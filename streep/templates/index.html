@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Streep</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/streep.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Streep: TelRaam Edoch Essentieel Programmeerwerkje</h1>
+        <a href="{{ url_for('add_user') }}" class="btn btn-default">Nieuwe gebruiker</a>
+    </div>
+    <div class="">
+        <table class="table table-hover table-users">
+            <tr>
+                <th>Naam</th>
+                <th>Kruisjes</th>
+                <th></th>
+            </tr>
+            {% for user in users %}
+            <tr id="{{ user.id }}">
+                <td>{{user.name}}</td>
+                <td>{{user.credits}}</td>
+                <td>
+                    <a href="{{ url_for('consume', user_id=user.id, amount=2) }}" data-user-id="{{user.id}}" data-amount="2" class="btn btn-primary btn-sm">Bier</a>
+                    <a href="{{ url_for('consume', user_id=user.id) }}" data-user-id="{{user.id}}" data-amount="1" class="btn btn-success btn-sm">Fris</a>
+                    <a href="{{ url_for('consume', user_id=user.id, amount=10) }}" data-user-id="{{user.id}}" data-amount="10" class="btn btn-danger btn-sm">Zonnebril</a>
+                    <a href="{{ url_for('consume', user_id=user.id, amount=-2) }}" data-user-id="{{user.id}}" data-amount="-2" class="btn btn-link btn-sm">Undo Bier</a>
+                    <a href="{{ url_for('consume', user_id=user.id, amount=-1) }}" data-user-id="{{user.id}}" data-amount="-1" class="btn btn-link btn-sm">Undo Fris</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <script>
+        var current = {};
+        var delta = {};
+        var timers = {};
+
+        $('.table-users tr').each(function() {
+            current[this.id] = parseInt($($(this).find('td').get(1)).text());
+        });
+
+        $('.table-users a').click(function(evt){
+            evt.preventDefault();
+            // Get me some data
+            var field = $(this).closest('tr').find('td').get(1);
+            var user_id = $(this).data('user-id');
+            var amount = $(this).data('amount');
+
+            // Update the users delta and current amount of x-es
+            delta[user_id] = (delta[user_id] || 0) + amount;
+            $(field).text(current[user_id] + delta[user_id]);
+
+            // If there is a sync-request queued for this user, delete it.
+            if (timers[user_id])
+                clearTimeout(timers[user_id]);
+
+            // Queue a sync-request for this user
+            timers[user_id] = setTimeout(create_sync_task(user_id), 1000);
+        });
+
+        function create_sync_task(user_id) {
+            return function() {
+                // Run the request
+                var user_delta = delta[user_id];
+                var url = '/' + user_id + '/consume?amount=' + user_delta;
+                $.get(url, {timeout: 3000}).fail(function(response){
+                    delta[user_id] = (delta[user_id] || 0) + user_delta;
+                    current[user_id] -= user_delta;
+                    alert('Something went wrong? See the console, or ask Jelmer or Martijn');
+                });
+
+                console.log('Submitted', user_id, delta[user_id], 'to', url);
+
+                // commit locally
+                current[user_id] += delta[user_id];
+                delete delta[user_id];
+                delete timers[user_id];
+            }
+        };
+
+    </script>
+</body>
+</html>
