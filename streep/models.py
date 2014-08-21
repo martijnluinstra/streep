@@ -6,20 +6,20 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     address = db.Column(db.String(255), nullable=False)
-    place_of_residence = db.Column(db.String(255), nullable=False)
+    city = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
     iban = db.Column(db.String(34), nullable=False)
-    date_of_birth = db.Column(db.DateTime(), nullable=True)
+    birthday = db.Column(db.DateTime(), nullable=True)
     purchases = db.relationship('Purchase', backref='user',
                                 lazy='dynamic')
 
-    def __init__(self, name, address, place_of_residence, email, iban, date_of_birth=None):
+    def __init__(self, name, address, city, email, iban, birthday=None):
         self.name = name
         self.address = address
-        self.place_of_residence = place_of_residence
+        self.city = city
         self.email = email
         self.iban = iban
-        self.date_of_birth = date_of_birth
+        self.birthday = birthday
 
 
 class Purchase(db.Model):
