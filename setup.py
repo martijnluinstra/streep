@@ -1,5 +1,5 @@
 from streep import db
-from streep.models import User
+from streep.models import User, Product
 from datetime import datetime
 import csv
 
@@ -14,14 +14,16 @@ def read_date(date):
 
 def create_demo_data():
     # Add a demo user
-    u_demo = User('Demo User', 'Nijenborgh 9', 'Groningen', 'martijn@svcover.nl', 'NL54RABO0103796940')
-    db.session.add(u_demo)
-    db.session.commit()
-
-    # # Add demo products
     # u_demo = User('Demo User', 'Nijenborgh 9', 'Groningen', 'martijn@svcover.nl', 'NL54RABO0103796940')
     # db.session.add(u_demo)
     # db.session.commit()
+
+    # Add demo products
+    p_demo1 = Product('Beer', 55, True)
+    db.session.add(p_demo1)
+    p_demo2 = Product('Soft drink', 27)
+    db.session.add(p_demo2)
+    db.session.commit()
 
 
 def import_users(file):
@@ -40,5 +42,7 @@ def import_users(file):
 
 # Create the database
 db.create_all()
+# Add some data
+create_demo_data()
 # Import files
 import_users("D:\\\\Martijn\\Documents\\GitHub\\streep\\test.csv")
