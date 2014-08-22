@@ -32,8 +32,8 @@ class Purchase(db.Model):
     def __init__(self, user_id, product_id):
         self.user_id = user_id
         self.product_id = product_id
-        self.timestamp = datetime.utcnow()
-        self.undone = True
+        self.timestamp = datetime.now()
+        self.undone = False
 
 
 class Product(db.Model):
@@ -45,4 +45,4 @@ class Product(db.Model):
     def __init__(self, name, price=1, age_limit=False):
         self.name = name
         self.price = price
-        self.age_limit = false
+        self.age_limit = age_limit

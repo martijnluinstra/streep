@@ -1,6 +1,6 @@
 .user-panel {
-	max-width: 400px;
-	margin: 100px auto;
+	max-width: 500px;
+	margin: 10px auto;
 }
 
 body{
@@ -34,4 +34,8 @@ body{
 
 .table-users tbody > tr > td{
 	vertical-align: middle;
+}
+
+.table-users tbody > tr > td:last-child{
+	text-align: right;
 }
