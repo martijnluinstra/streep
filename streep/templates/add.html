@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Streep toevoegen</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/streep.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+</head>
+<body id="user-page">
+	<div class="user-panel panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">Streep gebruiker toevoegen</h3>
+		</div>
+		<div class="panel-body">
+			{% if error %}
+			<div class="alert alert-info">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>Oh dear!</strong> {{ error }}
+			</div>
+			{% endif %}
+
+			<form method="post" action="{{ url_for('add_user') }}">
+				<div class="form-group">
+					<label for="add-name" class="control-label">Naam</label>
+					<input type="text" class="form-control" id="add-name" name="name">
+				</div>
+				<button type="submit" class="btn btn-default">Toevoegen</button><a href="{{url_for('view_home')}}" class="btn btn-link">Terug</a>
+			</form>
+		</div>
+	</div>
+</body>
+</html>
