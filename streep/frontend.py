@@ -1,15 +1,20 @@
 from flask import render_template, redirect, url_for, request
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from streep import app, db
 from models import User, Purchase, Product
 from forms import UserForm
 import csv
 
+
 @app.context_processor
 def utility_processor():
     def format_price(amount, currency=u"\u20AC"):
         return u'{1} {0:.2f}'.format(amount, currency)
-    return dict(format_price=format_price)
+    def is_eligible(birthdate, product_age_limit):
+        age = relativedelta(datetime.now(), birthdate).years
+        return not (product_age_limit and age<18)
+    return dict(format_price=format_price, is_eligible=is_eligible)
 
 @app.route('/', methods=['GET'])
 def view_home():
@@ -34,10 +39,10 @@ def add_user():
         return redirect(url_for('view_home'))
     return render_template('user_add.html', form=form, mode='add')
 
+
 @app.route('/users/<int:user_id>', methods=['GET', 'POST'])
 def edit_user(user_id):
     user = User.query.filter_by(id = user_id).first_or_404()
-    print db.session.query(Purchase.user_id, db.func.sum(Product.price)).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).group_by(Purchase.user_id).all()
     form = UserForm(request.form, user)
     if form.validate_on_submit():
         form.populate_obj(user)
@@ -45,21 +50,13 @@ def edit_user(user_id):
         return redirect(url_for('view_home'))
     return render_template('user_add.html', form=form, mode='edit', id=user.id)
 
+
 @app.route('/users/<int:user_id>/history', methods=['GET'])
 def history(user_id):
     # purchases = Purchase.query.filter_by(user_id = user_id).all()
-    purchases = db.session.query(Purchase, Product.name).join(Product, Purchase.product_id==Product.id).filter(Purchase.user_id == user_id).order_by(Purchase.id.desc()).all()
+    purchases = db.session.query(Purchase, Product.name, Product.price).join(Product, Purchase.product_id==Product.id).filter(Purchase.user_id == user_id).order_by(Purchase.id.desc()).all()
     user = User.query.filter_by(id = user_id).first_or_404()
     return render_template('user_history.html', purchases=purchases, user=user)
-
-@app.route('/purchase', methods=['POST'])
-def consume():
-    data = request.get_json()
-    for row in data:
-        purchase = Purchase(row['user'], row['product'])
-        db.session.add(purchase)
-    db.session.commit()
-    return 'Purchases created', 201
 
 
 @app.route('/purchase/<int:purchase_id>/undo', methods=['GET'])
@@ -68,3 +65,23 @@ def undo(purchase_id):
     purchase.undone = True
     db.session.commit()
     return redirect(url_for('history', user_id = purchase.user_id))
+
+
+@app.route('/purchase', methods=['POST'])
+def batch_consume():
+    data = request.get_json()
+    for row in data:
+        purchase = Purchase(row['user_id'], row['product_id'])
+        db.session.add(purchase)
+    db.session.commit()
+    return 'Purchases created', 201
+
+
+@app.route('/purchase/undo', methods=['POST'])
+def batch_undo():
+    data = request.get_json()
+    for row in data:
+        purchase = Purchase.query.filter_by(id = row['purchase_id']).first_or_404()
+        purchase.undone = True
+    db.session.commit()
+    return 'Purchases undone', 201

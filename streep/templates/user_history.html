@@ -21,12 +21,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% for (purchase, product) in purchases %}
+                {% for (purchase, product, price) in purchases %}
                 <tr id="{{ purchase.id }}">
                     <td>{{product}}</td>
                     <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
                     <td>
-                        <a href="{{ url_for('undo', purchase_id=purchase.id) }}" class="btn btn-default btn-sm" {{ 'disabled="disabled"' if purchase.undone}}>Undo</a>
+                        <button data-user-id="{{user.id}}" data-purchase-id="{{purchase.id}}" data-price="{{price}}" class="btn btn-danger btn-sm" {{ 'disabled="disabled"' if purchase.undone}}>Undo</button>
                     </td>
                 </tr>
                 {% endfor %}
