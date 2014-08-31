@@ -1,3 +1,5 @@
+@charset "UTF-8"*/;
+
 .user-panel {
 	max-width: 500px;
 	margin: 10px auto;
@@ -18,10 +20,20 @@ body{
 	font-size: 32px;
 }
 
-.header .btn{
+.header .nav{
 	position: absolute;
 	right: 0;
-	top: 4px;
+}
+
+.header .btn{
+	font-weight: bold;
+	font-size: 25px;
+	height: 43px;
+	width: 43px;
+	padding: 4px 12px;
+}
+.header .navicon-button{
+	padding: 19px 10px;
 }
 
 .content{
@@ -38,4 +50,69 @@ body{
 
 .table-users tbody > tr > td:last-child{
 	text-align: right;
+}
+
+/* Navicon */
+.navicon-button {
+  display: inline-block;
+  position: relative;
+  padding: 2.0625rem 0.9rem;
+  transition: 0.125s;
+  cursor: pointer;
+  user-select: none;
+  opacity: .8;
+}
+.navicon-button .navicon:before, .navicon-button .navicon:after {
+  transition: 0.125s;
+}
+.navicon-button:hover {
+  transition: 0.25s;
+}
+.navicon-button:hover .navicon:before, .navicon-button:hover .navicon:after {
+  transition: 0.125s;
+}
+.navicon-button:hover .navicon:before {
+  top: .825rem;
+}
+.navicon-button:hover .navicon:after {
+  top: -.825rem;
+}
+
+.navicon {
+  position: relative;
+  width: 2.1rem;
+  height: .3125rem;
+  background: #000;
+  transition: 0.25s;
+}
+.navicon:before, .navicon:after {
+  display: block;
+  content: "";
+  height: .3125rem;
+  width: 2.1rem;
+  background: #000;
+  position: absolute;
+  z-index: -1;
+  transition: 0.25s 0.125s;
+}
+.navicon:before {
+  top: .625rem;
+}
+.navicon:after {
+  top: -.625rem;
+}
+
+.open>a:not(.steps) .navicon:before,
+.open>a:not(.steps) .navicon:after {
+  top: 0 !important;
+}
+
+.open>a .navicon:before,
+.open>a .navicon:after {
+  transition: 0.5s;
+}
+
+/* Minus */
+.open>a>.navicon, .open>a:focus>.navicon {
+  transform: scale(0.75);
 }

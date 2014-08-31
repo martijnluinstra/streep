@@ -9,7 +9,17 @@
 <body>
     <div class="header">
         <h1>Streep: TelRaam Edoch Essentieel Programmeerwerkje</h1>
-        <a href="{{ url_for('add_user') }}" class="btn btn-default">Add User</a>
+        <div class="dropdown pull-right btn-toolbar" role="toolbar">
+            <button data-target="#" class="btn btn-default">?</button>
+            <a class="btn btn-default navicon-button" data-target="#" data-toggle="dropdown">
+                <div class="navicon"></div>
+            </a>
+            <!-- <button data-toggle="dropdown" data-target="#" class="btn btn-default">&equiv;</button> -->
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li><a href="{{ url_for('add_user') }}">Add User</a></li>
+                <li><a href="{{ url_for('add_product') }}">Add Product</a></li>
+            </ul>
+        </div>
     </div>
     <div class="content">
         <table class="table table-hover table-users">
