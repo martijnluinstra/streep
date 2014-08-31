@@ -1,27 +1,5 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>Streep</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/streep.css') }}">
-</head>
-<body>
-    <div class="header">
-        <h1>Streep: TelRaam Edoch Essentieel Programmeerwerkje</h1>
-        <div class="dropdown pull-right btn-toolbar" role="toolbar">
-            <button data-target="#" class="btn btn-default">?</button>
-            <a class="btn btn-default navicon-button" data-target="#" data-toggle="dropdown">
-                <div class="navicon"></div>
-            </a>
-            <!-- <button data-toggle="dropdown" data-target="#" class="btn btn-default">&equiv;</button> -->
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                <li><a href="{{ url_for('add_user') }}">Add User</a></li>
-                <li><a href="{{ url_for('add_product') }}">Add Product</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="content">
+{% extends "base.html" %}
+{% block body %}
         <table class="table table-hover table-users">
             <thead>
                 <tr>
@@ -48,7 +26,8 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
+{% endblock %}
+{% block scripts%}
     <div class="modal fade" id="streepModal" tabindex="-1" role="dialog" aria-labelledby="streepModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -60,8 +39,6 @@
         </div>
       </div>
     </div>
-    <script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    {{ super() }}
     <script src="{{ url_for('static', filename='js/streep.js') }}"></script>
-</body>
-</html>
+{% endblock %}

@@ -1,43 +1,65 @@
 @charset "UTF-8"*/;
 
-.streep-panel {
+.panel {
 	max-width: 500px;
 	margin: 10px auto;
 }
 
-body{
-	padding: 30px;
-}
-
 .header{
+  background: #c60c30;
 	position: relative;
 	height: 64px;
+  padding: 0 1em;
+}
+
+.header .brand{
+  position: relative;
+  top: -3px;
+  height: 64px;
+  line-height: 64px;
+  margin-right: 1em;
+}
+
+.header .brand img {
+  /*width: 132px;*/
+  height: 44px;
+  vertical-align: middle;
 }
 
 .header h1{
-	position: absolute;
-	margin: 0px;
-	font-size: 32px;
+  color: white;
+  display: inline;
+  line-height: 64px;
+  font-size: 32px;
+  margin: 0;
 }
 
-.header .nav{
-	position: absolute;
-	right: 0;
+.header h1 a {
+  text-decoration: inherit;
+  color: inherit;
+}
+
+.header nav{
+  position: relative;
+  top: 16px;
 }
 
 .header .btn{
 	font-weight: bold;
-	font-size: 25px;
-	height: 43px;
-	width: 43px;
-	padding: 4px 12px;
+	font-size: 18px;
+  line-height: 30px;
+	height: 32px;
+	width: 32px;
+	padding: 0;
 }
+
 .header .navicon-button{
-	padding: 19px 10px;
+  font-size: 12px;
+	padding: 14px 9px;
 }
 
 .content{
-	margin-top: 30px;
+	padding: 30px;
 }
 
 .table-users{
@@ -60,7 +82,6 @@ body{
   transition: 0.125s;
   cursor: pointer;
   user-select: none;
-  opacity: .8;
 }
 .navicon-button .navicon:before, .navicon-button .navicon:after {
   transition: 0.125s;
@@ -72,34 +93,34 @@ body{
   transition: 0.125s;
 }
 .navicon-button:hover .navicon:before {
-  top: .825rem;
+  top: .5em;
 }
 .navicon-button:hover .navicon:after {
-  top: -.825rem;
+  top: -.5em;
 }
 
 .navicon {
   position: relative;
-  width: 2.1rem;
-  height: .3125rem;
-  background: #000;
+  width: 1em;
+  height: .1667em;
+  background: #333;
   transition: 0.25s;
 }
 .navicon:before, .navicon:after {
   display: block;
   content: "";
-  height: .3125rem;
-  width: 2.1rem;
-  background: #000;
+  height: .1667em;
+  width: 1em;
+  background: #333;
   position: absolute;
-  z-index: -1;
+  z-index: 1;
   transition: 0.25s 0.125s;
 }
 .navicon:before {
-  top: .625rem;
+  top: .41667em;
 }
 .navicon:after {
-  top: -.625rem;
+  top: -.41667em;
 }
 
 .open>a:not(.steps) .navicon:before,
@@ -114,5 +135,5 @@ body{
 
 /* Minus */
 .open>a>.navicon, .open>a:focus>.navicon {
-  transform: scale(0.75);
+  transform: scale(0.83333);
 }

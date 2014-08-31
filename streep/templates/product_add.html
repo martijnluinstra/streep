@@ -1,6 +1,6 @@
 {% extends "page_layout.html" %}
 {% block title %}{{mode|title}} product{% endblock %}
-{% block body %}
+{% block content %}
 	<form method="post" action="{{ url_for('add_product') if mode == 'add' else url_for('edit_product', product_id=id) }}">
 		{{ form.hidden_tag() }}
 		<div class="form-group">
@@ -24,6 +24,6 @@
 			</label>
 		</div>
 		{{ render_errors(form.age_limit) }}
-		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('view_home')}}" class="btn btn-link">Back</a>
+		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('view_products')}}" class="btn btn-link">Back</a>
 	</form>
 {% endblock %}

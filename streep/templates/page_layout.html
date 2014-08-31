@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+
 {% macro render_errors(field, class='dialog') -%}
     {% if field.errors %}
         {% for error in field.errors %}
@@ -9,31 +11,17 @@
     {% endif %}
 {%- endmacro %}
 
-<!DOCTYPE html>
-<html>
-<head>
-{% block head %}
-    <title>Streep - {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/streep.css') }}">
-{% endblock %}
-</head>
-<body>
+{% block body %}
     <div class="panel panel-primary streep-panel">
         <div class="panel-heading">
             <h3 class="panel-title">{{ self.title() }}</h3>
         </div>
-        {% if self.body() %}<div class="panel-body">{% endif %}
-            {% block body %}{% endblock %}
-        {% if self.body() %}</div>{% endif %}
+        {% if self.content() %}<div class="panel-body">{% endif %}
+            {% block content %}{% endblock %}
+        {% if self.content() %}</div>{% endif %}
         {% block table %}{% endblock %}
         {% if self.footer() %}<div class="panel-footer">{% endif %}
             {% block footer %}{% endblock %}
         {% if self.footer() %}</div>{% endif %}
     </div>
-{% block script %}
-    <script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
 {% endblock %}
-</body>
-</html>

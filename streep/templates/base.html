@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% block head %}
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Streep{{ ' - 'if self.title() }}{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/streep.css') }}">
+{% endblock %}
+</head>
+<body>
+    <div class="header">
+    {% block header%}
+        <a class="brand" href="//www.svcover.nl/"><img src="{{ url_for('static', filename='img/cover.png') }}"></a>
+        <h1><a href="{{ url_for('view_home') }}">Streep</a></h1>
+        <nav class="dropdown pull-right btn-toolbar" role="toolbar">
+            <button data-target="#" class="btn btn-default">?</button>
+            <a class="btn btn-default navicon-button" data-target="#" data-toggle="dropdown">
+                <div class="navicon"></div>
+            </a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li><a href="{{ url_for('add_user') }}">Add User</a></li>
+                <li role="presentation" class="divider"></li>
+                <li><a href="{{ url_for('view_products') }}">Products</a></li>
+                <li><a href="{{ url_for('add_product') }}">Add Product</a></li>
+            </ul>
+        </nav>
+    {% endblock %}
+    </div>
+    <div class="content">
+<!-- Streep: TelRaam Edoch Essentieel Programmeerwerkje -->
+        {% block body %}{% endblock %}
+    </div>
+{% block scripts%}
+    <script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+{% endblock %}
+</body>
+</html>

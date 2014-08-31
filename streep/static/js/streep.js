@@ -75,13 +75,14 @@ $(".table-users button[data-type^='history']").click(function(evt){
     url='/users/' + user_id + '/history';
 
     $.get(url, {timeout: 3000}, function( data ) {
-            show_history_modal($(data).filter('.streep-panel'));
+            show_history_modal($(data).find('.streep-panel'));
         }).fail(function(response){
         alert('Something went wrong? See the console, or ask Jelmer or Martijn');
     });
 });
 
 function show_history_modal(data){
+    console.log(data);
     title = data.find('.panel-title').html();
     body = data.find('.table-users');
     body.find('button').click(function(evt){
