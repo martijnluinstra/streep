@@ -111,3 +111,18 @@ function show_history_modal(data){
     $('#streepModal').find('.modal-body').empty().append(body);
     $('#streepModal').modal('show');
 };
+
+// Case insensitive contains filter
+jQuery.expr[':'].containsNCS = function(a, i, m) {
+  return jQuery(a).text().toUpperCase()
+      .indexOf(m[3].toUpperCase()) >= 0;
+};
+
+$('#search').focus();
+$(document).click(function() { $('#search').focus(); });
+
+$('#search').keyup(function() {
+    var query = $(this).val();
+    $('.table-users tbody tr').hide();
+    $('.table-users tbody tr td:containsNCS('+ query +')').closest('tr').show();
+});

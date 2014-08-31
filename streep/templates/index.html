@@ -1,31 +1,40 @@
 {% extends "base.html" %}
+    
 {% block body %}
-        <table class="table table-hover table-users">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Spend amount</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for (user, spend) in users %}
-                <tr id="{{ user.id }}" data-spend-amount="{{spend if spend != None else 0}}">
-                    <td>{{user.name}}</td>
-                    <td>{{format_price((spend if spend != None else 0)/100)}}</td>
-                    <td>
-                        {% for product in products %}
-                            <button data-user-id="{{user.id}}" data-product-id="{{product.id}}" data-price="{{product.price}}" data-is-eligible="{{ is_eligible(user.birthday,product.age_limit)|lower if user.birthday != None else 'true' }}" data-type="purchase" class="btn btn-primary btn-sm">{{product.name}}</button>
-                        {% endfor %}
-                    </td><td>
-                        <button data-user-id="{{user.id}}" data-type="history" class="btn btn-default btn-sm">Undo</button>
-                        <a href="{{ url_for('edit_user', user_id=user.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <form class="form-search" role="search">
+        <div class="form-group">
+            <div class="input-group">
+                <input class="form-control" id="search" type="text" placeholder="Search..." autocomplete="off">
+                <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+            </div>
+        </div>
+    </form>
+    <table class="table table-hover table-users">
+        <thead>
+            <tr>
+                <th class="col-sm-2">Name</th>
+                <th class="col-sm-1">Spend amount</th>
+                <th class="col-sm-3"></th>
+                <th class="col-sm-1"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for (user, spend) in users %}
+            <tr id="{{ user.id }}" data-spend-amount="{{spend if spend != None else 0}}">
+                <td>{{user.name}}</td>
+                <td>{{format_price((spend if spend != None else 0)/100)}}</td>
+                <td>
+                    {% for product in products %}
+                        <button data-user-id="{{user.id}}" data-product-id="{{product.id}}" data-price="{{product.price}}" data-is-eligible="{{ is_eligible(user.birthday,product.age_limit)|lower if user.birthday != None else 'true' }}" data-type="purchase" class="btn btn-primary btn-sm">{{product.name}}</button>
+                    {% endfor %}
+                </td><td>
+                    <button data-user-id="{{user.id}}" data-type="history" class="btn btn-default btn-sm">Undo</button>
+                    <a href="{{ url_for('edit_user', user_id=user.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
 {% block scripts%}
     <div class="modal fade" id="streepModal" tabindex="-1" role="dialog" aria-labelledby="streepModalLabel" aria-hidden="true">

@@ -62,6 +62,10 @@
 	padding: 30px;
 }
 
+.form-search{
+  max-width: 500px;
+}
+
 .table-users{
 	margin-bottom: 0px;
 }
@@ -117,10 +121,10 @@
   transition: 0.25s 0.125s;
 }
 .navicon:before {
-  top: .41667em;
+  top: .3333em;
 }
 .navicon:after {
-  top: -.41667em;
+  top: -.3333em;
 }
 
 .open>a:not(.steps) .navicon:before,
