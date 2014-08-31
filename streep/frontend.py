@@ -3,7 +3,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from streep import app, db
 from models import User, Purchase, Product
-from forms import UserForm
+from forms import UserForm, ProductForm
 import csv
 
 
@@ -24,6 +24,11 @@ def view_home():
     # users = User.query.order_by(User.name).all()
     products = Product.query.all()
     return render_template('index.html', users=users, products=products)
+
+
+@app.route('/faq', methods=['POST'])
+def faq():
+    return render_template('faq.html')
 
 
 @app.route('/users/add', methods=['GET', 'POST'])
@@ -49,6 +54,31 @@ def edit_user(user_id):
         db.session.commit()
         return redirect(url_for('view_home'))
     return render_template('user_add.html', form=form, mode='edit', id=user.id)
+
+
+@app.route('/products/add', methods=['GET', 'POST'])
+def add_product():
+    """ 
+    Try to create a new product.
+    """
+    form = ProductForm()
+    if form.validate_on_submit():
+        product = Product(form.name.data, form.price.data, form.priority.data, form.age_limit.data)
+        db.session.add(product)
+        db.session.commit()
+        return redirect(url_for('view_home'))
+    return render_template('product_add.html', form=form, mode='add')
+
+
+@app.route('/products/<int:product_id>', methods=['GET', 'POST'])
+def edit_product(product_id):
+    product = Product.query.filter_by(id = product_id).first_or_404()
+    form = ProductForm(request.form, product)
+    if form.validate_on_submit():
+        form.populate_obj(product)
+        db.session.commit()
+        return redirect(url_for('view_home'))
+    return render_template('product_add.html', form=form, mode='edit', id=product.id)
 
 
 @app.route('/users/<int:user_id>/history', methods=['GET'])

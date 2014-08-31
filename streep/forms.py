@@ -13,5 +13,6 @@ class UserForm(Form):
 
 class ProductForm(Form):
     name = TextField('Name', [validators.InputRequired(message='Name is required')])
-    price = IntegerField('Price (credits)', [validators.InputRequired(message='Price is required')])
+    price = IntegerField('Price', [validators.InputRequired(message='Price is required')])
+    priority = IntegerField('Priority', [validators.InputRequired(message='Priority is required')])
     age_limit = BooleanField('Age limit')

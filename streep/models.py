@@ -27,7 +27,7 @@ class Purchase(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     timestamp = db.Column(db.DateTime(), nullable=False)
-    undone = db.Column(db.Boolean())
+    undone = db.Column(db.Boolean(), nullable=False)
 
     def __init__(self, user_id, product_id):
         self.user_id = user_id
@@ -40,9 +40,11 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     price = db.Column(db.Integer(), nullable=False)
-    age_limit = db.Column(db.Boolean())
+    priority = db.Column(db.Integer(), nullable=False)
+    age_limit = db.Column(db.Boolean(), nullable=False)
 
-    def __init__(self, name, price=1, age_limit=False):
+    def __init__(self, name, price=1, priority=0, age_limit=False):
         self.name = name
         self.price = price
+        self.priority = priority
         self.age_limit = age_limit
