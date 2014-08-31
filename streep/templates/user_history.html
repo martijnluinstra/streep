@@ -1,40 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Streep - history</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/streep.css') }}">
-	<script src="{{ url_for('static', filename='js/jquery-2.0.3.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
-</head>
-<body id="user-page">
-	<div class="user-panel panel panel-primary">
-		<div class="panel-heading">
-			<h3 class="panel-title">History of {{user.name}}</h3>
-		</div>
-        <table class="table table-hover table-users">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Timestamp</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for (purchase, product, price) in purchases %}
-                <tr id="{{ purchase.id }}">
-                    <td>{{product}}</td>
-                    <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
-                    <td>
-                        <button data-user-id="{{user.id}}" data-purchase-id="{{purchase.id}}" data-price="{{price}}" class="btn btn-danger btn-sm" {{ 'disabled="disabled"' if purchase.undone}}>Undo</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="panel-footer">
-	        <a href="{{url_for('view_home')}}" class="btn btn-primary">Back</a>
-		</div>
-	</div>
-</body>
-</html>
+{% extends "page_layout.html" %}
+{% block title %}History of {{user.name}}{% endblock %}
+{% block table %}
+    <table class="table table-hover table-users">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Timestamp</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for (purchase, product, price) in purchases %}
+            <tr id="{{ purchase.id }}">
+                <td>{{product}}</td>
+                <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
+                <td>
+                    <button data-user-id="{{user.id}}" data-purchase-id="{{purchase.id}}" data-price="{{price}}" class="btn btn-danger btn-sm" {{ 'disabled="disabled"' if purchase.undone}}>Undo</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block footer %}
+    <a href="{{url_for('view_home')}}" class="btn btn-primary">Back</a>
+{% endblock %}

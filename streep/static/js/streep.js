@@ -75,7 +75,7 @@ $(".table-users button[data-type^='history']").click(function(evt){
     url='/users/' + user_id + '/history';
 
     $.get(url, {timeout: 3000}, function( data ) {
-            show_history_modal($(data).filter('.user-panel'));
+            show_history_modal($(data).filter('.streep-panel'));
         }).fail(function(response){
         alert('Something went wrong? See the console, or ask Jelmer or Martijn');
     });
