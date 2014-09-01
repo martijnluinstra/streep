@@ -12,16 +12,13 @@
   padding: 0 1em;
 }
 
-.header .brand{
-  position: relative;
-  top: -3px;
-  height: 64px;
-  line-height: 64px;
-  margin-right: 1em;
-}
+/*.header .brand{
+}*/
 
-.header .brand img {
-  /*width: 132px;*/
+.header img {
+  position: relative;
+  top: -5px;
+  margin-right: 1em;
   height: 44px;
   vertical-align: middle;
 }
@@ -67,7 +64,17 @@
 }
 
 .table-users{
-	margin-bottom: 0px;
+  margin-bottom: 0px;
+}
+
+.table-users tr td:first-child,
+.table-users tr th:first-child{
+	padding-left: 15px;
+}
+
+.table-users tr td:last-child,
+.table-users tr th:last-child{
+  padding-right: 15px;
 }
 
 .table-users tbody > tr > td{
@@ -127,17 +134,17 @@
   top: -.3333em;
 }
 
-.open>a:not(.steps) .navicon:before,
-.open>a:not(.steps) .navicon:after {
+.open>button:not(.steps) .navicon:before,
+.open>button:not(.steps) .navicon:after {
   top: 0 !important;
 }
 
-.open>a .navicon:before,
-.open>a .navicon:after {
+.open>button .navicon:before,
+.open>button .navicon:after {
   transition: 0.5s;
 }
 
 /* Minus */
-.open>a>.navicon, .open>a:focus>.navicon {
+.open>button>.navicon, .open>a:focus>.navicon {
   transform: scale(0.83333);
 }

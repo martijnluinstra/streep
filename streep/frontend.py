@@ -27,7 +27,7 @@ def view_home():
     return render_template('index.html', users=users, products=products)
 
 
-@app.route('/faq', methods=['POST'])
+@app.route('/faq', methods=['GET'])
 def faq():
     return render_template('faq.html')
 
@@ -59,8 +59,13 @@ def edit_user(user_id):
 
 @app.route('/users/<int:user_id>/history', methods=['GET'])
 def history(user_id):
-    # purchases = Purchase.query.filter_by(user_id = user_id).all()
-    purchases = db.session.query(Purchase, Product.name, Product.price).join(Product, Purchase.product_id==Product.id).filter(Purchase.user_id == user_id).order_by(Purchase.id.desc()).all()
+    purchase_query = db.session.query(Purchase, Product.name, Product.price).join(Product, Purchase.product_id==Product.id).filter(Purchase.user_id == user_id).order_by(Purchase.id.desc())
+    try:
+        show = request.args.get('show', type=int)
+    except KeyError:
+        purchases = purchase_query.all();
+    else:
+        purchases = purchase_query.limit(show).all();
     user = User.query.filter_by(id = user_id).first_or_404()
     return render_template('user_history.html', purchases=purchases, user=user)
 

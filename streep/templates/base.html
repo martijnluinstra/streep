@@ -11,13 +11,13 @@
 <body>
     <div class="header">
     {% block header%}
-        <a class="brand" href="//www.svcover.nl/"><img src="{{ url_for('static', filename='img/cover.png') }}"></a>
+        <img src="{{ url_for('static', filename='img/cover.png') }}">
         <h1><a href="{{ url_for('view_home') }}">Streep</a></h1>
         <nav class="dropdown pull-right btn-toolbar" role="toolbar">
-            <button data-target="#" class="btn btn-default">?</button>
-            <a class="btn btn-default navicon-button" data-target="#" data-toggle="dropdown">
+            <button data-target="#" data-type="faq" class="btn btn-default">?</button>
+            <button class="btn btn-default navicon-button" data-target="#" data-toggle="dropdown">
                 <div class="navicon"></div>
-            </a>
+            </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                 <li><a href="{{ url_for('add_user') }}">Add User</a></li>
                 <li role="presentation" class="divider"></li>
@@ -28,7 +28,6 @@
     {% endblock %}
     </div>
     <div class="content">
-<!-- Streep: TelRaam Edoch Essentieel Programmeerwerkje -->
         {% block body %}{% endblock %}
     </div>
 {% block scripts%}

@@ -5,6 +5,10 @@ var model = {
     undos: []
 };
 var timers = {};
+var config = {
+    error_message: 'Something went wrong? See the console, or ask Martijn!',
+    history_size: 10
+};
 
 $('.table-users tr').each(function() {
     current[this.id] = parseInt($(this).data('spend-amount'));
@@ -54,7 +58,7 @@ function create_sync_task(url, item) {
                 delta[user_id] = (delta[user_id] || 0) + i['price'];
                 current[user_id] -= i['price'];
             }
-            alert('Something went wrong? See the console, or ask Jelmer or Martijn');
+            alert(config['error_message']);
         });
 
         console.log('Submitted', model[item], 'to', url);
@@ -72,17 +76,16 @@ function create_sync_task(url, item) {
 $(".table-users button[data-type^='history']").click(function(evt){
     evt.preventDefault();
     var user_id = $(this).data('user-id');
-    url='/users/' + user_id + '/history';
+    url='/users/' + user_id + '/history?show='+config['history_size'];
 
     $.get(url, {timeout: 3000}, function( data ) {
-            show_history_modal($(data).find('.streep-panel'));
+            show_history_modal($(data).find('.streep-panel'), user_id);
         }).fail(function(response){
-        alert('Something went wrong? See the console, or ask Jelmer or Martijn');
+        alert(config['error_message']);
     });
 });
 
-function show_history_modal(data){
-    console.log(data);
+function show_history_modal(data, user_id){
     title = data.find('.panel-title').html();
     body = data.find('.table-users');
     body.find('button').click(function(evt){
@@ -107,8 +110,11 @@ function show_history_modal(data){
 
         $(this).prop('disabled', true);
     });
-    $('#streepModal').find('.modal-title').html(title);
-    $('#streepModal').find('.modal-body').empty().append(body);
+    $('#streepModal').find('.modal-title').show().html(title);
+    $('#streepModal').find('.modal-body').hide().empty();
+    $('#streepModal').find('.modal-table').show().empty().append(body);
+    $('#streepModal').find('.modal-footer').show().html('<a href="/users/' + user_id + '/history" class="btn btn-default">Complete history</a><button class="btn btn-primary" data-dismiss="modal">Ok</button>');
+    $('#streepModal').find('.modal-dialog').removeClass("modal-lg");
     $('#streepModal').modal('show');
 };
 
@@ -124,5 +130,26 @@ $(document).click(function() { $('#search').focus(); });
 $('#search').keyup(function() {
     var query = $(this).val();
     $('.table-users tbody tr').hide();
-    $('.table-users tbody tr td:containsNCS('+ query +')').closest('tr').show();
+    $('.table-users tbody tr td:first-child:containsNCS('+ query +')').closest('tr').show();
 });
+
+$(".header button[data-type^='faq']").click(function(evt){
+    evt.preventDefault();
+    url='/faq';
+    $.get(url, {timeout: 3000}, function( data ) {
+            show_info_modal($(data).find('.streep-panel'));
+        }).fail(function(response){
+        alert(config['error_message']);
+    });
+});
+
+function show_info_modal(data){
+    title = data.find('.panel-title').html();
+    body = data.find('.panel-body').html();
+    $('#streepModal').find('.modal-title').show().html(title);
+    $('#streepModal').find('.modal-body').show().html(body);
+    $('#streepModal').find('.modal-table').hide().empty();
+    $('#streepModal').find('.modal-footer').show().html('<button class="btn btn-primary" data-dismiss="modal">Ok</button>');
+    $('#streepModal').find('.modal-dialog').addClass("modal-lg");
+    $('#streepModal').modal('show');
+};
