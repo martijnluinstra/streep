@@ -13,13 +13,14 @@
     {% block header%}
         <img src="{{ url_for('static', filename='img/cover.png') }}">
         <h1><a href="{{ url_for('view_home') }}">Streep</a></h1>
-        <nav class="dropdown pull-right btn-toolbar" role="toolbar">
+        <nav class="dropdown btn-toolbar pull-right" role="toolbar">
             <button data-target="#" data-type="faq" class="btn btn-default">?</button>
             <button class="btn btn-default navicon-button" data-target="#" data-toggle="dropdown">
                 <div class="navicon"></div>
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                 <li><a href="{{ url_for('add_user') }}">Add User</a></li>
+                <li><a href="{{ url_for('add_birthdays') }}">Add Birthdays</a></li>
                 <li role="presentation" class="divider"></li>
                 <li><a href="{{ url_for('view_products') }}">Products</a></li>
                 <li><a href="{{ url_for('add_product') }}">Add Product</a></li>

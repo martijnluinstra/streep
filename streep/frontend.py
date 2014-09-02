@@ -1,10 +1,21 @@
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, make_response, request
+from sqlalchemy.exc import IntegrityError
+
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import json
+
+
 from streep import app, db
 from models import User, Purchase, Product
-from forms import UserForm, ProductForm
-import csv
+from forms import UserForm, ProductForm, BirthdayForm
+
+
+def jsonify(data):
+    """ Create a json response from data """
+    response = make_response(json.dumps(data, indent=2, ensure_ascii=False).encode('utf-8'))
+    response.content_type = 'application/json'
+    return response
 
 
 @app.context_processor
@@ -41,8 +52,13 @@ def add_user():
     if form.validate_on_submit():
         user = User(form.name.data, form.address.data, form.city.data, form.email.data, form.iban.data, form.birthday.data)
         db.session.add(user)
-        db.session.commit()
-        return redirect(url_for('view_home'))
+        try:
+            db.session.commit()
+        except IntegrityError:
+            form.name.errors.append('Please provide a unique name!')
+            return render_template('user_add.html', form=form, mode='add')
+        else:
+            return redirect(url_for('view_home'))
     return render_template('user_add.html', form=form, mode='add')
 
 
@@ -52,8 +68,13 @@ def edit_user(user_id):
     form = UserForm(request.form, user)
     if form.validate_on_submit():
         form.populate_obj(user)
-        db.session.commit()
-        return redirect(url_for('view_home'))
+        try:
+            db.session.commit()
+        except IntegrityError:
+            form.name.errors.append('Please provide a unique name!')
+            return render_template('user_add.html', form=form, mode='edit', id=user.id)
+        else:
+            return redirect(url_for('view_home'))
     return render_template('user_add.html', form=form, mode='edit', id=user.id)
 
 
@@ -68,6 +89,30 @@ def history(user_id):
         purchases = purchase_query.limit(show).all();
     user = User.query.filter_by(id = user_id).first_or_404()
     return render_template('user_history.html', purchases=purchases, user=user)
+
+
+@app.route('/users/names', methods=['GET'])
+def list_users():
+    """ List all users """
+    users = db.session.query(User.name).all()
+    return jsonify([user[0] for user in users])
+
+
+@app.route('/users/birthday', methods=['GET', 'POST'])
+def add_birthdays():
+    """ 
+    Try to create a new user.
+    """
+    form = BirthdayForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(name = form.name.data).first()
+        if user is not None:
+            user.birthday = form.birthday.data
+            db.session.commit()
+            return redirect(url_for('add_birthdays'))
+        else:
+            form.name.errors.append('Username can not be found')
+    return render_template('user_birthday.html', form=form)
 
 
 @app.route('/purchase', methods=['POST'])

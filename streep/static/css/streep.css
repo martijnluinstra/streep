@@ -39,6 +39,8 @@
 .header nav{
   position: relative;
   top: 16px;
+  float: right;
+  display: inline;
 }
 
 .header .btn{

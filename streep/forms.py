@@ -1,4 +1,5 @@
 from flask.ext.wtf import Form
+from werkzeug.datastructures import MultiDict
 from wtforms import TextField, BooleanField, IntegerField, DateTimeField, validators
 
 
@@ -9,6 +10,11 @@ class UserForm(Form):
     email = TextField('Email address', [validators.InputRequired(message='Email is required'), validators.Email(message='Invalid email address')])
     iban = TextField('IBAN')
     birthday  = DateTimeField('Birthday', format='%d-%m-%Y', validators=[validators.Optional(strip_whitespace=True)])
+
+
+class BirthdayForm(Form):
+    name = TextField('Name', [validators.InputRequired(message='Name is required')])
+    birthday  = DateTimeField('Birthday', format='%d-%m-%Y', validators=[validators.InputRequired(message='Birthday is required')])
 
 
 class ProductForm(Form):
