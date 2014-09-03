@@ -1,6 +1,12 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-SECRET_KEY = '\xa3b{\xf2\xa3\xf1\x9aX\xe1\xc2\xe4t\xf7$\xb6tbV\xb0\x1cD\xf5e\xe6'
+SECRET_KEY = '-I\xc1me\x91\xd5\xfcQ\xd2V:\xc2W\xba3\xb18d\x08\xa4\x80\xe6E'
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'database.db')
+
+MULTIPLE_ENABLE = True
+
+MULTIPLE_AGE_LIMIT = True
+
+AGE_LIMIT = 18

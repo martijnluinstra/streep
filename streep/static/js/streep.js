@@ -18,10 +18,14 @@ $(".table-users button[data-type^='purchase']").click(function(evt){
     evt.preventDefault();
     // Get me some data
     var field = $(this).closest('tr').find('td').get(1);
+    var spinner = $(this).closest('td').find('.spinner').get(0);
     var user_id = $(this).data('user-id');
     var product_id = $(this).data('product-id');
     var product_price = $(this).data('price');
     var is_eligible = $(this).data('is-eligible');
+    var amount = parseInt($($(spinner).find('input').get(0)).val());
+
+    if (isNaN(amount)) amount = 1;
 
     if (!is_eligible){
         var proceed = confirm($(this).closest('tr').find('td').get(0).innerHTML + ' is too young to buy this product! Are you sure you want to continue?');
@@ -29,9 +33,14 @@ $(".table-users button[data-type^='purchase']").click(function(evt){
     }
 
     // Update the users delta and current amount of x-es
-    model['purchases'].push({user_id: user_id, product_id: product_id, price: product_price});
-    delta[user_id] = (delta[user_id] || 0) + product_price;
+    for(var i=0;i<amount;i++){
+        model['purchases'].push({user_id: user_id, product_id: product_id, price: product_price});
+        delta[user_id] = (delta[user_id] || 0) + product_price;
+    }
     $(field).text("€ "+((current[user_id] + delta[user_id])/100).toFixed(2));
+
+    //reset spinner
+    spinner_reset(spinner);
 
     // If there is a sync-request queued for this user, delete it.
     if (timers['purchases'])
@@ -88,7 +97,7 @@ $(".table-users button[data-type^='history']").click(function(evt){
 function show_history_modal(data, user_id){
     title = data.find('.panel-title').html();
     body = data.find('.table-users');
-    body.find('button').click(function(evt){
+    body.find("a[data-type^='undo']").click(function(evt){
         evt.preventDefault();
 
         var user_id = $(this).data('user-id');
@@ -125,7 +134,10 @@ jQuery.expr[':'].containsNCS = function(a, i, m) {
 };
 
 $('#search').focus();
-$(document).click(function() { $('#search').focus(); });
+$(document).click(function(evt) { 
+    if (! $(evt.target).is( ".spinner input" ))
+        $('#search').focus();
+});
 
 $('#search').keyup(function() {
     var query = $(this).val();
@@ -153,3 +165,40 @@ function show_info_modal(data){
     $('#streepModal').find('.modal-dialog').addClass("modal-lg");
     $('#streepModal').modal('show');
 };
+
+$('.spinner .btn:first-of-type').click(function(evt) {
+    evt.preventDefault();
+    spinner_update($(this).closest('.spinner'), 1);
+});
+$('.spinner .btn:last-of-type').click(function(evt) {
+    evt.preventDefault();
+    spinner_update($(this).closest('.spinner'), -1);
+});
+    
+$('.spinner input').keyup(function(evt) {
+    if(isNaN(parseInt($(this).val()))) $(this).val(1);
+    spinner_set_multiple($(this).closest('.spinner'));
+});
+
+function spinner_reset(spinner){
+    $($(spinner).find('input').get(0)).val(1);
+    spinner_set_multiple(spinner);
+}
+
+function spinner_update(spinner, mod){
+    var input = $(spinner).find('input').get(0);
+    var value = parseInt($(input).val(), 10) + mod;
+    if(isNaN(value)) value = 1;
+    if($(input).data('min') !== undefined) value = (value < $(input).data('min') ? $(input).data('min') : value);
+    if($(input).data('max') !== undefined) value = (value > $(input).data('max') ? $(input).data('max') : value);
+    $(input).val(value);
+    spinner_set_multiple(spinner);
+}
+
+function spinner_set_multiple(spinner){
+    if(parseInt($($(spinner).find('input').get(0)).val())>1){
+        $(spinner).closest('tr').find("button[data-multiple='false']").prop('disabled', true);
+    }else{
+       $(spinner).closest('tr').find("button[data-multiple='false']").prop('disabled', false); 
+    }
+}

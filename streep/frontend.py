@@ -24,7 +24,7 @@ def utility_processor():
         return u'{1} {0:.2f}'.format(amount, currency)
     def is_eligible(birthdate, product_age_limit):
         age = relativedelta(datetime.now(), birthdate).years
-        return not (product_age_limit and age<18)
+        return not (product_age_limit and age<app.config.get('AGE_LIMIT'))
     return dict(format_price=format_price, is_eligible=is_eligible)
 
 @app.route('/', methods=['GET'])
