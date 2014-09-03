@@ -5,7 +5,7 @@
 		{{ form.hidden_tag() }}
 		<div class="form-group">
 			{{ form.name.label(class="control-label") }}
-			{{ form.name(class="form-control", data_provide="typeahead", autocomplete="off") }}
+			{{ form.name(class="form-control", data_provide="typeahead", autocomplete="off",autofocus="true") }}
 		</div>
 		{{ render_errors(form.name) }}
 		<div class="form-group">
