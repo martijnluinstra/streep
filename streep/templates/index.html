@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-    
+
+{% block page_id %}view-users{% endblock %}
+
 {% block body %}
     <form class="form-search" role="search">
         <div class="form-group">
@@ -51,19 +53,8 @@
     </table>
 {% endblock %}
 {% block scripts%}
-    <div class="modal fade" id="streepModal" tabindex="-1" role="dialog" aria-labelledby="streepModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="streepModalLabel"></h4>
-          </div>
-          <div class="modal-body"></div>
-          <div class="modal-table"></div>
-          <div class="modal-footer"></div>
-        </div>
-      </div>
+    <div class="block-screen">
+        <div class="block-screen-wait"><img alt="Loading..." src="{{ url_for('static', filename='img/loading.gif') }}"></div>
     </div>
     {{ super() }}
-    <script src="{{ url_for('static', filename='js/streep.js') }}"></script>
 {% endblock %}

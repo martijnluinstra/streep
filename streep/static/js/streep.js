@@ -10,11 +10,11 @@ var config = {
     history_size: 10
 };
 
-$('.table-users tr').each(function() {
+$('#view-users .table-users tr').each(function() {
     current[this.id] = parseInt($(this).data('spend-amount'));
 });
 
-$(".table-users button[data-type^='purchase']").click(function(evt){
+$("#view-users .table-users button[data-type^='purchase']").click(function(evt){
     evt.preventDefault();
     // Get me some data
     var field = $(this).closest('tr').find('td').get(1);
@@ -59,7 +59,7 @@ function create_sync_task(url, item) {
             type: "POST",
             data: JSON.stringify(model[item]),
             contentType: "application/json",
-            timeout: 3000
+            timeout: 5000
         }).fail(function(response){
             model[item].concat(submitted_items);
             for(var i in submitted_items){
@@ -82,7 +82,7 @@ function create_sync_task(url, item) {
     }
 };
 
-$(".table-users button[data-type^='history']").click(function(evt){
+$("#view-users  .table-users button[data-type^='history']").click(function(evt){
     evt.preventDefault();
     var user_id = $(this).data('user-id');
     url='/users/' + user_id + '/history?show='+config['history_size'];
@@ -117,15 +117,19 @@ function show_history_modal(data, user_id){
         // Queue a sync-request for this user
         timers['undos'] = setTimeout(create_sync_task('/purchase/undo', 'undos'), 1000);
 
-        $(this).prop('disabled', true);
+        $(this).addClass('disabled');
     });
+    var btn_more = $('<a href="/users/' + user_id + '/history" class="btn btn-default">Complete history</a>');
+    btn_more.click(leave_page);
     $('#streepModal').find('.modal-title').show().html(title);
     $('#streepModal').find('.modal-body').hide().empty();
     $('#streepModal').find('.modal-table').show().empty().append(body);
-    $('#streepModal').find('.modal-footer').show().html('<a href="/users/' + user_id + '/history" class="btn btn-default">Complete history</a><button class="btn btn-primary" data-dismiss="modal">Ok</button>');
+    $('#streepModal').find('.modal-footer').show().empty().append(btn_more).append('<button class="btn btn-primary" data-dismiss="modal">Ok</button>');
     $('#streepModal').find('.modal-dialog').removeClass("modal-lg");
     $('#streepModal').modal('show');
 };
+
+/* Search */
 
 // Case insensitive contains filter
 jQuery.expr[':'].containsNCS = function(a, i, m) {
@@ -133,17 +137,19 @@ jQuery.expr[':'].containsNCS = function(a, i, m) {
       .indexOf(m[3].toUpperCase()) >= 0;
 };
 
-$('#search').focus();
+$('#view-users  #search').focus();
 $(document).click(function(evt) { 
     if (! $(evt.target).is( ".spinner input" ))
         $('#search').focus();
 });
 
-$('#search').keyup(function() {
+$('#view-users  #search').keyup(function() {
     var query = $(this).val();
     $('.table-users tbody tr').hide();
     $('.table-users tbody tr td:first-child:containsNCS('+ query +')').closest('tr').show();
 });
+
+/* FAQ */
 
 $(".header button[data-type^='faq']").click(function(evt){
     evt.preventDefault();
@@ -166,6 +172,8 @@ function show_info_modal(data){
     $('#streepModal').modal('show');
 };
 
+/* Spinner */
+
 $('.spinner .btn:first-of-type').click(function(evt) {
     evt.preventDefault();
     spinner_update($(this).closest('.spinner'), 1);
@@ -176,7 +184,7 @@ $('.spinner .btn:last-of-type').click(function(evt) {
 });
     
 $('.spinner input').keyup(function(evt) {
-    if(isNaN(parseInt($(this).val()))) $(this).val(1);
+    if(isNaN(parseInt($(this).val())) && $(this).val()!='') $(this).val(1);
     spinner_set_multiple($(this).closest('.spinner'));
 });
 
@@ -200,5 +208,41 @@ function spinner_set_multiple(spinner){
         $(spinner).closest('tr').find("button[data-multiple='false']").prop('disabled', true);
     }else{
        $(spinner).closest('tr').find("button[data-multiple='false']").prop('disabled', false); 
+    }
+}
+
+$('.block-screen').hide();
+
+$("#view-users a").click(leave_page);
+
+function leave_page(evt){
+    evt.preventDefault();
+    if (timers['purchases']){
+        clearTimeout(timers['purchases']);
+        var task = create_sync_task('/purchase', 'purchases');
+        task();
+    }
+    if (timers['undos']){
+        clearTimeout(timers['undos']);
+        var task = create_sync_task('/purchase/undo', 'undos');
+        task();
+    }
+
+    var target = $(this).attr('href');
+
+    if (timers['leave'])
+        clearInterval(timers['leave']);
+
+    if ($.active>0){
+        $('.block-screen').show();
+        timers['leave'] = setInterval(function(){
+            if ($.active==0){
+                $('.block-screen').hide();
+                clearInterval(timers['leave']);
+                window.location = target;
+            }
+        }, 250);
+    }else{
+        window.location = target;
     }
 }

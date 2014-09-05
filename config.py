@@ -7,6 +7,6 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'database.db')
 
 MULTIPLE_ENABLE = True
 
-MULTIPLE_AGE_LIMIT = True
+MULTIPLE_AGE_LIMIT = False
 
 AGE_LIMIT = 18

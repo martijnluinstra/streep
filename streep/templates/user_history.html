@@ -15,7 +15,7 @@
                 <td>{{product}}</td>
                 <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
                 <td>
-                    <a href="{{url_for('undo', purchase_id=purchase.id)}}" data-user-id="{{user.id}}" data-purchase-id="{{purchase.id}}" data-price="{{price}}" class="btn btn-default btn-sm" {{ 'disabled="disabled"' if purchase.undone}} data-type="undo">Undo</a>
+                    <a href="{{url_for('undo', purchase_id=purchase.id)}}" data-user-id="{{user.id}}" data-purchase-id="{{purchase.id}}" data-price="{{price}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone}}" data-type="undo">Undo</a>
                 </td>
             </tr>
             {% endfor %}
