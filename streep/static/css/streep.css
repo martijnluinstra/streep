@@ -62,28 +62,29 @@
 }
 
 .form-search{
+  margin-left: 8px;
   max-width: 500px;
 }
 
-.table-users{
+.table-streep{
   margin-bottom: 0px;
 }
 
-.table-users tr td:first-child,
-.table-users tr th:first-child{
+.modal .table-streep tr td:first-child,
+.modal .table-streep tr th:first-child{
 	padding-left: 15px;
 }
 
-.table-users tr td:last-child,
-.table-users tr th:last-child{
+.modal .table-streep tr td:last-child,
+.modal .table-streep tr th:last-child{
   padding-right: 15px;
 }
 
-.table-users tbody > tr > td{
+.table-streep tbody > tr > td{
 	vertical-align: middle;
 }
 
-.table-users tbody > tr > td:last-child{
+.table-streep tbody > tr > td:last-child{
 	text-align: right;
 }
 

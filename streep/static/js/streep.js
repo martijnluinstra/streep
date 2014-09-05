@@ -10,11 +10,11 @@ var config = {
     history_size: 10
 };
 
-$('#view-users .table-users tr').each(function() {
+$('#view-users .table-streep tr').each(function() {
     current[this.id] = parseInt($(this).data('spend-amount'));
 });
 
-$("#view-users .table-users button[data-type^='purchase']").click(function(evt){
+$("#view-users .table-streep button[data-type^='purchase']").click(function(evt){
     evt.preventDefault();
     // Get me some data
     var field = $(this).closest('tr').find('td').get(1);
@@ -82,7 +82,7 @@ function create_sync_task(url, item) {
     }
 };
 
-$("#view-users  .table-users button[data-type^='history']").click(function(evt){
+$("#view-users  .table-streep button[data-type^='history']").click(function(evt){
     evt.preventDefault();
     var user_id = $(this).data('user-id');
     url='/users/' + user_id + '/history?show='+config['history_size'];
@@ -96,14 +96,14 @@ $("#view-users  .table-users button[data-type^='history']").click(function(evt){
 
 function show_history_modal(data, user_id){
     title = data.find('.panel-title').html();
-    body = data.find('.table-users');
+    body = data.find('.table-streep');
     body.find("a[data-type^='undo']").click(function(evt){
         evt.preventDefault();
 
         var user_id = $(this).data('user-id');
         var purchase_id = $(this).data('purchase-id');
         var product_price = $(this).data('price')*-1;
-        var field = $('.table-users tr#'+user_id).find('td').get(1);
+        var field = $('.table-streep tr#'+user_id).find('td').get(1);
 
         // Update the users delta and current amount of x-es
         model['undos'].push({user_id: user_id, purchase_id: purchase_id, price: product_price});
@@ -145,8 +145,8 @@ $(document).click(function(evt) {
 
 $('#view-users  #search').keyup(function() {
     var query = $(this).val();
-    $('.table-users tbody tr').hide();
-    $('.table-users tbody tr td:first-child:containsNCS('+ query +')').closest('tr').show();
+    $('.table-streep tbody tr').hide();
+    $('.table-streep tbody tr td:first-child:containsNCS('+ query +')').closest('tr').show();
 });
 
 /* FAQ */

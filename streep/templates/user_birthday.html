@@ -1,5 +1,6 @@
 {% extends "page_layout.html" %}
 {% block title %}Add birthday{% endblock %}
+{% block page_id %}user-birthday{% endblock %}
 {% block content %}
 	<form method="post" action="{{ url_for('add_birthdays') }}">
 		{{ form.hidden_tag() }}
