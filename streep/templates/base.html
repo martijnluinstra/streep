@@ -3,7 +3,7 @@
 <head>
 {% block head %}
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>Streep{{ ' - 'if self.title() }}{% block title %}{% endblock %}</title>
+    <title>BAR{{ ' – 'if self.title() }}{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/streep.css') }}">
@@ -13,7 +13,7 @@
     <div class="header">
     {% block header%}
         <img src="{{ url_for('static', filename='img/cover.png') }}">
-        <h1><a href="{{ url_for('view_home') }}">Streep</a></h1>
+        <h1><a href="{{ url_for('view_home') }}">Beverage Administration Register</a></h1>
         <nav class="dropdown btn-toolbar pull-right" role="toolbar">
             <button data-target="#" data-type="faq" class="btn btn-default">?</button>
             <button class="btn btn-default navicon-button" data-target="#" data-toggle="dropdown">
