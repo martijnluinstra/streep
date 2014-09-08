@@ -1,9 +1,10 @@
-from flask import render_template, redirect, url_for, make_response, request
+from flask import render_template, redirect, url_for, make_response, request, Response
 from sqlalchemy.exc import IntegrityError
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import json
+import re
 
 
 from streep import app, db
@@ -26,6 +27,19 @@ def utility_processor():
         age = relativedelta(datetime.now(), birthdate).years
         return not (product_age_limit and age<app.config.get('AGE_LIMIT'))
     return dict(format_price=format_price, is_eligible=is_eligible)
+
+
+@app.route('/export.csv')
+def generate_csv():
+    spend_subq = db.session.query(Purchase.user_id.label("user_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).group_by(Purchase.user_id).subquery()
+    users =  db.session.query(User.name,User.address,User.city, User.email, User.iban, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.user_id==User.id).order_by(User.name).filter(spend_subq.c.spend!=0).all()
+    def generate(data):
+        for row in data:
+            my_row = list(row)
+            my_row[-1] = float(row[-1]) / 100
+            my_row[-2] = re.sub(r'\s+', '', row[-2])
+            yield ','.join(['"' + unicode(field).encode('utf-8') + '"' for field in my_row]) + '\n'
+    return Response(generate(users), mimetype='text/csv')
 
 @app.route('/', methods=['GET'])
 @app.route('/users', methods=['GET'])
