@@ -45,7 +45,7 @@
                     </form>
                 </td><td>
                     <button data-user-id="{{user.id}}" data-type="history" class="btn btn-default btn-sm">Undo</button>
-                    <a href="{{ url_for('edit_user', user_id=user.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="{#{ url_for('edit_user', user_id=user.id) }#}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
                 </td>
             </tr>
             {% endfor %}

@@ -6,7 +6,7 @@
     <title>BAR{{ ' – 'if self.title() }}{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/streep.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bar.css') }}">
 {% endblock %}
 </head>
 <body id="{% block page_id %}{% endblock %}">
@@ -21,11 +21,11 @@
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                 <li class="dropdown-header">Users</li>
-                <li><a href="{{ url_for('add_user') }}">Add User</a></li>
-                <li><a href="{{ url_for('add_birthdays') }}">Add Birthdays</a></li>
+                <li><a href="{#{ url_for('add_user') }#}">Add User</a></li>
+                <li><a href="{#{ url_for('add_birthdays') }#}">Add Birthdays</a></li>
                 <li role="presentation" class="divider"></li>
                 <li class="dropdown-header">Admin</li>
-                <li><a href="{{ url_for('view_products') }}">Products</a></li>
+                <li><a href="{#{ url_for('view_products') }#}">Products</a></li>
             </ul>
         </nav>
     {% endblock %}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>BAR Login</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bar.css') }}">
+	<style>
+		*{
+			-moz-box-sizing: border-box;
+				 box-sizing: border-box;
+		}
+		html,body{
+			height: 100%;
+			padding: 0;
+			margin: 0;
+			font-family: sans-serif;
+		}
+		body{
+			background: #eee;
+		}
+		.header{
+			background: none;
+		}
+		.header h1{
+			color: inherit;
+		}
+		form#login-form{
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			width: 100%;
+			max-width: 500px;
+			height: 50px;
+			margin: auto;
+			padding: 0 20px;
+		}
+		form#login-form input, 
+		form#login-form button{
+			height: 50px;
+			font-size: 1.3em;
+			line-height: 50px;
+		}
+		form#login-form div.form-group{
+			position: relative;
+			width: 100%;
+		}
+		form#login-form input{
+			position: absolute;
+			left: 0;
+			top: 0;
+			right: 50px;
+			bottom: 0;
+			line-height: 50px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			padding: 0 20px;
+		}
+		form#login-form button#btn-login{
+			padding: 0;
+			width: 50px;
+			text-align: center;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			border: none;
+			background: none;
+			cursor: pointer;
+			color: #bbb;
+		}
+		form#login-form.error input{
+			border-color: #e74c3c;
+		}
+		form#login-form.error button#btn-login{
+			color: #c0392b;
+		}
+	</style>
+</head>
+<body id="login-page">
+	<div class="header">
+		<img src="{{ url_for('static', filename='img/cover_black.png') }}">
+		<h1>BAR</h1>
+	</div>
+	<form method="post" id="login-form" {% if error %}class="error"{% endif %}>
+		<div class="form-group">
+			<input type="text" class="form-control" id="login-passcode" name="passcode" placeholder="Enter your passcode…">
+			<button type="submit" class="btn btn-default" id="btn-login"><i class="fa fa-arrow-right"></i></button>
+		</div>
+	</form>
+	<script src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</body>
+</html>

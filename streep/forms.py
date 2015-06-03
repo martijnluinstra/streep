@@ -1,9 +1,8 @@
 from flask.ext.wtf import Form
-from werkzeug.datastructures import MultiDict
 from wtforms import TextField, BooleanField, IntegerField, DateTimeField, validators
 
 
-class UserForm(Form):
+class ParticipantForm(Form):
     name = TextField('Name', [validators.InputRequired(message='Name is required')])
     address = TextField('Address', [validators.InputRequired(message='Address is required')])
     city = TextField('Place of residence', [validators.InputRequired(message='Place of residence is required')])
