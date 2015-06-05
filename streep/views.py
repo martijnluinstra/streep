@@ -59,14 +59,13 @@ def logout():
 @login_required
 def view_home():
     """ View all participants attending the activity, ordered by name """
-    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).group_by(Purchase.participant_id).subquery()
-    # participants =  db.session.query(Participant, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==Participant.id).order_by(Participant.name).all()
+    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
     parti_subq = current_user.participants.subquery()
     participants = db.session.query(parti_subq, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
     # users = User.query.order_by(User.name).all()
     products = Product.query.order_by(Product.priority.desc()).all()
-    print  "1 aapje "+str(products[1])
-    return render_template('index.html', users=participants, products=products)
+    print  "1 aapje "+str(participants)
+    return render_template('index.html', participants=participants, products=products)
 
 
 @app.route('/participant', methods=['GET'])

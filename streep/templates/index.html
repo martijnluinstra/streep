@@ -21,15 +21,15 @@
             </tr>
         </thead>
         <tbody>
-            {% for (user, spend) in users %}
-            <tr id="{{ user.id }}" data-spend-amount="{{spend if spend != None else 0}}">
-                <td>{{user.name}}</td>
-                <td>{{format_price((spend if spend != None else 0)/100)}}</td>
+            {% for participant in participants %}
+            <tr id="{{ participant.id }}" data-spend-amount="{{participant.spend if participant.spend != None else 0}}">
+                <td>{{participant.name}}</td>
+                <td>{{format_price((participant.spend if participant.spend != None else 0)/100)}}</td>
                 <td>
                     <form class="form-inline">
                         <div class="form-group">
                         {% for product in products %}
-                            <button data-user-id="{{user.id}}" data-product-id="{{product.id}}" data-price="{{product.price}}" data-is-eligible="{{ is_eligible(user.birthday,product.age_limit)|lower if user.birthday != None else 'true' }}" data-multiple="{{(not (config.get('MULTIPLE_AGE_LIMIT') and product.age_limit))|lower}}" data-type="purchase" class="btn btn-primary btn-sm">{{product.name}}</button>
+                            <button data-user-id="{{participant.id}}" data-product-id="{{product.id}}" data-price="{{product.price}}" data-is-eligible="{{ is_eligible(participant.birthday,product.age_limit)|lower if participant.birthday != None else 'true' }}" data-multiple="{{(not (config.get('MULTIPLE_AGE_LIMIT') and product.age_limit))|lower}}" data-type="purchase" class="btn btn-primary btn-sm">{{product.name}}</button>
                         {% endfor %}
                         {% if config.get('MULTIPLE_ENABLE') %}
                             <div class="input-group input-group-sm spinner">
@@ -44,8 +44,8 @@
                         </div>
                     </form>
                 </td><td>
-                    <button data-user-id="{{user.id}}" data-type="history" class="btn btn-default btn-sm">Undo</button>
-                    <a href="{#{ url_for('edit_user', user_id=user.id) }#}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <button data-user-id="{{participant.id}}" data-type="history" class="btn btn-default btn-sm">Undo</button>
+                    <a href="{#{ url_for('edit_user', user_id=participant.id) }#}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
                 </td>
             </tr>
             {% endfor %}
