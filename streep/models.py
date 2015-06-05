@@ -11,7 +11,7 @@ activities_participants_table =  db.Table('activities_participants',
 class Activity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-    passcode = db.Column(db.String(40))
+    passcode = db.Column(db.String(40), unique=True)
     check_age_limit = db.Column(db.Boolean(), nullable=False)
     participants = db.relationship('Participant', secondary=activities_participants_table,
         lazy='dynamic', backref=db.backref('activities', lazy='dynamic'))
