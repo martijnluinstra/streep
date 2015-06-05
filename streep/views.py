@@ -1,8 +1,10 @@
-from urlparse import urlparse, urljoin
-from flask import request, render_template, redirect, url_for, abort
-from streep import app, db, login_manager
-from models import Activity, Participant, Purchase, Product
+from flask import request, render_template, redirect, url_for, abort, flash
 from flask.ext.login import login_user, logout_user, login_required, current_user
+from urlparse import urlparse, urljoin
+
+from streep import app, db, login_manager
+from models import Activity, Participant, Purchase, Product, activities_participants_table
+from forms import ParticipantForm, ProductForm, BirthdayForm
 
 
 def is_safe_url(target):
@@ -56,9 +58,64 @@ def logout():
 # @app.route('/participants', methods=['GET'])
 @login_required
 def view_home():
-    """ View all participants, ordered by name """
+    """ View all participants attending the activity, ordered by name """
     spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).group_by(Purchase.participant_id).subquery()
-    users =  db.session.query(Participant, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==Participant.id).order_by(Participant.name).all()
+    # participants =  db.session.query(Participant, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==Participant.id).order_by(Participant.name).all()
+    parti_subq = current_user.participants.subquery()
+    participants = db.session.query(parti_subq, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
     # users = User.query.order_by(User.name).all()
     products = Product.query.order_by(Product.priority.desc()).all()
-    return render_template('index.html', users=users, products=products)
+    print  "1 aapje "+str(products[1])
+    return render_template('index.html', users=participants, products=products)
+
+
+@app.route('/participant', methods=['GET'])
+@login_required
+def list_participants():
+    """ List all participants in the system by name """
+    registered_subq = current_user.participants.add_column(db.bindparam("activity", current_user.id)).subquery()
+    participants = db.session.query(Participant, registered_subq.c.activity).outerjoin(registered_subq, Participant.id==registered_subq.c.id).all()
+    return render_template('participants.html', participants=participants)
+
+
+@app.route('/participant/add', methods=['GET', 'POST'])
+def add_participant():
+    """ Try to create a new participant. """
+    form = ParticipantForm()
+    if form.validate_on_submit():
+        participant = Participant(
+            form.name.data, form.address.data, form.city.data, form.email.data, form.iban.data, form.birthday.data)
+        db.session.add(participant)
+        current_user.participants.append(participant)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            form.name.errors.append('Please provide a unique name!')
+            return render_template('participant_add.html', form=form, mode='add')
+        else:
+            return redirect(url_for('view_home'))
+    return render_template('participant_add.html', form=form, mode='add')
+
+
+
+@app.route('/participant/<int:participant_id>/register', methods=['GET'])
+@login_required
+def register_participant(participant_id):
+    """ Add a participant to an activity """
+    participant = Participant.query.filter_by(id=participant_id).first_or_404()
+    current_user.participants.append(participant)
+    db.session.commit()
+    return redirect(url_for('list_participants'))
+
+@app.route('/participant/<int:participant_id>/deregister', methods=['GET'])
+@login_required
+def deregister_participant(participant_id):
+    """ Remove a participant from an activity """
+    participant = Participant.query.filter_by(id=participant_id).first_or_404()
+    purchases = participant.purchases.filter_by(activity_id=current_user.id).first()
+    if purchases:
+        flash("Cannot remove this participant, this participant has purchases!")
+    else:
+        current_user.participants.remove(participant)
+        db.session.commit()
+    return redirect(url_for('list_participants'))

@@ -13,24 +13,31 @@
     <div class="header">
     {% block header%}
         <img src="{{ url_for('static', filename='img/cover.png') }}">
-        <h1><a href="{{ url_for('view_home') }}">Beverage Administration Register</a></h1>
+        <h1><a href="{{ url_for('view_home') }}">BAR: {{ current_user.name }}</a></h1>
         <nav class="dropdown btn-toolbar pull-right" role="toolbar">
             <button data-target="#" data-type="faq" class="btn btn-default">?</button>
             <button class="btn btn-default navicon-button" data-target="#" data-toggle="dropdown">
                 <div class="navicon"></div>
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                <li class="dropdown-header">Users</li>
-                <li><a href="{#{ url_for('add_user') }#}">Add User</a></li>
-                <li><a href="{#{ url_for('add_birthdays') }#}">Add Birthdays</a></li>
-                <li role="presentation" class="divider"></li>
-                <li class="dropdown-header">Admin</li>
-                <li><a href="{#{ url_for('view_products') }#}">Products</a></li>
+                <!-- <li class="dropdown-header">Admin</li> -->
+                <li><a href="{#{ url_for('list_products') }#}">Products</a></li>
+                <li><a href="{{ url_for('list_participants') }}">Participants</a></li>
+                <li><a href="{#{ url_for('settings') }#}">Settings</a></li>
             </ul>
         </nav>
     {% endblock %}
     </div>
     <div class="content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
         {% block body %}{% endblock %}
     </div>
 {% block scripts%}

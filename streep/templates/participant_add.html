@@ -1,8 +1,8 @@
 {% extends "page_layout.html" %}
-{% block title %}{{mode|title}} user{% endblock %}
-{% block page_id %}user-add{% endblock %}
+{% block title %}{{mode|title}} participant{% endblock %}
+{% block page_id %}participant-add{% endblock %}
 {% block content %}
-	<form method="post" action="{{ url_for('add_user') if mode == 'add' else url_for('edit_user', user_id=id) }}">
+	<form method="post" action="{{ url_for('add_participant') if mode == 'add' else url_for('edit_participant', participant_id=id) }}">
 		{{ form.hidden_tag() }}
 		<div class="form-group">
 			{{ form.name.label(class="control-label") }}
@@ -34,6 +34,6 @@
 			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
 		</div>
 		{{ render_errors(form.birthday) }}
-		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('view_home')}}" class="btn btn-link">Back</a>
+		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_participants')}}" class="btn btn-link">Back</a>
 	</form>
 {% endblock %}

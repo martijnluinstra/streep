@@ -217,3 +217,12 @@
   border: 1px solid #eee;
   padding: 9px;
 }
+
+#list-participants table tr{
+  color: #666;
+}
+
+#list-participants table tr th,
+#list-participants table tr.registered td{
+  color: initial;
+}
