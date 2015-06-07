@@ -1,3 +1,5 @@
+from __future__ import division
+
 from flask import request, render_template, redirect, url_for, abort, make_response, flash, Response
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from urlparse import urlparse, urljoin
@@ -28,12 +30,18 @@ def is_safe_url(target):
 
 @app.context_processor
 def utility_processor():
+    def format_exchange(amount):
+        if(current_user.trade_credits):
+            return amount
+        return format_price(amount/100)
     def format_price(amount, currency=u"\u20AC"):
         return u'{1} {0:.2f}'.format(amount, currency)
     def is_eligible(birthdate, product_age_limit):
+        if not birthdate:
+            return True
         age = relativedelta(datetime.now(), birthdate).years
         return not (product_age_limit and age<current_user.age_limit)
-    return dict(format_price=format_price, is_eligible=is_eligible)
+    return dict(format_exchange=format_exchange, format_price=format_price, is_eligible=is_eligible)
 
 
 @login_manager.user_loader
@@ -67,7 +75,6 @@ def logout():
 
 
 @app.route('/', methods=['GET'])
-# @app.route('/participants', methods=['GET'])
 @login_required
 def view_home():
     """ View all participants attending the activity, ordered by name """

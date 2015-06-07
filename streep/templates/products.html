@@ -15,7 +15,7 @@
             {% for product in products %}
             <tr id="{{ product.id }}">
                 <td>{{product.name}}</td>
-                <td>{{format_price(product.price/100)}}</td>
+                <td>{{format_exchange(product.price)}}</td>
                 <td>{% if product.age_limit %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
                 <td>
                     <a href="{{ url_for('edit_product', product_id=product.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>

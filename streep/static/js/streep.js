@@ -10,6 +10,13 @@ var config = {
     history_size: 10
 };
 
+function format_exchange(amount){
+    if ($('#view-users').data('trade-credits')){
+        return amount;
+    }
+    return "€ "+(amount/100).toFixed(2)
+}
+
 $('#view-users .table-streep tr').each(function() {
     current[this.id] = parseInt($(this).data('spend-amount'));
 });
@@ -37,7 +44,7 @@ $("#view-users .table-streep button[data-type^='purchase']").click(function(evt)
         model['purchases'].push({participant_id: participant_id, product_id: product_id, price: product_price});
         delta[participant_id] = (delta[participant_id] || 0) + product_price;
     }
-    $(field).text("€ "+((current[participant_id] + delta[participant_id])/100).toFixed(2));
+    $(field).text(format_exchange(current[participant_id] + delta[participant_id]));
 
     //reset spinner
     spinner_reset(spinner);
@@ -108,7 +115,7 @@ function show_history_modal(data, participant_id){
         // Update the users delta and current amount of x-es
         model['undos'].push({participant_id: participant_id, purchase_id: purchase_id, price: product_price});
         delta[participant_id] = (delta[participant_id] || 0) + product_price;
-        $(field).text("€ "+((current[participant_id] + delta[participant_id])/100).toFixed(2));
+        $(field).text(format_exchange(current[participant_id] + delta[participant_id]));
 
         // If there is a sync-request queued for this user, delete it.
         if (timers['undos'])

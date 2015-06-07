@@ -13,6 +13,8 @@ class Activity(db.Model):
     name = db.Column(db.String(80))
     passcode = db.Column(db.String(40), unique=True)
     # settings
+    trade_credits = db.Column(db.Boolean(), nullable=False, default=False)
+    credit_value = db.Column(db.Integer, nullable=True)
     age_limit = db.Column(db.Integer, nullable=False, default=18)
     stacked_purchases = db.Column(db.Boolean(), nullable=False, default=True)
 
