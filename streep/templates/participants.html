@@ -12,14 +12,14 @@
         <tbody>
             {% for participant, activity in participants %}
             <tr id="{{ participant.id }}" {% if activity %} class="registered" {% endif %}>
-                <td>{{participant.name}} {{activity}}</td>
+                <td>{{participant.name}}</td>
                 <td>
                     {% if not activity %}
                     <a href="{{ url_for('register_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm">Add to activity</a>
                     {% else %}
                     <a href="{{ url_for('deregister_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm">Remove from activity</a>
                     {% endif %}
-                    <a href="{#{ url_for('edit_participant', participant_id=participant.id) }#}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="{{ url_for('edit_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
                 </td>
             </tr>
             {% endfor %}
@@ -28,4 +28,5 @@
 {% endblock %}
 {% block footer %}
     <a href="{{url_for('add_participant')}}" class="btn btn-primary">Add participant</a>
+    <a href="{{url_for('add_participant_birthday')}}" class="btn btn-default">Birthday registration</a>
 {% endblock %}

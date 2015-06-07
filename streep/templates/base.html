@@ -20,10 +20,14 @@
                 <div class="navicon"></div>
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li><a href="{{ url_for('view_home') }}">Home</a></li>
+                <li class="divider"></li>
                 <!-- <li class="dropdown-header">Admin</li> -->
-                <li><a href="{#{ url_for('list_products') }#}">Products</a></li>
+                <li><a href="{{ url_for('list_products') }}">Products</a></li>
                 <li><a href="{{ url_for('list_participants') }}">Participants</a></li>
                 <li><a href="{#{ url_for('settings') }#}">Settings</a></li>
+                <li class="divider"></li>
+                <li><a href="{{ url_for('logout') }}">Log out</a></li>
             </ul>
         </nav>
     {% endblock %}

@@ -2,7 +2,7 @@
 {% block title %}Add birthday{% endblock %}
 {% block page_id %}user-birthday{% endblock %}
 {% block content %}
-	<form method="post" action="{{ url_for('add_birthdays') }}">
+	<form method="post" action="{{ url_for('add_participant_birthday') }}">
 		{{ form.hidden_tag() }}
 		<div class="form-group">
 			{{ form.name.label(class="control-label") }}
@@ -14,14 +14,14 @@
 			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
 		</div>
 		{{ render_errors(form.birthday) }}
-		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('view_home')}}" class="btn btn-link">Back</a>
+		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_participants')}}" class="btn btn-link">Back</a>
 	</form>
 {% endblock %}
 {% block scripts %}
 	{{super()}}
 	<script src="{{ url_for('static', filename='js/bootstrap3-typeahead.js') }}"></script>
 	<script>
-		$.get("{{url_for('list_users')}}", function(data){
+		$.get("{{url_for('list_participant_names')}}", function(data){
 		    $("#name").typeahead({ source:data });
 		},'json');
 	</script>

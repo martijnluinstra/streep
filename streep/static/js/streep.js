@@ -19,7 +19,7 @@ $("#view-users .table-streep button[data-type^='purchase']").click(function(evt)
     // Get me some data
     var field = $(this).closest('tr').find('td').get(1);
     var spinner = $(this).closest('td').find('.spinner').get(0);
-    var user_id = $(this).data('user-id');
+    var participant_id = $(this).data('participant-id');
     var product_id = $(this).data('product-id');
     var product_price = $(this).data('price');
     var is_eligible = $(this).data('is-eligible');
@@ -34,10 +34,10 @@ $("#view-users .table-streep button[data-type^='purchase']").click(function(evt)
 
     // Update the users delta and current amount of x-es
     for(var i=0;i<amount;i++){
-        model['purchases'].push({user_id: user_id, product_id: product_id, price: product_price});
-        delta[user_id] = (delta[user_id] || 0) + product_price;
+        model['purchases'].push({participant_id: participant_id, product_id: product_id, price: product_price});
+        delta[participant_id] = (delta[participant_id] || 0) + product_price;
     }
-    $(field).text("€ "+((current[user_id] + delta[user_id])/100).toFixed(2));
+    $(field).text("€ "+((current[participant_id] + delta[participant_id])/100).toFixed(2));
 
     //reset spinner
     spinner_reset(spinner);
@@ -63,9 +63,9 @@ function create_sync_task(url, item) {
         }).fail(function(response){
             model[item].concat(submitted_items);
             for(var i in submitted_items){
-                var user_id = i['user_id'];
-                delta[user_id] = (delta[user_id] || 0) + i['price'];
-                current[user_id] -= i['price'];
+                var participant_id = i['participant_id'];
+                delta[participant_id] = (delta[participant_id] || 0) + i['price'];
+                current[participant_id] -= i['price'];
             }
             alert(config['error_message']);
         });
@@ -74,8 +74,8 @@ function create_sync_task(url, item) {
 
         // commit locally
         for(var i in model[item]){
-            current[i['user_id']] += i['price'];
-            delete delta[i['user_id']];
+            current[i['participant_id']] += i['price'];
+            delete delta[i['participant_id']];
         }
         model[item] = new Array();
         delete timers[item];
@@ -84,31 +84,31 @@ function create_sync_task(url, item) {
 
 $("#view-users  .table-streep button[data-type^='history']").click(function(evt){
     evt.preventDefault();
-    var user_id = $(this).data('user-id');
-    url='/users/' + user_id + '/history?show='+config['history_size'];
+    var participant_id = $(this).data('participant-id');
+    url='/participant/' + participant_id + '/history?show='+config['history_size'];
 
     $.get(url, {timeout: 3000}, function( data ) {
-            show_history_modal($(data).find('.streep-panel'), user_id);
+            show_history_modal($(data).find('.streep-panel'), participant_id);
         }).fail(function(response){
         alert(config['error_message']);
     });
 });
 
-function show_history_modal(data, user_id){
+function show_history_modal(data, participant_id){
     title = data.find('.panel-title').html();
     body = data.find('.table-streep');
     body.find("a[data-type^='undo']").click(function(evt){
         evt.preventDefault();
 
-        var user_id = $(this).data('user-id');
+        var participant_id = $(this).data('participant-id');
         var purchase_id = $(this).data('purchase-id');
         var product_price = $(this).data('price')*-1;
-        var field = $('.table-streep tr#'+user_id).find('td').get(1);
+        var field = $('.table-streep tr#'+participant_id).find('td').get(1);
 
         // Update the users delta and current amount of x-es
-        model['undos'].push({user_id: user_id, purchase_id: purchase_id, price: product_price});
-        delta[user_id] = (delta[user_id] || 0) + product_price;
-        $(field).text("€ "+((current[user_id] + delta[user_id])/100).toFixed(2));
+        model['undos'].push({participant_id: participant_id, purchase_id: purchase_id, price: product_price});
+        delta[participant_id] = (delta[participant_id] || 0) + product_price;
+        $(field).text("€ "+((current[participant_id] + delta[participant_id])/100).toFixed(2));
 
         // If there is a sync-request queued for this user, delete it.
         if (timers['undos'])
@@ -119,7 +119,7 @@ function show_history_modal(data, user_id){
 
         $(this).addClass('disabled');
     });
-    var btn_more = $('<a href="/users/' + user_id + '/history" class="btn btn-default">Complete history</a>');
+    var btn_more = $('<a href="/participant/' + participant_id + '/history" class="btn btn-default">Complete history</a>');
     btn_more.click(leave_page);
     $('#streepModal').find('.modal-title').show().html(title);
     $('#streepModal').find('.modal-body').hide().empty();
