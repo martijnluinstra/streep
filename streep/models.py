@@ -12,14 +12,16 @@ class Activity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
     passcode = db.Column(db.String(40), unique=True)
-    check_age_limit = db.Column(db.Boolean(), nullable=False)
+    # settings
+    age_limit = db.Column(db.Integer, nullable=False, default=18)
+    stacked_purchases = db.Column(db.Boolean(), nullable=False, default=True)
+
     participants = db.relationship('Participant', secondary=activities_participants_table,
         lazy='dynamic', backref=db.backref('activities', lazy='dynamic'))
 
-    def __init__(self, name, passcode, check_age_limit=True):
+    def __init__(self, name, passcode):
         self.name = name
         self.passcode = passcode
-        self.check_age_limit = check_age_limit
 
     def is_authenticated(self):
         return True

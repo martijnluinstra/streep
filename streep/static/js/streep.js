@@ -185,12 +185,10 @@ $('.spinner .btn:last-of-type').click(function(evt) {
     
 $('.spinner input').keyup(function(evt) {
     if(isNaN(parseInt($(this).val())) && $(this).val()!='') $(this).val(1);
-    spinner_set_multiple($(this).closest('.spinner'));
 });
 
 function spinner_reset(spinner){
     $($(spinner).find('input').get(0)).val(1);
-    spinner_set_multiple(spinner);
 }
 
 function spinner_update(spinner, mod){
@@ -200,15 +198,6 @@ function spinner_update(spinner, mod){
     if($(input).data('min') !== undefined) value = (value < $(input).data('min') ? $(input).data('min') : value);
     if($(input).data('max') !== undefined) value = (value > $(input).data('max') ? $(input).data('max') : value);
     $(input).val(value);
-    spinner_set_multiple(spinner);
-}
-
-function spinner_set_multiple(spinner){
-    if(parseInt($($(spinner).find('input').get(0)).val())>1){
-        $(spinner).closest('tr').find("button[data-multiple='false']").prop('disabled', true);
-    }else{
-       $(spinner).closest('tr').find("button[data-multiple='false']").prop('disabled', false); 
-    }
 }
 
 $('.block-screen').hide();
