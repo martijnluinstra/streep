@@ -1,0 +1,13 @@
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+# Set a secret key for the FLASK's cryptographic component's. (See also http://flask.pocoo.org/docs/0.10/quickstart/#sessions)
+SECRET_KEY = '\xdd\x92\xbe\xefr8{\x08cF\x85O&\xa7A\xed,\x91U-\xf6\x84\x98\xbc'
+
+SQLALCHEMY_DATABASE_URI = 'dialect+driver://username:password@host:port/database'
+
+# example sqlite 
+# SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'database.db')
+
+# example local MySQL database
+# SQLALCHEMY_DATABASE_URI = 'mysql://bar:bar@localhost/bar'
