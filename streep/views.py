@@ -89,6 +89,11 @@ def view_home():
     products = Product.query.order_by(Product.priority.desc()).all()
     return render_template('index.html', participants=participants, products=products)
 
+ 
+@app.route('/faq', methods=['GET'])
+def faq():
+    return render_template('faq.html')
+
 
 @app.route('/participant', methods=['GET'])
 @login_required
@@ -280,11 +285,26 @@ def edit_product(product_id):
 @login_required
 def activity_settings():
     """ Edit settings """
-    activity = Activity.query.filter_by(id = current_user.id).first_or_404()
-    form = SettingsForm(request.form, activity)
+    # activity = Activity.query.filter_by(id = current_user.id).first_or_404()
+    form = SettingsForm(request.form, current_user)
     if form.validate_on_submit():
-        form.populate_obj(activity)
+        form.populate_obj(current_user)
         db.session.commit()
         flash('Changes are saved!')
     return render_template('activity_settings.html', form=form)
 
+
+@app.route('/activity/export.csv', methods=['GET'])
+@login_required
+def activity_export():
+    """ Export all purchases of an activity """
+    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
+    parti_subq = current_user.participants.subquery()
+    participants = db.session.query(parti_subq.c.name,parti_subq.c.address, parti_subq.c.city, parti_subq.c.email, parti_subq.c.iban, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).filter(spend_subq.c.spend!=0).all()
+    def generate(data, trade_credits, credit_value):
+        for row in data:
+            my_row = list(row)
+            my_row[-1] = float(row[-1]*credit_value) / 100 if trade_credits else float(row[-1]) / 100
+            my_row[-2] = re.sub(r'\s+', '', row[-2])
+            yield ','.join(['"' + unicode(field).encode('utf-8') + '"' for field in my_row]) + '\n'
+    return Response(generate(participants, current_user.trade_credits, current_user.credit_value), mimetype='text/csv')
