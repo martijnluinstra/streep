@@ -153,6 +153,11 @@
 }
 
 
+.alert-flash{
+  max-width: 500px;
+  margin: 0 auto;
+}
+
 /* Bootstrap spinner */
 .spinner {
   width: 80px;
