@@ -11,7 +11,7 @@ import re
 
 from streep import app, db, login_manager
 from models import Activity, Participant, Purchase, Product, activities_participants_table
-from forms import ParticipantForm, ProductForm, BirthdayForm
+from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm
 
 
 def jsonify(data):
@@ -26,6 +26,10 @@ def is_safe_url(target):
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and \
            ref_url.netloc == test_url.netloc
+
+@app.template_test()
+def equalto(value, other):
+    return value == other
 
 
 @app.context_processor
@@ -270,3 +274,17 @@ def edit_product(product_id):
         db.session.commit()
         return redirect(url_for('list_products'))
     return render_template('product_add.html', form=form, mode='edit', id=product.id)
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def activity_settings():
+    """ Edit settings """
+    activity = Activity.query.filter_by(id = current_user.id).first_or_404()
+    form = SettingsForm(request.form, activity)
+    if form.validate_on_submit():
+        form.populate_obj(activity)
+        db.session.commit()
+        flash('Changes are saved!')
+    return render_template('activity_settings.html', form=form)
+

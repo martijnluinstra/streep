@@ -1,0 +1,55 @@
+{% extends "page_layout.html" %}
+{% block title %}Settings{% endblock %}
+{% block page_id %}activity-settings{% endblock %}
+{% block content %}
+	<form method="post">
+		{{ form.hidden_tag() }}
+		<div class="form-group">
+			{{ form.trade_credits.label(class="control-label") }}
+			{% for field in form.trade_credits %}
+			<div class="radio">
+	            <label>
+                	{{  field(checked="") if (field.label.text=='Credits') is equalto current_user.trade_credits else field() }}{{ field.label.text }}
+	            </label>
+			</div>
+			{% endfor %}
+		</div>
+		{{ render_errors(form.trade_credits) }}
+		<div class="form-group" id="option-credit-value">
+			{{ form.credit_value.label(class="control-label") }}
+			{{ form.credit_value(class="form-control") }}
+		</div>
+		{{ render_errors(form.credit_value) }}
+		<div class="form-group">
+			{{ form.age_limit.label(class="control-label") }}
+			{{ form.age_limit(class="form-control") }}
+		</div>
+		{{ render_errors(form.age_limit) }}
+		<div class="checkbox">
+			<label>
+				{{ form.stacked_purchases }} {{ form.stacked_purchases.label.text }}
+			</label>
+		</div>
+		{{ render_errors(form.stacked_purchases) }}
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+{% endblock %}
+{% block scripts %}
+	{{super()}}
+	<script>
+		
+		toggle_credit_value();
+
+		$('input:radio[name=trade_credits]').change(function(){
+			toggle_credit_value();
+		});
+
+		function toggle_credit_value(){
+			if($('input:radio[name=trade_credits]:checked').val() === 'True'){
+				$('#option-credit-value').show();
+			}else{
+				$('#option-credit-value').hide();
+			}
+		}
+	</script>
+{% endblock %}
