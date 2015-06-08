@@ -4,3 +4,4 @@ venv/*
 test.csv
 
 config.py
+bar.wsgi
