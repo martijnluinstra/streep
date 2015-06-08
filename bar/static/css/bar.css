@@ -66,25 +66,25 @@
   max-width: 500px;
 }
 
-.table-streep{
+.table-bar{
   margin-bottom: 0px;
 }
 
-.modal .table-streep tr td:first-child,
-.modal .table-streep tr th:first-child{
+.modal .table-bar tr td:first-child,
+.modal .table-bar tr th:first-child{
 	padding-left: 15px;
 }
 
-.modal .table-streep tr td:last-child,
-.modal .table-streep tr th:last-child{
+.modal .table-bar tr td:last-child,
+.modal .table-bar tr th:last-child{
   padding-right: 15px;
 }
 
-.table-streep tbody > tr > td{
+.table-bar tbody > tr > td{
 	vertical-align: middle;
 }
 
-.table-streep tbody > tr > td:last-child{
+.table-bar tbody > tr > td:last-child{
 	text-align: right;
 }
 

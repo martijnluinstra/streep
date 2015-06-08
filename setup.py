@@ -1,5 +1,5 @@
-from streep import db
-from streep.models import Activity, Participant, Product
+from bar import db
+from bar.models import Activity, Participant, Product
 from datetime import datetime
 from unicodedata import normalize
 import csv
@@ -51,4 +51,3 @@ db.create_all()
 # Add some data
 create_demo_data()
 # Import files
-# import_users("D:\\\\Martijn\\Dropbox\\introkamp\\streep\\import.csv")

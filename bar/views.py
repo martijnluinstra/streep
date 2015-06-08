@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta
 import json
 import re
 
-from streep import app, db, login_manager
+from bar import app, db, login_manager
 from models import Activity, Participant, Purchase, Product, activities_participants_table
 from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm
 

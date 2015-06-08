@@ -1,4 +1,4 @@
-from streep import db
+from bar import db
 from datetime import datetime
 
 

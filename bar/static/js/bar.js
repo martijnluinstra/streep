@@ -17,11 +17,11 @@ function format_exchange(amount){
     return "€ "+(amount/100).toFixed(2)
 }
 
-$('#view-users .table-streep tr').each(function() {
+$('#view-users .table-bar tr').each(function() {
     current[this.id] = parseInt($(this).data('spend-amount'));
 });
 
-$("#view-users .table-streep button[data-type^='purchase']").click(function(evt){
+$("#view-users .table-bar button[data-type^='purchase']").click(function(evt){
     evt.preventDefault();
     // Get me some data
     var field = $(this).closest('tr').find('td').get(1);
@@ -89,13 +89,13 @@ function create_sync_task(url, item) {
     }
 };
 
-$("#view-users  .table-streep button[data-type^='history']").click(function(evt){
+$("#view-users  .table-bar button[data-type^='history']").click(function(evt){
     evt.preventDefault();
     var participant_id = $(this).data('participant-id');
     url='/participant/' + participant_id + '/history?show='+config['history_size'];
 
     $.get(url, {timeout: 3000}, function( data ) {
-            show_history_modal($(data).find('.streep-panel'), participant_id);
+            show_history_modal($(data).find('.bar-panel'), participant_id);
         }).fail(function(response){
         alert(config['error_message']);
     });
@@ -103,14 +103,14 @@ $("#view-users  .table-streep button[data-type^='history']").click(function(evt)
 
 function show_history_modal(data, participant_id){
     title = data.find('.panel-title').html();
-    body = data.find('.table-streep');
+    body = data.find('.table-bar');
     body.find("a[data-type^='undo']").click(function(evt){
         evt.preventDefault();
 
         var participant_id = $(this).data('participant-id');
         var purchase_id = $(this).data('purchase-id');
         var product_price = $(this).data('price')*-1;
-        var field = $('.table-streep tr#'+participant_id).find('td').get(1);
+        var field = $('.table-bar tr#'+participant_id).find('td').get(1);
 
         // Update the users delta and current amount of x-es
         model['undos'].push({participant_id: participant_id, purchase_id: purchase_id, price: product_price});
@@ -128,12 +128,12 @@ function show_history_modal(data, participant_id){
     });
     var btn_more = $('<a href="/participant/' + participant_id + '/history" class="btn btn-default">Complete history</a>');
     btn_more.click(leave_page);
-    $('#streepModal').find('.modal-title').show().html(title);
-    $('#streepModal').find('.modal-body').hide().empty();
-    $('#streepModal').find('.modal-table').show().empty().append(body);
-    $('#streepModal').find('.modal-footer').show().empty().append(btn_more).append('<button class="btn btn-primary" data-dismiss="modal">Ok</button>');
-    $('#streepModal').find('.modal-dialog').removeClass("modal-lg");
-    $('#streepModal').modal('show');
+    $('#barModal').find('.modal-title').show().html(title);
+    $('#barModal').find('.modal-body').hide().empty();
+    $('#barModal').find('.modal-table').show().empty().append(body);
+    $('#barModal').find('.modal-footer').show().empty().append(btn_more).append('<button class="btn btn-primary" data-dismiss="modal">Ok</button>');
+    $('#barModal').find('.modal-dialog').removeClass("modal-lg");
+    $('#barModal').modal('show');
 };
 
 /* Search */
@@ -152,8 +152,8 @@ $(document).click(function(evt) {
 
 $('#view-users  #search').keyup(function() {
     var query = $(this).val();
-    $('.table-streep tbody tr').hide();
-    $('.table-streep tbody tr td:first-child:containsNCS('+ query +')').closest('tr').show();
+    $('.table-bar tbody tr').hide();
+    $('.table-bar tbody tr td:first-child:containsNCS('+ query +')').closest('tr').show();
 });
 
 /* FAQ */
@@ -162,7 +162,7 @@ $(".header button[data-type^='faq']").click(function(evt){
     evt.preventDefault();
     url='/faq';
     $.get(url, {timeout: 3000}, function( data ) {
-            show_info_modal($(data).find('.streep-panel'));
+            show_info_modal($(data).find('.bar-panel'));
         }).fail(function(response){
         alert(config['error_message']);
     });
@@ -171,12 +171,12 @@ $(".header button[data-type^='faq']").click(function(evt){
 function show_info_modal(data){
     title = data.find('.panel-title').html();
     body = data.find('.panel-body').html();
-    $('#streepModal').find('.modal-title').show().html(title);
-    $('#streepModal').find('.modal-body').show().html(body);
-    $('#streepModal').find('.modal-table').hide().empty();
-    $('#streepModal').find('.modal-footer').show().html('<button class="btn btn-primary" data-dismiss="modal">Ok</button>');
-    $('#streepModal').find('.modal-dialog').addClass("modal-lg");
-    $('#streepModal').modal('show');
+    $('#barModal').find('.modal-title').show().html(title);
+    $('#barModal').find('.modal-body').show().html(body);
+    $('#barModal').find('.modal-table').hide().empty();
+    $('#barModal').find('.modal-footer').show().html('<button class="btn btn-primary" data-dismiss="modal">Ok</button>');
+    $('#barModal').find('.modal-dialog').addClass("modal-lg");
+    $('#barModal').modal('show');
 };
 
 /* Spinner */
