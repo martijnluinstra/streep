@@ -86,7 +86,7 @@ def view_home():
     parti_subq = current_user.participants.subquery()
     participants = db.session.query(parti_subq, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
     # users = User.query.order_by(User.name).all()
-    products = Product.query.order_by(Product.priority.desc()).all()
+    products = Product.query.filter_by(activity_id=current_user.id).order_by(Product.priority.desc()).all()
     return render_template('index.html', participants=participants, products=products)
 
  
