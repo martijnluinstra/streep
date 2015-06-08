@@ -1,6 +1,6 @@
 from __future__ import division
 
-from flask import request, render_template, redirect, url_for, abort, make_response, flash, Response
+from flask import request, render_template, redirect, url_for, abort, make_response, flash, Response, get_flashed_messages
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from urlparse import urlparse, urljoin
 
@@ -67,7 +67,7 @@ def login():
             if not is_safe_url(next):
                 return abort(400)
             return redirect(next or url_for('view_home'))
-
+    flashes = get_flashed_messages()
     return render_template('login.html', error=error)
 
 
