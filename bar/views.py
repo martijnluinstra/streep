@@ -281,6 +281,22 @@ def edit_product(product_id):
     return render_template('product_add.html', form=form, mode='edit', id=product.id)
 
 
+@app.route('/products/<int:product_id>/delete', methods=['GET', 'POST'])
+@login_required
+def delete_product(product_id):
+    """ Edit a product """
+    product = Product.query.filter_by(id = product_id).first_or_404()
+    if product.activity_id != current_user.id:
+        return 'Product not in current activity', 401 
+    purchase = Purchase.query.filter_by(product_id=product.id).first()
+    if purchase:
+        flash('Cannot delete product, as it has been purchased already. Carry on or contact the AC/DCee!')
+    else:
+        db.session.delete(product)
+        db.session.commit()
+    return redirect(url_for('list_products'))
+
+
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def activity_settings():

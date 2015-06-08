@@ -15,7 +15,7 @@ def read_date(date):
 
 def create_demo_data():
     # Add a demo participant
-    p_demo = Participant('Demo Participant', 'Nijenborgh 9', 'Groningen', 'martijn@svcover.nl', 'NL54RABO0103796940')
+    p_demo = Participant('Demo Participant', 'Nijenborgh 9', 'Groningen', 'martijn@svcover.nl', 'NL37BANK0123456789')
     db.session.add(p_demo)
     db.session.commit()
 
