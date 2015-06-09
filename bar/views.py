@@ -8,10 +8,13 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import json
 import re
+import csv
+
+from pprint import pprint
 
 from bar import app, db, login_manager
 from models import Activity, Participant, Purchase, Product, activities_participants_table
-from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm
+from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm
 
 
 def jsonify(data):
@@ -102,6 +105,31 @@ def list_participants():
     registered_subq = current_user.participants.add_column(db.bindparam("activity", current_user.id)).subquery()
     participants = db.session.query(Participant, registered_subq.c.activity).outerjoin(registered_subq, Participant.id==registered_subq.c.id).all()
     return render_template('participants.html', participants=participants)
+
+
+@app.route('/participants/import', methods=['GET', 'POST'])
+@login_required
+def import_participants():
+    form = ImportForm()
+    if form.validate_on_submit():
+        header = []
+        columns = 0
+        participants = []
+        
+        participant_data = csv.reader(form.import_file.data, delimiter=form.delimiter.data.encode('ascii', 'ignore'))
+        for (line, row) in enumerate(participant_data):
+            if line==0:
+                columns = len(row)
+                if form.header.data:
+                    header = row
+                    continue
+            if len(row) != columns:
+                return 'Inconsistent row length', 400
+            participants.append(row)
+        if columns < 5:
+            return 'Not enough columns provided', 400
+        return render_template('import_select.html', participants=participants, header=header, columns=columns)
+    return render_template('import_form.html', form=form)
 
 
 @app.route('/participant/add', methods=['GET', 'POST'])

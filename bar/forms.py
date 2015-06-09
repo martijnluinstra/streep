@@ -1,5 +1,6 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, BooleanField, IntegerField, DateTimeField, RadioField, validators
+from flask.ext.wtf.file import FileField, FileAllowed, FileRequired
+from wtforms import TextField, BooleanField, IntegerField, DateTimeField, RadioField, SelectField, validators
 
 
 class ParticipantForm(Form):
@@ -21,6 +22,12 @@ class ProductForm(Form):
     price = IntegerField('Price', [validators.InputRequired(message='Price is required')])
     priority = IntegerField('Priority (order)', [validators.InputRequired(message='Priority is required')])
     age_limit = BooleanField('Age limit')
+
+
+class ImportForm(Form):
+    import_file = FileField('Participants CSV', validators=[FileRequired(), FileAllowed(['csv'], 'CSV files only!')])
+    delimiter = SelectField('Delimiter', choices=[(';', ';'), (',', ',')])
+    header = BooleanField('This file has a header')
 
 
 class SettingsForm(Form):
