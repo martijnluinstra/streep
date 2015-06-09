@@ -3,6 +3,7 @@ from __future__ import division
 from flask import request, render_template, redirect, url_for, abort, make_response, flash, Response, get_flashed_messages
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from urlparse import urlparse, urljoin
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -112,24 +113,63 @@ def list_participants():
 def import_participants():
     form = ImportForm()
     if form.validate_on_submit():
-        header = []
-        columns = 0
-        participants = []
-        
-        participant_data = csv.reader(form.import_file.data, delimiter=form.delimiter.data.encode('ascii', 'ignore'))
-        for (line, row) in enumerate(participant_data):
-            if line==0:
-                columns = len(row)
-                if form.header.data:
-                    header = row
-                    continue
-            if len(row) != columns:
-                return 'Inconsistent row length', 400
-            participants.append(row)
-        if columns < 5:
-            return 'Not enough columns provided', 400
-        return render_template('import_select.html', participants=participants, header=header, columns=columns)
+        return import_process_csv(form)
+    elif request.method == 'POST':
+        return import_process_data(request.get_json())
     return render_template('import_form.html', form=form)
+
+
+def import_process_csv(form):
+    data = []
+    participant_data = csv.reader(form.import_file.data, delimiter=form.delimiter.data.encode('ascii', 'ignore'))
+    for line, row in enumerate(participant_data):
+        if line==0:
+            for column, value in enumerate(row):
+                data.append({
+                    'header': value if form.header.data else ('Column_%d' % (column+1)),
+                    'rows': []
+                    })
+            if form.header.data:
+                continue
+        for column, value in enumerate(row):
+            data[column]["rows"].append(value)
+    return render_template('import_select.html', json_data=json.dumps(data, ensure_ascii=False).encode('utf-8'))
+
+
+def import_report_error(errors, key, err):
+    if  errors.has_key(key):
+        errors[key].update(err)
+        print errors
+    else:
+        errors[key] = err
+
+
+def import_process_data(data):
+    errors = {}
+    for key, row in data.iteritems():
+        birthday = None
+        if row['birthday']:
+            try:
+                birthday = datetime.strptime(row['birthday'], "%d-%m-%Y")
+            except ValueError:
+                import_report_error(errors,key,{'birthday': ['type']})
+        for prop in ['name', 'address', 'city', 'email', 'iban']:
+            if not row[prop].strip():
+                import_report_error(errors,key,{prop: ['nonblank']})
+        participant = Participant(row['name'],row['address'],row['city'],row['email'],row['iban'], birthday)
+        db.session.add(participant)
+        current_user.participants.append(participant)
+        try: 
+            db.session.flush()
+        except IntegrityError:
+            import_report_error(errors,key,{'name': ['nonunique']})
+            db.session.rollback()
+    if not errors:
+        db.session.commit()
+        return "", 200
+    else:
+        db.session.rollback()
+        return jsonify(errors)
 
 
 @app.route('/participant/add', methods=['GET', 'POST'])

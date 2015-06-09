@@ -231,3 +231,34 @@
 #list-participants table tr.registered td{
   color: initial;
 }
+
+
+/* import */
+#import-select .bar-panel{
+  max-width: none;
+}
+
+#import-select #import-table .invalid.nonblank{
+  background-color: #F2DEDE;
+}
+#import-select #import-table .invalid.nonunique{
+  background-color: #F2DEDE;
+}
+#import-select #import-table .invalid.type{
+  background-color: #FCF8E3;
+}
+#import-select #import-table select{
+  width: 100%;
+}
+#import-select #import-table input[type=text],
+#import-select #import-table input[type=email]{
+  background: none;
+  border: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#import-select #import-table input[type=text]:focus,
+#import-select #import-table input[type=email]:focus{
+  border: 1px solid #999;
+}
