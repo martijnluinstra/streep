@@ -1,5 +1,6 @@
 from bar import db
 from datetime import datetime
+from flask.ext import login
 
 
 activities_participants_table =  db.Table('activities_participants',
@@ -8,7 +9,7 @@ activities_participants_table =  db.Table('activities_participants',
 )
 
 
-class Activity(db.Model):
+class Activity(db.Model, login.UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
     passcode = db.Column(db.String(40), unique=True)
@@ -24,18 +25,6 @@ class Activity(db.Model):
     def __init__(self, name, passcode):
         self.name = name
         self.passcode = passcode
-
-    def is_authenticated(self):
-        return True
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return self.id
 
 
 class Participant(db.Model):
