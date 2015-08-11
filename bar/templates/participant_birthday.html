@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% block title %}Add birthday{% endblock %}
 {% block page_id %}user-birthday{% endblock %}
-{% block content %}
+{% block panel_content %}
 	<form method="post" action="{{ url_for('add_participant_birthday') }}">
 		{{ form.hidden_tag() }}
 		<div class="form-group">

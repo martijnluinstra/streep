@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% block title %}Settings{% endblock %}
 {% block page_id %}activity-settings{% endblock %}
-{% block content %}
+{% block panel_content %}
 	<p>Export all purchases to an <a href="https://incasso.svcover.nl" target="_blank">Incass-o-matic</a> compliant CSV-file.</p>
 	<p><a href="{{url_for('activity_export')}}" class="btn btn-default">Export</a></p>
 	<hr>

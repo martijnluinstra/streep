@@ -1,7 +1,7 @@
 {% extends "page_layout.html" %}
 {% block title %}{{mode|title}} product{% endblock %}
 {% block page_id %}product-add{% endblock %}
-{% block content %}
+{% block panel_content %}
 	<form method="post" action="{{ url_for('add_product') if mode == 'add' else url_for('edit_product', product_id=id) }}">
 		{{ form.hidden_tag() }}
 		<div class="form-group">

@@ -1,12 +1,26 @@
+{% macro render_errors(field, class='dialog') -%}
+    {% if field.errors %}
+        {% for error in field.errors %}
+        <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Oh dear!</strong> {{ error }}
+        </div>
+        {% endfor %}
+    {% endif %}
+{%- endmacro %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 {% block head %}
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title>BAR{{ ' – 'if self.title() }}{% block title %}{% endblock %}</title>
+    {% block css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bar.css') }}">
+    {% endblock %}
 {% endblock %}
 </head>
 <body id="{% block page_id %}{% endblock %}">
@@ -33,6 +47,7 @@
     {% endblock %}
     </div>
     <div class="content">
+    {% block content%}
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
@@ -44,6 +59,7 @@
             {% endif %}
         {% endwith %}
         {% block body %}{% endblock %}
+    {% endblock %}
     </div>
 {% block scripts%}
     <div class="modal fade" id="barModal" tabindex="-1" role="dialog" aria-labelledby="barModalLabel" aria-hidden="true">

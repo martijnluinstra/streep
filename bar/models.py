@@ -11,8 +11,9 @@ activities_participants_table =  db.Table('activities_participants',
 
 class Activity(db.Model, login.UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
-    passcode = db.Column(db.String(40), unique=True)
+    name = db.Column(db.String(80), nullable=False)
+    passcode = db.Column(db.String(40), nullable=False, unique=True)
+    active = db.Column(db.Boolean(), nullable=False, default=True)
     # settings
     trade_credits = db.Column(db.Boolean(), nullable=False, default=False)
     credit_value = db.Column(db.Integer, nullable=True)
@@ -22,9 +23,14 @@ class Activity(db.Model, login.UserMixin):
     participants = db.relationship('Participant', secondary=activities_participants_table,
         lazy='dynamic', backref=db.backref('activities', lazy='dynamic'))
 
-    def __init__(self, name, passcode):
+    def __init__(self, name, passcode, active=True):
         self.name = name
         self.passcode = passcode
+        self.active = active
+
+    def is_active(self):
+        return self.active
+    
 
 
 class Participant(db.Model):

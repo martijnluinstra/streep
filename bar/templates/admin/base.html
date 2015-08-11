@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block css %}
+    {{ super() }}
+    <style>
+		html,body{
+			height: 100%;
+ 			padding: 0;
+			margin: 0;
+			font-family: sans-serif;
+		}
+		body{
+			background: #eee;
+		}
+		.header{
+			background: none;
+		    line-height: 64px;
+		}
+		.header h1{
+			color: inherit;
+		}
+		.header a,
+		.header a:visited,
+		.header a:hover,
+		.header a:focus{
+			color: #222;
+		}
+    </style>
+{% endblock %}
+
+{% block header%}
+	<img src="{{ url_for('static', filename='img/cover_black.png') }}">
+	<h1>BAR: Admin</h1>
+	<a class="pull-right" href="{{ url_for('admin_logout') }}">Logout</a>
+{% endblock %}
+
+{% block content %}
+	    <div class="panel panel-primary bar-panel">
+	        <div class="panel-heading">
+	            <h3 class="panel-title">{{ self.title() }}</h3>
+	        </div>
+	    {% if self.panel_content() %}
+	        <div class="panel-body">
+	            {% block panel_content %}{% endblock %}
+	        </div>
+	    {% endif %}
+	        {% block table %}{% endblock %}
+	    {% if self.footer() %}
+	        <div class="panel-footer">
+	            {% block footer %}{% endblock %}
+	        </div>
+	    {% endif %}
+	    </div>
+{% endblock %}

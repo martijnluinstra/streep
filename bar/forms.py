@@ -2,9 +2,14 @@ from flask.ext.wtf import Form
 from flask.ext.wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import TextField, BooleanField, IntegerField, DateTimeField, RadioField, SelectField, validators
 
+from models import Activity
 
-class ParticipantForm(Form):
+class ActivityForm(Form):
     name = TextField('Name', [validators.InputRequired(message='Name is required')])
+    passcode = TextField('Passcode', [validators.InputRequired(message='Passcode is required')])
+    active = BooleanField('Active')
+    
+class ParticipantForm(Form):
     address = TextField('Address', [validators.InputRequired(message='Address is required')])
     city = TextField('Place of residence', [validators.InputRequired(message='Place of residence is required')])
     email = TextField('Email address', [validators.InputRequired(message='Email is required'), validators.Email(message='Invalid email address')])

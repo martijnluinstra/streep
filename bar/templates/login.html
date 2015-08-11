@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>BAR Login</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/bar.css') }}">
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block css %}
+    {{ super() }}
 	<style>
-		*{
-			-moz-box-sizing: border-box;
-				 box-sizing: border-box;
-		}
 		html,body{
 			height: 100%;
 			padding: 0;
@@ -78,19 +73,19 @@
 			color: #c0392b;
 		}
 	</style>
-</head>
-<body id="login-page">
-	<div class="header">
+{% endblock %}
+
+{% block header%}
 		<img src="{{ url_for('static', filename='img/cover_black.png') }}">
 		<h1>Beverage Administration Register</h1>
-	</div>
+{% endblock %}
+
+{% block content %}
+	{{super()}}
 	<form method="post" id="login-form" {% if error %}class="error"{% endif %}>
 		<div class="form-group">
 			<input type="text" class="form-control" id="login-passcode" name="passcode" autocomplete="off" placeholder="Enter your passcode…">
 			<button type="submit" class="btn btn-default" id="btn-login"><i class="fa fa-arrow-right"></i></button>
 		</div>
 	</form>
-	<script src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-</body>
-</html>
+{% endblock %}

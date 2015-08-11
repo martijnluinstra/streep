@@ -1,0 +1,26 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{mode|title}} activity{% endblock %}
+
+{% block panel_content %}
+    <form method="post" action="{{ url_for('add_activity') if mode == 'add' else url_for('edit_activity', activity_id=id) }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.name.label(class="control-label") }}
+            {{ form.name(class="form-control") }}
+        </div>
+        {{ render_errors(form.name) }}
+        <div class="form-group">
+            {{ form.passcode.label(class="control-label") }}
+            {{ form.passcode(class="form-control") }}
+        </div>
+        {{ render_errors(form.passcode) }}
+        <div class="checkbox">
+            <label>
+                {{ form.active }} {{ form.active.label.text }}
+            </label>
+        </div>
+        {{ render_errors(form.active) }}
+        <button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_activities')}}" class="btn btn-link">Back</a>
+    </form>
+{% endblock %}

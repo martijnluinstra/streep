@@ -62,7 +62,7 @@ def login():
     error = None
     if request.method == 'POST':
         activity = Activity.query.filter_by(passcode = request.form['passcode']).first()
-        if activity is None:
+        if not activity or not activity.is_active():
             error = 'Invalid code!'
         else:
             login_user(activity)
