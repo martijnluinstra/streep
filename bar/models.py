@@ -40,16 +40,18 @@ class Participant(db.Model):
     city = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
     iban = db.Column(db.String(34), nullable=False)
+    bic = db.Column(db.String(11), nullable=True)
     birthday = db.Column(db.DateTime(), nullable=True)
     purchases = db.relationship('Purchase', backref='participant',
                                 lazy='dynamic')
 
-    def __init__(self, name, address, city, email, iban, birthday=None):
+    def __init__(self, name, address, city, email, iban, bic=None , birthday=None):
         self.name = name
         self.address = address
         self.city = city
         self.email = email
         self.iban = iban
+        self.bic = bic
         self.birthday = birthday
 
 

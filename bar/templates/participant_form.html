@@ -37,6 +37,11 @@
 	</div>
 	{{ render_errors(form.iban) }}
 	<div class="form-group">
+		{{ form.bic.label(class="control-label") }}
+		{{ form.bic(class="form-control") }}
+	</div>
+	{{ render_errors(form.bic) }}
+	<div class="form-group">
 		{{ form.birthday.label(class="control-label") }}
 		{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
 	</div>

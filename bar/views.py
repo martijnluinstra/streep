@@ -144,19 +144,29 @@ def import_report_error(errors, key, err):
         errors[key] = err
 
 
+def import_validate_row(key, row, errors):
+    birthday = None
+    if row['birthday']:
+        try:
+            birthday = datetime.strptime(row['birthday'], "%d-%m-%Y")
+        except ValueError:
+            import_report_error(errors,key,{'birthday': ['type']})
+    row['birthday'] = birthday
+    for prop in ['name', 'address', 'city', 'email', 'iban']:
+        if not row[prop].strip():
+            import_report_error(errors,key,{prop: ['nonblank']})
+    if len(row['iban']) > 34:
+        import_report_error(errors,key,{'iban': ['type']})
+    if len(row['bic']) > 11:
+        import_report_error(errors,key,{'bic': ['type']})
+    return (row, errors)
+
+
 def import_process_data(data):
     errors = {}
     for key, row in data.iteritems():
-        birthday = None
-        if row['birthday']:
-            try:
-                birthday = datetime.strptime(row['birthday'], "%d-%m-%Y")
-            except ValueError:
-                import_report_error(errors,key,{'birthday': ['type']})
-        for prop in ['name', 'address', 'city', 'email', 'iban']:
-            if not row[prop].strip():
-                import_report_error(errors,key,{prop: ['nonblank']})
-        participant = Participant(row['name'],row['address'],row['city'],row['email'],row['iban'], birthday)
+        row, errors = import_validate_row(key, row, errors)
+        participant = Participant(row['name'],row['address'],row['city'],row['email'],row['iban'], row['bic'], row['birthday'])
         db.session.add(participant)
         current_user.participants.append(participant)
         try: 
@@ -179,7 +189,7 @@ def add_participant():
     form = ParticipantForm()
     if form.validate_on_submit():
         participant = Participant(
-            form.name.data, form.address.data, form.city.data, form.email.data, form.iban.data, form.birthday.data)
+            form.name.data, form.address.data, form.city.data, form.email.data, form.iban.data, form.bic.data, form.birthday.data)
         db.session.add(participant)
         current_user.participants.append(participant)
         try:
