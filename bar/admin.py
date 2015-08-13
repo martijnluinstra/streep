@@ -13,7 +13,6 @@ from views import is_safe_url
 def admin_required(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        print (session.get('username', None))
         if not get_user():
             return redirect(url_for('admin_login', next=request.url))
         return func(*args, **kwargs)
@@ -38,7 +37,6 @@ def admin_login():
         if not any(field in request.form for field in ('username', 'password')):
             return abort(400)
         user = get_user(request.form['username'])
-        print user
         if user and check_password_hash(user[2], request.form['password']):
             session['username'] = user[0]
 
