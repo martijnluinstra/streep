@@ -80,6 +80,9 @@
 		<h1>Beverage Administration Register</h1>
 {% endblock %}
 
+{# Disable messages #}
+{% block messages %}{% endblock %}
+
 {% block content %}
 	<form method="post" id="login-form" {% if error %}class="error"{% endif %}>
 		<div class="form-group">
