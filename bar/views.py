@@ -205,7 +205,7 @@ def add_participant():
 @app.route('/participants/<int:participant_id>', methods=['GET', 'POST'])
 @login_required
 def edit_participant(participant_id):
-    participant = Participant.query.filter_by(id = participant_id).first_or_404()
+    participant = Participant.query.get_or_404(participant_id)
     form = ParticipantForm(request.form, participant)
     if form.validate_on_submit():
         form.populate_obj(participant)
@@ -223,7 +223,7 @@ def edit_participant(participant_id):
 @login_required
 def register_participant(participant_id):
     """ Add a participant to an activity """
-    participant = Participant.query.filter_by(id=participant_id).first_or_404()
+    participant = Participant.query.get_or_404(participant_id)
     current_user.participants.append(participant)
     db.session.commit()
     return redirect(url_for('list_participants'))
@@ -233,7 +233,7 @@ def register_participant(participant_id):
 @login_required
 def deregister_participant(participant_id):
     """ Remove a participant from an activity """
-    participant = Participant.query.filter_by(id=participant_id).first_or_404()
+    participant = Participant.query.get_or_404(participant_id)
     purchases = participant.purchases.filter_by(activity_id=current_user.id).first()
     if purchases:
         flash("Cannot remove this participant, this participant has purchases!")
@@ -253,7 +253,7 @@ def participant_history(participant_id):
         purchases = purchase_query.all();
     else:
         purchases = purchase_query.limit(show).all();
-    participant = Participant.query.filter_by(id = participant_id).first_or_404()
+    participant = Participant.query.get_or_404(participant_id)
     return render_template('participant_history.html', purchases=purchases, participant=participant)
 
 
@@ -300,7 +300,7 @@ def batch_consume():
 def batch_undo():
     data = request.get_json()
     for row in data:
-        purchase = Purchase.query.filter_by(id = row['purchase_id']).first_or_404()
+        purchase = Purchase.query.get_or_404(row['purchase_id'])
         if purchase.activity_id != current_user.id:
             return 'Purchase not in current activity', 401
         purchase.undone = True
@@ -311,7 +311,7 @@ def batch_undo():
 @app.route('/purchases/<int:purchase_id>/undo', methods=['GET'])
 @login_required
 def undo(purchase_id):
-    purchase = Purchase.query.filter_by(id = purchase_id).first_or_404()
+    purchase = Purchase.query.get_or_404(purchase_id)
     if purchase.activity_id != current_user.id:
         return 'Purchase not in current activity', 401    
     purchase.undone = True
@@ -348,7 +348,7 @@ def add_product():
 @login_required
 def edit_product(product_id):
     """ Edit a product """
-    product = Product.query.filter_by(id = product_id).first_or_404()
+    product = Product.query.get_or_404(product_id)
     if product.activity_id != current_user.id:
         return 'Product not in current activity', 401 
     form = ProductForm(request.form, product)
@@ -363,7 +363,7 @@ def edit_product(product_id):
 @login_required
 def delete_product(product_id):
     """ Edit a product """
-    product = Product.query.filter_by(id = product_id).first_or_404()
+    product = Product.query.get_or_404(product_id)
     if product.activity_id != current_user.id:
         return 'Product not in current activity', 401 
     purchase = Purchase.query.filter_by(product_id=product.id).first()
@@ -379,7 +379,6 @@ def delete_product(product_id):
 @login_required
 def activity_settings():
     """ Edit settings """
-    # activity = Activity.query.filter_by(id = current_user.id).first_or_404()
     form = SettingsForm(request.form, current_user)
     if form.validate_on_submit():
         form.populate_obj(current_user)
