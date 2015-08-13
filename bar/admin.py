@@ -57,6 +57,8 @@ def admin_logout():
     session.pop('username', None)
     return redirect(url_for('admin_login'))
 
+
+@app.route('/admin', methods=['GET'])
 @app.route('/activities', methods=['GET'])
 @admin_required
 def list_activities():
