@@ -10,6 +10,7 @@ class ActivityForm(Form):
     active = BooleanField('Active')
     
 class ParticipantForm(Form):
+    name = TextField('Name', [validators.InputRequired(message='Name is required')])
     address = TextField('Address', [validators.InputRequired(message='Address is required')])
     city = TextField('Place of residence', [validators.InputRequired(message='Place of residence is required')])
     email = TextField('Email address', [validators.InputRequired(message='Email is required'), validators.Email(message='Invalid email address')])
@@ -38,8 +39,8 @@ class ImportForm(Form):
 class SettingsForm(Form):
     trade_credits = RadioField('Trading currency', choices=[('True','Credits'),('False','Euro')])
     credit_value = IntegerField('Credit value (in Euro cent)')
-    age_limit = IntegerField('Age limit (minimal save age)', [validators.InputRequired(message='Age limit is required')])
-    stacked_purchases = BooleanField('Allow stacked purchases')
+    age_limit = IntegerField('Age limit (minimal legal age)', [validators.InputRequired(message='Age limit is required')])
+    stacked_purchases = BooleanField('Allow stacked purchases (e.g. buy 6 beers at once)')
 
     def validate_trade_credits(form, field):
         field.data = field.data == 'True'
