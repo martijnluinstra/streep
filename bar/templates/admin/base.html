@@ -33,22 +33,3 @@
 	<h1>BAR: Admin</h1>
 	<a class="pull-right" href="{{ url_for('admin_logout') }}">Logout</a>
 {% endblock %}
-
-{% block content %}
-	    <div class="panel panel-primary bar-panel">
-	        <div class="panel-heading">
-	            <h3 class="panel-title">{{ self.title() }}</h3>
-	        </div>
-	    {% if self.panel_content() %}
-	        <div class="panel-body">
-	            {% block panel_content %}{% endblock %}
-	        </div>
-	    {% endif %}
-	        {% block table %}{% endblock %}
-	    {% if self.footer() %}
-	        <div class="panel-footer">
-	            {% block footer %}{% endblock %}
-	        </div>
-	    {% endif %}
-	    </div>
-{% endblock %}

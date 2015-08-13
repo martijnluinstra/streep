@@ -1,7 +1,9 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
+
 {% block title %}History of {{participant.name}}{% endblock %}
 {% block page_id %}participant-history{% endblock %}
-{% block table %}
+
+{% block panel_table %}
     <table class="table table-hover table-bar">
         <thead>
             <tr>
@@ -23,6 +25,7 @@
         </tbody>
     </table>
 {% endblock %}
-{% block footer %}
+
+{% block panel_footer %}
     <a href="{{url_for('view_home')}}" class="btn btn-primary">Back</a>
 {% endblock %}

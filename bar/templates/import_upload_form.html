@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Import{% endblock %}
+{% block page_id %}participant-import{% endblock %}
+
+{% block content %}
+	<form method="POST" enctype="multipart/form-data">
+		{{ form.hidden_tag() }}
+		{{ super() }}
+	</form>
+{% endblock %}
+
+{% block panel_body %}
+	<div class="form-group">
+		{{ form.import_file.label(class="control-label") }}
+		{{ form.import_file() }}
+	</div>
+	{{ render_errors(form.import_file) }}
+	<div class="form-group">
+		{{ form.delimiter.label(class="control-label") }}
+		{{ form.delimiter(class="form-control") }}
+	</div>
+	{{ render_errors(form.delimiter) }}
+	<div class="checkbox">
+		<label>
+			{{ form.header }} {{ form.header.label.text }}
+		</label>
+	</div>
+	{{ render_errors(form.header) }}
+{% endblock %}
+
+{% block panel_footer %}
+	<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_participants')}}" class="btn btn-link">Back</a>
+{% endblock %}

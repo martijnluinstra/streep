@@ -47,18 +47,33 @@
     {% endblock %}
     </div>
     <div class="content">
-    {% block content%}
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-info alert-dismissible alert-flash" role="alert">
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        {% block body %}{% endblock %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info alert-dismissible alert-flash" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% block content %}
+        <div class="panel panel-primary bar-panel">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ self.title() }}</h3>
+            </div>
+        {% if self.panel_body() %}
+            <div class="panel-body">
+                {% block panel_body %}{% endblock %}
+            </div>
+        {% endif %}
+            {% block panel_table %}{% endblock %}
+        {% if self.panel_footer() %}
+            <div class="panel-footer">
+                {% block panel_footer %}{% endblock %}
+            </div>
+        {% endif %}
+        </div>
     {% endblock %}
     </div>
 {% block scripts%}

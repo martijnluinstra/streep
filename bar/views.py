@@ -91,7 +91,7 @@ def view_home():
     participants = db.session.query(parti_subq, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
     # users = User.query.order_by(User.name).all()
     products = Product.query.filter_by(activity_id=current_user.id).order_by(Product.priority.desc()).all()
-    return render_template('index.html', participants=participants, products=products)
+    return render_template('main.html', participants=participants, products=products)
 
  
 @app.route('/faq', methods=['GET'])
@@ -99,13 +99,13 @@ def faq():
     return render_template('faq.html')
 
 
-@app.route('/participant', methods=['GET'])
+@app.route('/participants', methods=['GET'])
 @login_required
 def list_participants():
     """ List all participants in the system by name """
     registered_subq = current_user.participants.add_column(db.bindparam("activity", current_user.id)).subquery()
     participants = db.session.query(Participant, registered_subq.c.activity).outerjoin(registered_subq, Participant.id==registered_subq.c.id).all()
-    return render_template('participants.html', participants=participants)
+    return render_template('participant_list.html', participants=participants)
 
 
 @app.route('/participants/import', methods=['GET', 'POST'])
@@ -116,7 +116,7 @@ def import_participants():
         return import_process_csv(form)
     elif request.method == 'POST':
         return import_process_data(request.get_json())
-    return render_template('import_form.html', form=form)
+    return render_template('import_upload_form.html', form=form)
 
 
 def import_process_csv(form):
@@ -133,7 +133,7 @@ def import_process_csv(form):
                 continue
         for column, value in enumerate(row):
             data[column]["rows"].append(value)
-    return render_template('import_select.html', json_data=json.dumps(data, ensure_ascii=False).encode('utf-8'))
+    return render_template('import_select_form.html', json_data=json.dumps(data, ensure_ascii=False).encode('utf-8'))
 
 
 def import_report_error(errors, key, err):
@@ -172,7 +172,7 @@ def import_process_data(data):
         return jsonify(errors)
 
 
-@app.route('/participant/add', methods=['GET', 'POST'])
+@app.route('/participants/add', methods=['GET', 'POST'])
 @login_required
 def add_participant():
     """ Try to create a new participant. """
@@ -186,13 +186,13 @@ def add_participant():
             db.session.commit()
         except IntegrityError:
             form.name.errors.append('Please provide a unique name!')
-            return render_template('participant_add.html', form=form, mode='add')
+            return render_template('participant_form.html', form=form, mode='add')
         else:
             return redirect(url_for('view_home'))
-    return render_template('participant_add.html', form=form, mode='add')
+    return render_template('participant_form.html', form=form, mode='add')
 
 
-@app.route('/participant/<int:participant_id>', methods=['GET', 'POST'])
+@app.route('/participants/<int:participant_id>', methods=['GET', 'POST'])
 @login_required
 def edit_participant(participant_id):
     participant = Participant.query.filter_by(id = participant_id).first_or_404()
@@ -203,13 +203,13 @@ def edit_participant(participant_id):
             db.session.commit()
         except IntegrityError:
             form.name.errors.append('Please provide a unique name!')
-            return render_template('participant_add.html', form=form, mode='edit', id=participant.id)
+            return render_template('participant_form.html', form=form, mode='edit', id=participant.id)
         else:
             return redirect(url_for('list_participants'))
-    return render_template('participant_add.html', form=form, mode='edit', id=participant.id)
+    return render_template('participant_form.html', form=form, mode='edit', id=participant.id)
 
 
-@app.route('/participant/<int:participant_id>/register', methods=['GET'])
+@app.route('/participants/<int:participant_id>/register', methods=['GET'])
 @login_required
 def register_participant(participant_id):
     """ Add a participant to an activity """
@@ -219,7 +219,7 @@ def register_participant(participant_id):
     return redirect(url_for('list_participants'))
 
 
-@app.route('/participant/<int:participant_id>/deregister', methods=['GET'])
+@app.route('/participants/<int:participant_id>/deregister', methods=['GET'])
 @login_required
 def deregister_participant(participant_id):
     """ Remove a participant from an activity """
@@ -233,7 +233,7 @@ def deregister_participant(participant_id):
     return redirect(url_for('list_participants'))
 
 
-@app.route('/participant/<int:participant_id>/history', methods=['GET'])
+@app.route('/participants/<int:participant_id>/history', methods=['GET'])
 @login_required
 def participant_history(participant_id):
     purchase_query = db.session.query(Purchase, Product.name, Product.price).join(Product, Purchase.product_id==Product.id).filter(Purchase.participant_id == participant_id).filter(Purchase.activity_id==current_user.id).order_by(Purchase.id.desc())
@@ -247,7 +247,7 @@ def participant_history(participant_id):
     return render_template('participant_history.html', purchases=purchases, participant=participant)
 
 
-@app.route('/participant/birthday', methods=['GET', 'POST'])
+@app.route('/participants/birthday', methods=['GET', 'POST'])
 @login_required
 def add_participant_birthday():
     """ 
@@ -265,7 +265,7 @@ def add_participant_birthday():
     return render_template('participant_birthday.html', form=form)
 
 
-@app.route('/participant/names', methods=['GET'])
+@app.route('/participants/names', methods=['GET'])
 @login_required
 def list_participant_names():
     """ List all participants """
@@ -274,7 +274,7 @@ def list_participant_names():
     return jsonify([participant.name for participant in participants])
 
 
-@app.route('/purchase', methods=['POST'])
+@app.route('/purchases', methods=['POST'])
 @login_required
 def batch_consume():
     data = request.get_json()
@@ -285,7 +285,7 @@ def batch_consume():
     return 'Purchases created', 201
 
 
-@app.route('/purchase/undo', methods=['POST'])
+@app.route('/purchases/undo', methods=['POST'])
 @login_required
 def batch_undo():
     data = request.get_json()
@@ -298,7 +298,7 @@ def batch_undo():
     return 'Purchases undone', 201
 
 
-@app.route('/purchase/<int:purchase_id>/undo', methods=['GET'])
+@app.route('/purchases/<int:purchase_id>/undo', methods=['GET'])
 @login_required
 def undo(purchase_id):
     purchase = Purchase.query.filter_by(id = purchase_id).first_or_404()
@@ -316,7 +316,7 @@ def list_products():
     View all products.
     """
     products = Product.query.order_by(Product.priority.desc()).filter_by(activity_id=current_user.id).all()
-    return render_template('products.html', products=products)
+    return render_template('product_list.html', products=products)
 
 
 @app.route('/products/add', methods=['GET', 'POST'])
@@ -331,7 +331,7 @@ def add_product():
         db.session.add(product)
         db.session.commit()
         return redirect(url_for('list_products'))
-    return render_template('product_add.html', form=form, mode='add')
+    return render_template('product_form.html', form=form, mode='add')
 
 
 @app.route('/products/<int:product_id>', methods=['GET', 'POST'])
@@ -346,7 +346,7 @@ def edit_product(product_id):
         form.populate_obj(product)
         db.session.commit()
         return redirect(url_for('list_products'))
-    return render_template('product_add.html', form=form, mode='edit', id=product.id)
+    return render_template('product_form.html', form=form, mode='edit', id=product.id)
 
 
 @app.route('/products/<int:product_id>/delete', methods=['GET', 'POST'])

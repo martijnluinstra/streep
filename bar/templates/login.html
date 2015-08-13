@@ -81,7 +81,6 @@
 {% endblock %}
 
 {% block content %}
-	{{super()}}
 	<form method="post" id="login-form" {% if error %}class="error"{% endif %}>
 		<div class="form-group">
 			<input type="text" class="form-control" id="login-passcode" name="passcode" autocomplete="off" placeholder="Enter your passcode…">

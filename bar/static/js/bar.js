@@ -54,7 +54,7 @@ $("#view-users .table-bar button[data-type^='purchase']").click(function(evt){
         clearTimeout(timers['purchases']);
 
     // Queue a sync-request for this user
-    timers['purchases'] = setTimeout(create_sync_task('/purchase', 'purchases'), 1000);
+    timers['purchases'] = setTimeout(create_sync_task('/purchases', 'purchases'), 1000);
 });
 
 function create_sync_task(url, item) {
@@ -92,7 +92,7 @@ function create_sync_task(url, item) {
 $("#view-users  .table-bar button[data-type^='history']").click(function(evt){
     evt.preventDefault();
     var participant_id = $(this).data('participant-id');
-    url='/participant/' + participant_id + '/history?show='+config['history_size'];
+    url='/participants/' + participant_id + '/history?show='+config['history_size'];
 
     $.get(url, {timeout: 3000}, function( data ) {
             show_history_modal($(data).find('.bar-panel'), participant_id);
@@ -122,11 +122,11 @@ function show_history_modal(data, participant_id){
             clearTimeout(timers['undos']);
 
         // Queue a sync-request for this user
-        timers['undos'] = setTimeout(create_sync_task('/purchase/undo', 'undos'), 1000);
+        timers['undos'] = setTimeout(create_sync_task('/purchases/undo', 'undos'), 1000);
 
         $(this).addClass('disabled');
     });
-    var btn_more = $('<a href="/participant/' + participant_id + '/history" class="btn btn-default">Complete history</a>');
+    var btn_more = $('<a href="/participants/' + participant_id + '/history" class="btn btn-default">Complete history</a>');
     btn_more.click(leave_page);
     $('#barModal').find('.modal-title').show().html(title);
     $('#barModal').find('.modal-body').hide().empty();
@@ -215,12 +215,12 @@ function leave_page(evt){
     evt.preventDefault();
     if (timers['purchases']){
         clearTimeout(timers['purchases']);
-        var task = create_sync_task('/purchase', 'purchases');
+        var task = create_sync_task('/purchases', 'purchases');
         task();
     }
     if (timers['undos']){
         clearTimeout(timers['undos']);
-        var task = create_sync_task('/purchase/undo', 'undos');
+        var task = create_sync_task('/purchases/undo', 'undos');
         task();
     }
 

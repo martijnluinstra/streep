@@ -1,22 +1,32 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
+
 {% block title %}Add birthday{% endblock %}
 {% block page_id %}user-birthday{% endblock %}
-{% block panel_content %}
+
+{% block content %}
 	<form method="post" action="{{ url_for('add_participant_birthday') }}">
 		{{ form.hidden_tag() }}
-		<div class="form-group">
-			{{ form.name.label(class="control-label") }}
-			{{ form.name(class="form-control", data_provide="typeahead", autocomplete="off",autofocus="true") }}
-		</div>
-		{{ render_errors(form.name) }}
-		<div class="form-group">
-			{{ form.birthday.label(class="control-label") }}
-			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
-		</div>
-		{{ render_errors(form.birthday) }}
-		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_participants')}}" class="btn btn-link">Back</a>
+		{{ super() }}
 	</form>
 {% endblock %}
+
+{% block panel_body %}
+	<div class="form-group">
+		{{ form.name.label(class="control-label") }}
+		{{ form.name(class="form-control", data_provide="typeahead", autocomplete="off",autofocus="true") }}
+	</div>
+	{{ render_errors(form.name) }}
+	<div class="form-group">
+		{{ form.birthday.label(class="control-label") }}
+		{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
+	</div>
+	{{ render_errors(form.birthday) }}
+{% endblock %}
+
+{% block panel_footer %}
+	<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_participants')}}" class="btn btn-link">Back</a>
+{% endblock %}
+
 {% block scripts %}
 	{{super()}}
 	<script src="{{ url_for('static', filename='js/bootstrap3-typeahead.js') }}"></script>

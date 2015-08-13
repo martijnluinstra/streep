@@ -61,7 +61,7 @@ def admin_logout():
 @admin_required
 def list_activities():
     activities = Activity.query.all()
-    return render_template('admin/activities.html', activities=activities)
+    return render_template('activity_list.html', activities=activities)
 
 
 @app.route('/activities/add', methods=['GET', 'POST'])
@@ -77,10 +77,10 @@ def add_activity():
             db.session.commit()
         except IntegrityError:
             form.name.errors.append('Please provide a unique passcode!')
-            return render_template('admin/activity_form.html', form=form, mode='add')
+            return render_template('activity_form.html', form=form, mode='add')
         else:
             return redirect(url_for('list_activities'))
-    return render_template('admin/activity_form.html', form=form, mode='add')
+    return render_template('activity_form.html', form=form, mode='add')
 
 
 @app.route('/activities/<int:activity_id>', methods=['GET', 'POST'])
@@ -94,10 +94,10 @@ def edit_activity(activity_id):
             db.session.commit()
         except IntegrityError:
             form.name.errors.append('Please provide a unique name!')
-            return render_template('admin/activity_form.html', form=form, mode='edit', id=activity.id)
+            return render_template('activity_form.html', form=form, mode='edit', id=activity.id)
         else:
             return redirect(url_for('list_activities'))
-    return render_template('admin/activity_form.html', form=form, mode='edit', id=activity.id)
+    return render_template('activity_form.html', form=form, mode='edit', id=activity.id)
 
 
 @app.route('/activities/<int:activity_id>/impersonate', methods=['GET', 'POST'])

@@ -2,7 +2,7 @@
 
 {% block title %}Activities{% endblock %}
 
-{% block table %}
+{% block panel_table %}
     <table class="table table-hover table-bar">
         <thead>
             <tr>
@@ -34,6 +34,6 @@
     </table>
 {% endblock %}
 
-{% block footer %}
+{% block panel_footer %}
     <a href="{{url_for('add_activity')}}" class="btn btn-primary">Add activity</a>
 {% endblock %}

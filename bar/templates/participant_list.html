@@ -1,7 +1,9 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
+
 {% block title %}Participants{% endblock %}
 {% block page_id %}list-participants{% endblock %}
-{% block table %}
+
+{% block panel_table %}
     <table class="table table-hover table-bar">
         <thead>
             <tr>
@@ -26,7 +28,8 @@
         </tbody>
     </table>
 {% endblock %}
-{% block footer %}
+
+{% block panel_footer %}
     <a href="{{url_for('add_participant')}}" class="btn btn-primary">Add participant</a>
     <a href="{{url_for('import_participants')}}" class="btn btn-default">Import participants</a>
     <a href="{{url_for('add_participant_birthday')}}" class="btn btn-default">Birthday registration</a>

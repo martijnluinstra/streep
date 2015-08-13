@@ -1,12 +1,22 @@
-{% extends "page_layout.html" %}
+{% extends "base.html" %}
+
 {% block title %}Import{% endblock %}
 {% block page_id %}import-select{% endblock %}
-{% block table %}
-<form id="import-form" method="post" action="{{ url_for('import_participants')}}" novalidate>
-    <div class="panel-body">
-        <p>Select in wich column in the file contains the values can be found. Make sure you do not import users already in the database!</p> 
-        <p><button type="submit" class="btn btn-primary">Import participants</button></p>
-    </div>
+
+
+{% block content %}
+    <form id="import-form" method="post" action="{{ url_for('import_participants')}}" novalidate>
+        {{ super() }}
+    </form>
+{% endblock %}
+
+{% block panel_body %}
+    <p>Select in wich column in the file contains the values can be found. Make sure you do not import users already in the database!</p> 
+    <p><button type="submit" class="btn btn-primary">Import participants</button></p>
+{% endblock %}
+
+
+{% block panel_table %}
     <table id="import-table" class="table table-hover">
         <thead>
             <tr>
@@ -40,7 +50,6 @@
             </tr>
         </tbody>
     </table>
-</form>
 {% endblock %}
 
 {% block scripts %}
