@@ -72,7 +72,7 @@ def add_activity():
     if form.validate_on_submit():
         activity = Activity(
             form.name.data, form.passcode.data, form.active.data)
-        db.session.add(active)
+        db.session.add(activity)
         try:
             db.session.commit()
         except IntegrityError:
