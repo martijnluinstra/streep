@@ -1,6 +1,7 @@
 from bar import db
 from datetime import datetime
 from flask.ext import login
+from sqlalchemy_utils.types.choice import ChoiceType
 
 
 activities_participants_table =  db.Table('activities_participants',
@@ -56,19 +57,31 @@ class Participant(db.Model):
 
 
 class Purchase(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    CATEGORY_AUCTION = u'auction'
+    CATEGORY_BAR = u'bar'
+    CATEGORY_OPTIONS  = [
+        (CATEGORY_AUCTION, u'Auction'),
+        (CATEGORY_BAR, u'Bar')
+    ]
+
+    id = db.Column(db.Integer, primary_key=True)    
+    category = db.Column(ChoiceType(CATEGORY_OPTIONS), nullable=False)
     participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'), nullable=False)
     activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=True)
+    description = db.Column(db.String(255), nullable=True)
+    price = db.Column(db.Integer(), nullable=True)
     timestamp = db.Column(db.DateTime(), nullable=False)
-    undone = db.Column(db.Boolean(), nullable=False)
+    undone = db.Column(db.Boolean(), default=False, nullable=False)
 
-    def __init__(self, participant_id, activity_id, product_id):
+    def __init__(self, category, participant_id, activity_id, product_id=None, description=None, price=None):
+        self.category = category
         self.participant_id = participant_id
         self.activity_id = activity_id
         self.product_id = product_id
+        self.description = description
+        self.price = price
         self.timestamp = datetime.now()
-        self.undone = False
 
 
 class Product(db.Model):
@@ -85,3 +98,4 @@ class Product(db.Model):
         self.activity_id = activity_id
         self.priority = priority
         self.age_limit = age_limit
+        
