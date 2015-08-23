@@ -58,10 +58,10 @@ class Participant(db.Model):
 
 class Purchase(db.Model):
     CATEGORY_AUCTION = u'auction'
-    CATEGORY_BAR = u'bar'
+    CATEGORY_POS = u'pos'
     CATEGORY_OPTIONS  = [
         (CATEGORY_AUCTION, u'Auction'),
-        (CATEGORY_BAR, u'Bar')
+        (CATEGORY_POS, u'Point of Sale')
     ]
 
     id = db.Column(db.Integer, primary_key=True)    

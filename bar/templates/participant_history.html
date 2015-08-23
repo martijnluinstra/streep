@@ -8,11 +8,15 @@
         <thead>
             <tr>
                 <th>Product</th>
-                <th>Timestamp</th>
+            {% if view == 'auction' %}
+                <th>Price</th>
+            {% endif %}
+                <th>Time</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
+        {% if view == 'pos' %}
             {% for (purchase, product, price) in purchases %}
             <tr id="{{ purchase.id }}">
                 <td>{{product}}</td>
@@ -22,10 +26,27 @@
                 </td>
             </tr>
             {% endfor %}
+        {% else %}
+            {% for purchase in purchases %}
+            <tr id="{{ purchase.id }}">
+                <td>{{purchase.description}}</td>
+                <td>{{format_price(purchase.price/100)}}</td>
+                <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
+                <td>
+                    <a href="{{url_for('undo', purchase_id=purchase.id)}}" data-participant-id="{{participant.id}}" data-purchase-id="{{purchase.id}}" data-price="{{purchase.price}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone }}" data-type="undo">Undo</a>
+                </td>
+            </tr>
+            {% endfor %}
+        {% endif %}
         </tbody>
     </table>
 {% endblock %}
 
 {% block panel_footer %}
     <a href="{{url_for('view_home')}}" class="btn btn-primary">Back</a>
+    {% if view == 'pos' %}
+        <a href="{{url_for('participant_history', participant_id=participant.id, view='auction')}}" class="btn btn-default">Auction purchases</a>
+    {% else %}
+        <a href="{{url_for('participant_history', participant_id=participant.id, view='pos')}}" class="btn btn-default">Bar purchases</a>
+    {% endif %}
 {% endblock %}

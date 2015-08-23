@@ -92,7 +92,7 @@ function create_sync_task(url, item) {
 $("#view-users  .table-bar button[data-type^='history']").click(function(evt){
     evt.preventDefault();
     var participant_id = $(this).data('participant-id');
-    url='/participants/' + participant_id + '/history?show='+config['history_size'];
+    url='/participants/' + participant_id + '/history?limit='+config['history_size'];
 
     $.get(url, {timeout: 3000}, function( data ) {
             show_history_modal($(data).find('.bar-panel'), participant_id);

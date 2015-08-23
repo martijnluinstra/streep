@@ -86,7 +86,7 @@ def logout():
 @login_required
 def view_home():
     """ View all participants attending the activity, ordered by name """
-    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).filter(Purchase.category==Purchase.CATEGORY_BAR).group_by(Purchase.participant_id).subquery()
+    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).filter(Purchase.category==Purchase.CATEGORY_POS).group_by(Purchase.participant_id).subquery()
     parti_subq = current_user.participants.subquery()
     participants = db.session.query(parti_subq, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
     products = Product.query.filter_by(activity_id=current_user.id).order_by(Product.priority.desc()).all()
@@ -245,15 +245,32 @@ def deregister_participant(participant_id):
 @app.route('/participants/<int:participant_id>/history', methods=['GET'])
 @login_required
 def participant_history(participant_id):
-    purchase_query = db.session.query(Purchase, Product.name, Product.price).join(Product, Purchase.product_id==Product.id).filter(Purchase.participant_id == participant_id).filter(Purchase.activity_id==current_user.id).filter(Purchase.category==Purchase.CATEGORY_BAR).order_by(Purchase.id.desc())
+    view = request.args.get('view', 'pos')
+    
+    if view == 'auction':
+        purchase_query = Purchase.query.filter(Purchase.participant_id == participant_id)\
+                .filter(Purchase.activity_id == current_user.id)\
+                .filter(Purchase.category == Purchase.CATEGORY_AUCTION)\
+                .order_by(Purchase.timestamp.desc())
+    elif view == 'pos':
+        purchase_query = db.session.query(Purchase, Product.name, Product.price)\
+                .join(Product, Purchase.product_id == Product.id)\
+                .filter(Purchase.participant_id == participant_id)\
+                .filter(Purchase.activity_id == current_user.id)\
+                .filter(Purchase.category == Purchase.CATEGORY_POS)\
+                .order_by(Purchase.timestamp.desc())
+    else:
+        return 'Invalid view', 400
+
     try:
-        show = request.args.get('show', type=int)
+        limit = request.args.get('limit', type=int)
     except KeyError:
         purchases = purchase_query.all();
     else:
-        purchases = purchase_query.limit(show).all();
+        purchases = purchase_query.limit(limit).all();
+
     participant = Participant.query.get_or_404(participant_id)
-    return render_template('participant_history.html', purchases=purchases, participant=participant)
+    return render_template('participant_history.html', purchases=purchases, participant=participant, view=view)
 
 
 @app.route('/participants/birthday', methods=['GET', 'POST'])
@@ -288,7 +305,7 @@ def list_participant_names():
 def batch_consume():
     data = request.get_json()
     for row in data:
-        purchase = Purchase(category=Purchase.CATEGORY_BAR, participant_id=row['participant_id'], activity_id=current_user.id, product_id=row['product_id'])
+        purchase = Purchase(category=Purchase.CATEGORY_POS, participant_id=row['participant_id'], activity_id=current_user.id, product_id=row['product_id'])
         db.session.add(purchase)
     db.session.commit()
     return 'Purchases created', 201
