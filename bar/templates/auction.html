@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/typeaheadjs.css') }}">
+{% endblock %}
+
 {% block content %}
     <form method="post">
         {{ form.hidden_tag() }}
         <div class="form-group">
             {{ form.description.label(class="control-label") }}
-            {{ form.description(class="form-control") }}
+            {{ form.description(class="form-control",autofocus="true") }}
         </div>
         {{ render_errors(form.description) }}
         <div class="form-group">
@@ -15,7 +20,7 @@
         {{ render_errors(form.price) }}
         <div class="form-group">
             {{ form.participant.label(class="control-label") }}
-            {{ form.participant(class="form-control") }}
+            {{ form.participant(class="form-control typeahead", autocomplete="off") }}
         </div>
         {{ render_errors(form.participant) }}
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -35,9 +40,29 @@
                 <td>{{purchase.participant.name}}</td>
                 <td>{{format_price(purchase.price/100)}}</td>
                 <td>{{purchase.description}}</td>
-                <td></td>
+                <td><a href="{{url_for('undo', purchase_id=purchase.id, next=request.url)}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone}}">Undo</a></td>
             </tr> 
             {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
+    <script>
+
+        var participants = new Bloodhound({ 
+            datumTokenizer: Bloodhound.tokenizers.whitespace, 
+            queryTokenizer: Bloodhound.tokenizers.whitespace, 
+            prefetch: '{{url_for('list_participant_names')}}' 
+        }); 
+
+        $('#participant.typeahead').typeahead({
+            highlight: true
+        }, { 
+            name: 'participants', 
+            source: participants 
+        }); 
+    </script>
 {% endblock %}

@@ -315,7 +315,10 @@ def undo(purchase_id):
         return 'Purchase not in current activity', 401    
     purchase.undone = True
     db.session.commit()
-    return redirect(url_for('history', participant_id = purchase.participant_id))
+    next_url = request.args.get('next')
+    if not is_safe_url(next_url):
+        return abort(400)
+    return redirect(next_url or url_for('participant_history', participant_id = purchase.participant_id))
 
 
 @app.route('/products', methods=['GET', 'POST'])
