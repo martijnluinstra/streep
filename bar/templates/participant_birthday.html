@@ -40,7 +40,10 @@
 		var participants = new Bloodhound({ 
 			datumTokenizer: Bloodhound.tokenizers.whitespace, 
 			queryTokenizer: Bloodhound.tokenizers.whitespace, 
-			prefetch: '{{url_for('list_participant_names')}}' 
+			prefetch: {
+                url: '{{url_for('list_participant_names')}}',
+                cache: false
+            }
 		}); 
 
 		$('#name.typeahead').typeahead({
