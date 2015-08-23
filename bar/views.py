@@ -15,7 +15,7 @@ from pprint import pprint
 
 from bar import app, db, login_manager
 from models import Activity, Participant, Purchase, Product, activities_participants_table
-from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm
+from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, AuctionForm
 
 
 def jsonify(data):
@@ -400,3 +400,17 @@ def activity_export():
             my_row[-2] = re.sub(r'\s+', '', row[-2])
             yield ','.join(['"' + unicode(field).encode('utf-8') + '"' for field in my_row]) + '\n'
     return Response(generate(participants, current_user.trade_credits, current_user.credit_value), mimetype='text/csv')
+
+
+@app.route('/auction', methods=['GET', 'POST'])
+@login_required
+def list_auction():
+    form = AuctionForm()
+    if form.validate_on_submit():
+        participant = Participant.query.filter_by(name=form.participant.data).first()
+        purchase = Purchase(category=Purchase.CATEGORY_AUCTION, participant_id=participant.id, activity_id=current_user.id, description=form.description.data, price=form.price.data)
+        db.session.add(purchase)
+        db.session.commit()
+        return redirect(url_for('list_auction'))
+    purchases = Purchase.query.filter_by(activity_id=current_user.get_id()).filter_by(category=Purchase.CATEGORY_AUCTION).all()
+    return render_template('auction.html', form=form, purchases=purchases)

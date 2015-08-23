@@ -4,11 +4,19 @@ from wtforms import TextField, BooleanField, IntegerField, DateTimeField, RadioF
 
 from models import Activity
 
+
 class ActivityForm(Form):
     name = TextField('Name', [validators.InputRequired(message='Name is required')])
     passcode = TextField('Passcode', [validators.InputRequired(message='Passcode is required')])
     active = BooleanField('Active')
-    
+
+
+class AuctionForm(Form):
+    description = TextField('Product description', [validators.Optional(strip_whitespace=True)])
+    price = IntegerField('Price (in Euro cent)', [validators.InputRequired(message='Price is required')])
+    participant = TextField('Participant', [validators.InputRequired(message='Participant is required')])
+ 
+
 class ParticipantForm(Form):
     name = TextField('Name', [validators.InputRequired(message='Name is required')])
     address = TextField('Address', [validators.InputRequired(message='Address is required')])
