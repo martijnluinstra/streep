@@ -311,6 +311,30 @@ def batch_consume():
     return 'Purchases created', 201
 
 
+@app.route('/auction/purchases/<int:purchase_id>', methods=['GET', 'POST'])
+@login_required
+def edit_purchase(purchase_id):
+    """ Edit a purchase """
+    purchase = Purchase.query.get_or_404(purchase_id)
+    if purchase.category != Purchase.CATEGORY_AUCTION:
+        return "Only auction purchases can be edited", 403
+    if purchase.activity_id != current_user.id:
+        return 'Product not in current activity', 401
+    form = AuctionForm(request.form, purchase)
+    if form.validate_on_submit():
+        participant = Participant.query.filter_by(name=form.participant.data).first()
+        if participant:
+            form.participant.data = participant
+            form.populate_obj(purchase)
+            db.session.commit()
+            return redirect(url_for('list_auction'))
+        else:
+            form.participant.errors.append('Participant not found!')
+    else:
+        form.participant.data = purchase.participant.name
+    return render_template('auction_form.html', form=form, mode='edit', id=purchase.id)
+
+
 @app.route('/purchases/undo', methods=['POST'])
 @login_required
 def batch_undo():

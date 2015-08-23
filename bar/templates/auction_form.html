@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{mode|title}} participant{% endblock %}
+{% block page_id %}participant-add{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/typeaheadjs.css') }}">
+{% endblock %}
+
+{% block content %}
+	<form method="post" action="{{url_for('edit_purchase', purchase_id=id) }}">
+		{{ form.hidden_tag() }}
+		{{ super() }}
+	</form>
+{% endblock %}
+
+{% block panel_body %}
+    <div class="form-group">
+        {{ form.description.label(class="control-label") }}
+        {{ form.description(class="form-control",autofocus="true") }}
+    </div>
+    {{ render_errors(form.description) }}
+    <div class="form-group">
+        {{ form.price.label(class="control-label") }}
+        {{ form.price(class="form-control") }}
+    </div>
+    {{ render_errors(form.price) }}
+    <div class="form-group">
+        {{ form.participant.label(class="control-label") }}
+        {{ form.participant(class="form-control typeahead", autocomplete="off") }}
+    </div>
+    {{ render_errors(form.participant) }}
+{% endblock %}
+
+{% block panel_footer %}
+	<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_auction')}}" class="btn btn-link">Back</a>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
+    <script>
+        var participants = new Bloodhound({ 
+            datumTokenizer: Bloodhound.tokenizers.whitespace, 
+            queryTokenizer: Bloodhound.tokenizers.whitespace, 
+            prefetch: {
+                url: '{{url_for('list_participant_names')}}',
+                cache: false
+            }
+        }); 
+
+        $('#participant.typeahead').typeahead({
+            highlight: true
+        }, { 
+            name: 'participants', 
+            source: participants 
+        }); 
+    </script>
+{% endblock %}

@@ -40,7 +40,10 @@
                 <td>{{purchase.participant.name}}</td>
                 <td>{{format_price(purchase.price/100)}}</td>
                 <td>{{purchase.description}}</td>
-                <td><a href="{{url_for('undo', purchase_id=purchase.id, next=request.url)}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone}}">Undo</a></td>
+                <td>
+                    <a href="{{url_for('undo', purchase_id=purchase.id, next=request.url)}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone}}">Undo</a>
+                    <a href="{{ url_for('edit_purchase', purchase_id=purchase.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                </td>
             </tr> 
             {% endfor %}
         </tbody>
