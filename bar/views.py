@@ -274,7 +274,7 @@ def add_participant_birthday():
     return render_template('participant_birthday.html', form=form)
 
 
-@app.route('/participants/names', methods=['GET'])
+@app.route('/participants/names.json', methods=['GET'])
 @login_required
 def list_participant_names():
     """ List all participants """

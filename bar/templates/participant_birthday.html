@@ -3,6 +3,11 @@
 {% block title %}Add birthday{% endblock %}
 {% block page_id %}user-birthday{% endblock %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/typeaheadjs.css') }}">
+{% endblock %}
+
 {% block content %}
 	<form method="post" action="{{ url_for('add_participant_birthday') }}">
 		{{ form.hidden_tag() }}
@@ -13,7 +18,7 @@
 {% block panel_body %}
 	<div class="form-group">
 		{{ form.name.label(class="control-label") }}
-		{{ form.name(class="form-control", data_provide="typeahead", autocomplete="off",autofocus="true") }}
+		{{ form.name(class="form-control typeahead", autocomplete="off",autofocus="true") }}
 	</div>
 	{{ render_errors(form.name) }}
 	<div class="form-group">
@@ -29,10 +34,20 @@
 
 {% block scripts %}
 	{{super()}}
-	<script src="{{ url_for('static', filename='js/bootstrap3-typeahead.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
 	<script>
-		$.get("{{url_for('list_participant_names')}}", function(data){
-		    $("#name").typeahead({ source:data });
-		},'json');
+
+		var participants = new Bloodhound({ 
+			datumTokenizer: Bloodhound.tokenizers.whitespace, 
+			queryTokenizer: Bloodhound.tokenizers.whitespace, 
+			prefetch: '{{url_for('list_participant_names')}}' 
+		}); 
+
+		$('#name.typeahead').typeahead({
+			highlight: true
+		}, { 
+			name: 'participants', 
+			source: participants 
+		}); 
 	</script>
 {% endblock %}
