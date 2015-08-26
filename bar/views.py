@@ -14,7 +14,7 @@ import csv
 from pprint import pprint
 
 from bar import app, db, login_manager
-from models import Activity, Participant, Purchase, Product, activities_participants_table
+from models import Activity, Participant, Purchase, Product, activities_participants_table, AuctionPurchase
 from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, AuctionForm, ExportForm
 
 
@@ -86,7 +86,7 @@ def logout():
 @login_required
 def view_home():
     """ View all participants attending the activity, ordered by name """
-    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).filter(Purchase.category==Purchase.CATEGORY_POS).group_by(Purchase.participant_id).subquery()
+    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
     parti_subq = current_user.participants.subquery()
     participants = db.session.query(parti_subq, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
     products = Product.query.filter_by(activity_id=current_user.id).order_by(Product.priority.desc()).all()
@@ -250,14 +250,12 @@ def participant_history(participant_id):
     if view == 'auction':
         purchase_query = Purchase.query.filter(Purchase.participant_id == participant_id)\
                 .filter(Purchase.activity_id == current_user.id)\
-                .filter(Purchase.category == Purchase.CATEGORY_AUCTION)\
                 .order_by(Purchase.timestamp.desc())
     elif view == 'pos':
         purchase_query = db.session.query(Purchase, Product.name, Product.price)\
                 .join(Product, Purchase.product_id == Product.id)\
                 .filter(Purchase.participant_id == participant_id)\
                 .filter(Purchase.activity_id == current_user.id)\
-                .filter(Purchase.category == Purchase.CATEGORY_POS)\
                 .order_by(Purchase.timestamp.desc())
     else:
         return 'Invalid view', 400
@@ -305,34 +303,10 @@ def list_participant_names():
 def batch_consume():
     data = request.get_json()
     for row in data:
-        purchase = Purchase(category=Purchase.CATEGORY_POS, participant_id=row['participant_id'], activity_id=current_user.id, product_id=row['product_id'])
+        purchase = Purchase(participant_id=row['participant_id'], activity_id=current_user.id, product_id=row['product_id'])
         db.session.add(purchase)
     db.session.commit()
     return 'Purchases created', 201
-
-
-@app.route('/auction/purchases/<int:purchase_id>', methods=['GET', 'POST'])
-@login_required
-def edit_purchase(purchase_id):
-    """ Edit a purchase """
-    purchase = Purchase.query.get_or_404(purchase_id)
-    if purchase.category != Purchase.CATEGORY_AUCTION:
-        return "Only auction purchases can be edited", 403
-    if purchase.activity_id != current_user.id:
-        return 'Product not in current activity', 401
-    form = AuctionForm(request.form, purchase)
-    if form.validate_on_submit():
-        participant = Participant.query.filter_by(name=form.participant.data).first()
-        if participant:
-            form.participant.data = participant
-            form.populate_obj(purchase)
-            db.session.commit()
-            return redirect(url_for('list_auction'))
-        else:
-            form.participant.errors.append('Participant not found!')
-    else:
-        form.participant.data = purchase.participant.name
-    return render_template('auction_form.html', form=form, mode='edit', id=purchase.id)
 
 
 @app.route('/purchases/undo', methods=['POST'])
@@ -357,9 +331,7 @@ def undo(purchase_id):
     purchase.undone = request.args.get('undo') != 'False'
     db.session.commit()
     next_url = request.args.get('next')
-    if not is_safe_url(next_url):
-        return abort(400)
-    return redirect(next_url or url_for('participant_history', participant_id = purchase.participant_id))
+    return redirect(url_for('participant_history', participant_id = purchase.participant_id))
 
 
 @app.route('/products', methods=['GET', 'POST'])
@@ -452,9 +424,42 @@ def list_auction():
     form = AuctionForm()
     if form.validate_on_submit():
         participant = Participant.query.filter_by(name=form.participant.data).first()
-        purchase = Purchase(category=Purchase.CATEGORY_AUCTION, participant_id=participant.id, activity_id=current_user.id, description=form.description.data, price=form.price.data)
+        purchase = AuctionPurchase(participant_id=participant.id, activity_id=current_user.id, description=form.description.data, price=form.price.data)
         db.session.add(purchase)
         db.session.commit()
         return redirect(url_for('list_auction'))
-    purchases = Purchase.query.filter_by(activity_id=current_user.get_id()).filter_by(category=Purchase.CATEGORY_AUCTION).all()
+    purchases = AuctionPurchase.query.filter_by(activity_id=current_user.get_id()).all()
     return render_template('auction.html', form=form, purchases=purchases)
+
+
+@app.route('/auction/purchases/<int:purchase_id>', methods=['GET', 'POST'])
+@login_required
+def edit_auction_purchase(purchase_id):
+    """ Edit a purchase """
+    purchase = AuctionPurchase.query.get_or_404(purchase_id)
+    if purchase.activity_id != current_user.id:
+        return 'Product not in current activity', 401
+    form = AuctionForm(request.form, purchase)
+    if form.validate_on_submit():
+        participant = Participant.query.filter_by(name=form.participant.data).first()
+        if participant:
+            form.participant.data = participant
+            form.populate_obj(purchase)
+            db.session.commit()
+            return redirect(url_for('list_auction'))
+        else:
+            form.participant.errors.append('Participant not found!')
+    else:
+        form.participant.data = purchase.participant.name
+    return render_template('auction_form.html', form=form, mode='edit', id=purchase.id)
+
+
+@app.route('/auction/purchases/<int:purchase_id>/undo', methods=['GET'])
+@login_required
+def undo_auction_purchase(purchase_id):
+    purchase = AuctionPurchase.query.get_or_404(purchase_id)
+    if purchase.activity_id != current_user.id:
+        return 'Purchase not in current activity', 401    
+    purchase.undone = request.args.get('undo') != 'False'
+    db.session.commit()
+    return redirect(url_for('list_auction'))

@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-	<form method="post" action="{{url_for('edit_purchase', purchase_id=id) }}">
+	<form method="post" action="{{url_for('edit_auction_purchase', purchase_id=id) }}">
 		{{ form.hidden_tag() }}
 		{{ super() }}
 	</form>
