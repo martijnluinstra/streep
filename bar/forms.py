@@ -17,6 +17,14 @@ class AuctionForm(Form):
     participant = TextField('Participant', [validators.InputRequired(message='Participant is required')])
  
 
+class ExportForm(Form):
+    pos = BooleanField('Consumptions')
+    auction = BooleanField('Auction')
+    description_pos_prefix = TextField('Consumption Description', [validators.Optional(strip_whitespace=True)])
+    description_auction_prefix = TextField('Auction Description', [validators.Optional(strip_whitespace=True)])
+    description_postfix = TextField('General Description', [validators.Optional(strip_whitespace=True)])
+
+
 class ParticipantForm(Form):
     name = TextField('Name', [validators.InputRequired(message='Name is required')])
     address = TextField('Address', [validators.InputRequired(message='Address is required')])
@@ -34,7 +42,7 @@ class BirthdayForm(Form):
 
 class ProductForm(Form):
     name = TextField('Name', [validators.InputRequired(message='Name is required')])
-    price = IntegerField('Price', [validators.InputRequired(message='Price is required')])
+    price = IntegerField('Price (in Euro cent)', [validators.InputRequired(message='Price is required')])
     priority = IntegerField('Priority (position of the button)', [validators.InputRequired(message='Priority is required')])
     age_limit = BooleanField('Age limit')
 
