@@ -15,7 +15,7 @@ from pprint import pprint
 
 from bar import app, db, login_manager
 from models import Activity, Participant, Purchase, Product, activities_participants_table
-from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, AuctionForm
+from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, AuctionForm, ExportForm
 
 
 def jsonify(data):
@@ -354,7 +354,7 @@ def undo(purchase_id):
     purchase = Purchase.query.get_or_404(purchase_id)
     if purchase.activity_id != current_user.id:
         return 'Purchase not in current activity', 401    
-    purchase.undone = True
+    purchase.undone = request.args.get('undo') != 'False'
     db.session.commit()
     next_url = request.args.get('next')
     if not is_safe_url(next_url):
