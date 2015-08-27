@@ -1,12 +1,7 @@
 from bar import db
 from datetime import datetime
 from flask.ext import login
-
-
-activities_participants_table =  db.Table('activities_participants',
-    db.Column('activity_id', db.Integer, db.ForeignKey('activity.id')),
-    db.Column('participant_id', db.Integer, db.ForeignKey('participant.id'))
-)
+from sqlalchemy.ext.associationproxy import association_proxy
 
 
 class Activity(db.Model, login.UserMixin):
@@ -19,9 +14,10 @@ class Activity(db.Model, login.UserMixin):
     credit_value = db.Column(db.Integer, nullable=True)
     age_limit = db.Column(db.Integer, nullable=False, default=18)
     stacked_purchases = db.Column(db.Boolean(), nullable=False, default=True)
+    require_terms = db.Column(db.Boolean(), nullable=False, default=False)
+    terms = db.Column(db.String(2048), nullable=True)
 
-    participants = db.relationship('Participant', secondary=activities_participants_table,
-        lazy='dynamic', backref=db.backref('activities', lazy='dynamic'))
+    participants = association_proxy('activity_participants', 'participant')
 
     def __init__(self, name, passcode, active=True):
         self.name = name
@@ -31,6 +27,21 @@ class Activity(db.Model, login.UserMixin):
     def is_active(self):
         return self.active
     
+
+class ActivityParticipant(db.Model):
+    __tablename__ = 'activity_participant'
+    participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'), primary_key=True)
+    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), primary_key=True)
+    agree_to_terms = db.Column(db.Boolean(), default=False)
+
+    activity = db.relationship(Activity, backref=db.backref('activity_participants', cascade="all, delete-orphan"))
+
+    participant = db.relationship("Participant", backref='activity_participants')
+    
+    def __init__(self, participant=None, activity=None, agree_to_terms=False):
+        self.activity = activity
+        self.participant = participant
+        self.agree_to_terms = agree_to_terms
 
 
 class Participant(db.Model):

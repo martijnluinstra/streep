@@ -16,7 +16,7 @@ from pprint import pprint
 from sqlalchemy_utils.functions import render_statement
 
 from bar import app, db, login_manager
-from models import Activity, Participant, Purchase, Product, activities_participants_table, AuctionPurchase
+from models import Activity, Participant, Purchase, Product, AuctionPurchase, ActivityParticipant
 from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, AuctionForm, ExportForm
 
 
@@ -89,9 +89,12 @@ def logout():
 def view_home():
     """ View all participants attending the activity, ordered by name """
     spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
-    parti_subq = current_user.participants.subquery()
+    # parti_subq = current_user.participants.subquery()
+    parti_subq = db.session.query(Participant, ActivityParticipant.agree_to_terms.label('agree_to_terms')).join(ActivityParticipant, Participant.id==ActivityParticipant.participant_id).filter(ActivityParticipant.activity_id == current_user.id).subquery()
+    # parti_subq = ActivityParticipant.query.filter_by(activity_id=current_user.id)
     participants = db.session.query(parti_subq, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
     products = Product.query.filter_by(activity_id=current_user.id).order_by(Product.priority.desc()).all()
+    print participants[0].agree_to_terms
     return render_template('main.html', participants=participants, products=products)
 
  
@@ -104,7 +107,7 @@ def faq():
 @login_required
 def list_participants():
     """ List all participants in the system by name """
-    registered_subq = current_user.participants.add_column(db.bindparam("activity", current_user.id)).subquery()
+    registered_subq = db.session.query(Participant).join(ActivityParticipant, Participant.id==ActivityParticipant.participant_id).filter(ActivityParticipant.activity_id == current_user.id).add_column(db.bindparam("activity", current_user.id)).subquery()
     participants = db.session.query(Participant, registered_subq.c.activity).outerjoin(registered_subq, Participant.id==registered_subq.c.id).order_by(Participant.name).all()
     return render_template('participant_list.html', participants=participants)
 
@@ -181,7 +184,7 @@ def import_process_data(data):
         else:
             participant = Participant(row['name'],row['address'],row['city'],row['email'],row['iban'], row['bic'], row['birthday'])
             db.session.add(participant)
-        if not current_user.participants.filter_by(name=participant.name).first():
+        if not participant in current_user.participants:
             current_user.participants.append(participant)
         db.session.flush()
     if not errors:
@@ -234,7 +237,7 @@ def edit_participant(participant_id):
 def register_participant(participant_id):
     """ Add a participant to an activity """
     participant = Participant.query.get_or_404(participant_id)
-    if not current_user.participants.filter_by(id=participant.id).first():
+    if not participant in current_user.participants:
         current_user.participants.append(participant)
     db.session.commit()
     return redirect(url_for('list_participants'))
@@ -255,15 +258,30 @@ def deregister_participant(participant_id):
     return redirect(url_for('list_participants'))
 
 
+@app.route('/participants/<int:participant_id>/terms', methods=['GET'])
+@login_required
+def accept_terms_participant(participant_id):
+    """ Let a participant accept terms """
+    accept = request.args.get('accept') == 'True'
+    participant = ActivityParticipant.query.filter_by(participant_id=participant_id).first_or_404()
+    products = Product.query.filter_by(activity_id=current_user.id).all()
+    if not participant.agree_to_terms:
+        participant.agree_to_terms = accept
+    db.session.commit()
+    if accept:
+        return redirect(url_for('view_home'))
+    return render_template('terms.html', terms=current_user.terms, participant=participant.participant, products=products)
+
+
 @app.route('/participants/<int:participant_id>/history', methods=['GET'])
 @login_required
 def participant_history(participant_id):
     view = request.args.get('view', 'pos')
     
     if view == 'auction':
-        purchase_query = Purchase.query.filter(Purchase.participant_id == participant_id)\
-                .filter(Purchase.activity_id == current_user.id)\
-                .order_by(Purchase.timestamp.desc())
+        purchase_query = AuctionPurchase.query.filter_by(participant_id=participant_id)\
+                .filter_by(activity_id=current_user.id)\
+                .order_by(AuctionPurchase.timestamp.desc())
     elif view == 'pos':
         purchase_query = db.session.query(Purchase, Product.name, Product.price)\
                 .join(Product, Purchase.product_id == Product.id)\
@@ -306,8 +324,7 @@ def add_participant_birthday():
 @login_required
 def list_participant_names():
     """ List all participants """
-    # users = db.session.query(User.name).all()
-    participants = current_user.participants.all()
+    participants = current_user.participants
     return jsonify([participant.name for participant in participants])
 
 
@@ -436,7 +453,8 @@ def activity_export():
 
     pos_subq = db.session.query(Purchase.participant_id.label('participant_id'), db.func.sum(Product.price).label('spend')).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
     auction_subq = db.session.query(AuctionPurchase.participant_id.label('participant_id'), db.func.sum(AuctionPurchase.price).label('spend')).filter(AuctionPurchase.activity_id==current_user.get_id()).group_by(AuctionPurchase.participant_id).subquery()
-    participants = current_user.participants.add_columns(pos_subq.c.spend.label('spend_pos'), auction_subq.c.spend.label('spend_auction')).outerjoin(pos_subq, pos_subq.c.participant_id == Participant.id).outerjoin(auction_subq, auction_subq.c.participant_id == Participant.id).order_by(Participant.name).all()
+
+    participants = db.session.query(Participant).join(ActivityParticipant, Participant.id==ActivityParticipant.participant_id).filter(ActivityParticipant.activity_id == current_user.id).add_columns(pos_subq.c.spend.label('spend_pos'), auction_subq.c.spend.label('spend_auction')).outerjoin(pos_subq, pos_subq.c.participant_id == Participant.id).outerjoin(auction_subq, auction_subq.c.participant_id == Participant.id).order_by(Participant.name).all()
 
     spend_data = []
 

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% macro user_data() %}
+	<table class="table table-bordered table-condensed">
+		<tr><th>Name</th><td>{{participant.name}}</td></tr>
+		<tr><th>Address</th><td>{{participant.address}}</td></tr>
+		<tr><th>Place of residence</th><td>{{participant.city}}</td></tr>
+		<tr><th>Email</th><td>{{participant.email}}</td></tr>
+		<tr><th>IBAN</th><td>{{participant.iban}}</td></tr>
+	</table>
+{% endmacro %}
+
+{% macro price_list() %}
+	<table class="table table-bordered table-condensed">
+	{% for product in products %}
+		<tr>
+			<th>{{ product.name }}</th>
+			<td>
+			{% if current_user.tradecredits %}
+				{{format_price((product.price*current_user.credit_value)/100)}}
+			{% else %}
+				{{format_price(product.price/100)}}
+			{% endif %}
+			</td>
+		</tr>
+	{% endfor %}
+	</table>
+{% endmacro %}
+
+{% macro render_markdown_tags(data) %}
+	{{ data|markdown|replace('[activity]', current_user.name)|replace('[price-list]', price_list())|replace('[user-details]',user_data())}}
+{% endmacro %}
+
+
+{% block title %}Terms and conditions{% endblock %}
+{% block page_id %}terms{% endblock %}
+
+{% block panel_body %}
+	{{render_markdown_tags(terms)}}
+{% endblock %}
+
+{% block panel_footer %}
+	<a href="{{url_for('view_home')}}" class="btn btn-danger">I disagree</a>
+	<a href="{{url_for('accept_terms_participant', participant_id=participant.id, accept='True')}}" class="btn btn-success">I agree to the terms and conditions</a>
+{% endblock %}

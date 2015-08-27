@@ -27,6 +27,7 @@
                 <td>{{participant.name}}</td>
                 <td>{{format_exchange(participant.spend if participant.spend != None else 0)}}</td>
                 <td>
+                {% if participant.agree_to_terms or not current_user.require_terms%}
                     <form class="form-inline">
                         <div class="form-group">
                         {% for product in products %}
@@ -44,6 +45,9 @@
                         {% endif %}
                         </div>
                     </form>
+                {% else %}
+                    <a href="{{url_for('accept_terms_participant', participant_id=participant.id)}}" class="btn btn-danger btn-sm">Accept the terms</a>
+                {% endif %}
                 </td><td>
                     <button data-participant-id="{{participant.id}}" data-type="history" class="btn btn-default btn-sm">Undo</button>
                 </td>

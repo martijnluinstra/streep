@@ -41,6 +41,17 @@
 		</label>
 	</div>
 	{{ render_errors(form.stacked_purchases) }}
+	<div class="checkbox">
+		<label>
+			{{ form.require_terms }} {{ form.require_terms.label.text }}
+		</label>
+	</div>
+	{{ render_errors(form.require_terms) }}
+	<div class="form-group" id="option-terms">
+		{{ form.terms.label(class="control-label") }}
+		{{ form.terms(class="form-control") }}
+	</div>
+	{{ render_errors(form.terms) }}
 {% endblock %}
 
 {% block panel_footer %}
@@ -50,19 +61,32 @@
 {% block scripts %}
 	{{super()}}
 	<script>
+		toggle_terms = function(){
+			if($('input:checkbox[name=require_terms]').prop('checked')){
+				$('#option-terms').show();
+			}else{
+				$('#option-terms').hide();
+			}
+		};
 
-		toggle_credit_value();
-
-		$('input:radio[name=trade_credits]').change(function(){
-			toggle_credit_value();
-		});
-
-		function toggle_credit_value(){
+		toggle_credit_value = function(){
 			if($('input:radio[name=trade_credits]:checked').val() === 'True'){
 				$('#option-credit-value').show();
 			}else{
 				$('#option-credit-value').hide();
 			}
-		}
+		};
+
+		toggle_credit_value();
+		toggle_terms();
+
+		$('input:radio[name=trade_credits]').change(function(){
+			toggle_credit_value();
+		});
+
+		$('input:checkbox[name=require_terms]').change(function(){
+			toggle_terms();
+		});
+
 	</script>
 {% endblock %}
