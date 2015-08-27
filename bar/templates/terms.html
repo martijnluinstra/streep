@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% macro user_data() %}
+{% macro participant_details() %}
 	<table class="table table-bordered table-condensed">
 		<tr><th>Name</th><td>{{participant.name}}</td></tr>
 		<tr><th>Address</th><td>{{participant.address}}</td></tr>
@@ -28,9 +28,8 @@
 {% endmacro %}
 
 {% macro render_markdown_tags(data) %}
-	{{ data|markdown|replace('[activity]', current_user.name)|replace('[price-list]', price_list())|replace('[user-details]',user_data())}}
+	{{ data|markdown|replace('[activity]', current_user.name)|replace('[price-list]', price_list())|replace('[participant-details]',participant_details())}}
 {% endmacro %}
-
 
 {% block title %}Terms and conditions{% endblock %}
 {% block page_id %}terms{% endblock %}
