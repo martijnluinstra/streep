@@ -11,8 +11,6 @@ import json
 import re
 import csv
 
-from pprint import pprint
-
 from bar import app, db, login_manager
 from models import Activity, Participant, Purchase, Product, AuctionPurchase, ActivityParticipant
 from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, AuctionForm, ExportForm
@@ -87,12 +85,9 @@ def logout():
 def view_home():
     """ View all participants attending the activity, ordered by name """
     spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
-    # parti_subq = current_user.participants.subquery()
     parti_subq = db.session.query(Participant, ActivityParticipant.agree_to_terms.label('agree_to_terms')).join(ActivityParticipant, Participant.id==ActivityParticipant.participant_id).filter(ActivityParticipant.activity_id == current_user.id).subquery()
-    # parti_subq = ActivityParticipant.query.filter_by(activity_id=current_user.id)
     participants = db.session.query(parti_subq, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
     products = Product.query.filter_by(activity_id=current_user.id).order_by(Product.priority.desc()).all()
-    print participants[0].agree_to_terms
     return render_template('main.html', participants=participants, products=products)
 
  
@@ -144,7 +139,6 @@ def import_process_csv(form):
 def import_report_error(errors, key, err):
     if  errors.has_key(key):
         errors[key].update(err)
-        print errors
     else:
         errors[key] = err
 
