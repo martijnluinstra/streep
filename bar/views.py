@@ -13,8 +13,6 @@ import csv
 
 from pprint import pprint
 
-from sqlalchemy_utils.functions import render_statement
-
 from bar import app, db, login_manager
 from models import Activity, Participant, Purchase, Product, AuctionPurchase, ActivityParticipant
 from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, AuctionForm, ExportForm
