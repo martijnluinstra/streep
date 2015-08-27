@@ -42,9 +42,9 @@ class Participant(db.Model):
     iban = db.Column(db.String(34), nullable=False)
     bic = db.Column(db.String(11), nullable=True)
     birthday = db.Column(db.DateTime(), nullable=True)
-    purchases = db.relationship('Purchase', backref='participant',
+    pos_purchases = db.relationship('Purchase', backref='participant',
                                 lazy='dynamic')
-    purchases = db.relationship('AuctionPurchase', backref='participant',
+    auction_purchases = db.relationship('AuctionPurchase', backref='participant',
                                 lazy='dynamic')
 
     def __init__(self, name, address, city, email, iban, bic=None , birthday=None):

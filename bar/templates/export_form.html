@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Export and settings{% endblock %}
+{% block page_id %}activity-settings{% endblock %}
+
+{% block content %}
+	<form method="get" action="{{ url_for('activity_export') }}">
+		{{ super() }}
+	</form>
+{% endblock %}
+
+{% block panel_body %}
+	<p>Please choose what to export and provide a description if you like.</p>
+	<div class="checkbox">
+		<label>
+			{{ form.pos }} {{ form.pos.label.text }}
+		</label>
+	</div>
+	{{ render_errors(form.pos) }}
+	<div class="checkbox">
+		<label>
+			{{ form.auction }} {{ form.auction.label.text }}
+		</label>
+	</div>
+	<div class="form-group" id="description-demo">
+		<label for="description-demo">Description example</label>
+		<input class="form-control" name="description-demo" type="text" readonly>
+	</div>
+	{{ render_errors(form.auction) }}
+	<div class="form-group" id="option-description-pos-prefix">
+		{{ form.description_pos_prefix.label(class="control-label") }}
+		{{ form.description_pos_prefix(class="form-control") }}
+	</div>
+	{{ render_errors(form.description_pos_prefix) }}
+	<div class="form-group" id="option-description-auction-prefix">
+		{{ form.description_auction_prefix.label(class="control-label") }}
+		{{ form.description_auction_prefix(class="form-control") }}
+	</div>
+	{{ render_errors(form.description_auction_prefix) }}
+	<div class="form-group">
+		{{ form.description.label(class="control-label") }}
+		{{ form.description(class="form-control") }}
+	</div>
+	{{ render_errors(form.description) }}
+{% endblock %}
+
+
+{% block panel_footer %}
+	<button type="submit" class="btn btn-primary">Export</button>
+	<a href="{{url_for('activity_settings')}}" class="btn btn-default">Back</a>
+{% endblock %}
+
+{% block scripts %}
+	{{super()}}
+	<script>
+
+		toggle_description_prefix();
+
+		$('input:checkbox').change(function(){
+			toggle_description_prefix();
+		});
+
+		$('#description_pos_prefix, #description_auction_prefix, #description').keyup(function() {
+			if($('#description_pos_prefix').val().trim() === '' && $('#description_pos_prefix').val().trim() === ''){
+				$('input[name=description-demo]').val($('#description').val());
+			}else{
+				$('input[name=description-demo]').val(
+					$('#description_pos_prefix').val() + ' + ' 
+					+ $('#description_auction_prefix').val() + ' '
+					+ $('#description').val());
+			}
+		});
+
+
+		function toggle_description_prefix(){
+			if($('input#pos').prop('checked') && $('input#auction').prop('checked')){
+				$('#description-demo').show();
+				$('#option-description-pos-prefix').show();
+				$('#option-description-auction-prefix').show();
+			}else{
+				$('#description-demo').hide();
+				$('#option-description-pos-prefix').hide();
+				$('#option-description-auction-prefix').hide();
+			}
+		}
+	</script>
+{% endblock %}

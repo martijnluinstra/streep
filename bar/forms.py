@@ -20,9 +20,9 @@ class AuctionForm(Form):
 class ExportForm(Form):
     pos = BooleanField('Consumptions')
     auction = BooleanField('Auction')
-    description_pos_prefix = TextField('Consumption Description', [validators.Optional(strip_whitespace=True)])
-    description_auction_prefix = TextField('Auction Description', [validators.Optional(strip_whitespace=True)])
-    description_postfix = TextField('General Description', [validators.Optional(strip_whitespace=True)])
+    description_pos_prefix = TextField('Consumption description prefix (optional)', [validators.Optional(strip_whitespace=True)])
+    description_auction_prefix = TextField('Auction description prefix (optional)', [validators.Optional(strip_whitespace=True)])
+    description = TextField('Description (optional)', [validators.Optional(strip_whitespace=True)])
 
 
 class ParticipantForm(Form):

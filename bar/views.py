@@ -13,6 +13,8 @@ import csv
 
 from pprint import pprint
 
+from sqlalchemy_utils.functions import render_statement
+
 from bar import app, db, login_manager
 from models import Activity, Participant, Purchase, Product, activities_participants_table, AuctionPurchase
 from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, AuctionForm, ExportForm
@@ -402,20 +404,73 @@ def activity_settings():
     return render_template('activity_settings.html', form=form)
 
 
+@app.route('/settings/export', methods=['GET'])
+@login_required
+def activity_export_form():
+    """ Edit settings """
+    form = ExportForm(csrf_enabled=False)
+    return render_template('export_form.html', form=form)
+
+
 @app.route('/activity/export.csv', methods=['GET'])
 @login_required
 def activity_export():
     """ Export all purchases of an activity """
-    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
-    parti_subq = current_user.participants.subquery()
-    participants = db.session.query(parti_subq.c.name,parti_subq.c.address, parti_subq.c.city, parti_subq.c.email, parti_subq.c.iban, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).filter(spend_subq.c.spend!=0).all()
-    def generate(data, trade_credits, credit_value):
-        for row in data:
-            my_row = list(row)
-            my_row[-1] = float(row[-1]*credit_value) / 100 if trade_credits else float(row[-1]) / 100
-            my_row[-2] = re.sub(r'\s+', '', row[-2])
-            yield ','.join(['"' + unicode(field).encode('utf-8') + '"' for field in my_row]) + '\n'
-    return Response(generate(participants, current_user.trade_credits, current_user.credit_value), mimetype='text/csv')
+    form = ExportForm(request.args, csrf_enabled=False)
+    if not form.validate():
+        return 'Unexpected error in form', 400
+
+    if not (form.pos.data or form.auction.data):
+        return '', 200
+
+    pos_subq = db.session.query(Purchase.participant_id.label('participant_id'), db.func.sum(Product.price).label('spend')).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
+    auction_subq = db.session.query(AuctionPurchase.participant_id.label('participant_id'), db.func.sum(AuctionPurchase.price).label('spend')).filter(AuctionPurchase.activity_id==current_user.get_id()).group_by(AuctionPurchase.participant_id).subquery()
+    participants = current_user.participants.add_columns(pos_subq.c.spend.label('spend_pos'), auction_subq.c.spend.label('spend_auction')).outerjoin(pos_subq, pos_subq.c.participant_id == Participant.id).outerjoin(auction_subq, auction_subq.c.participant_id == Participant.id).order_by(Participant.name).all()
+
+    spend_data = []
+
+    settings={
+        'trade_credits': current_user.trade_credits,
+        'credit_value': current_user.credit_value,
+        'pos': form.pos.data,
+        'auction': form.auction.data,
+        'description_pos_prefix': form.description_pos_prefix.data,
+        'description_auction_prefix': form.description_auction_prefix.data,
+        'description': form.description.data
+    }
+
+    def generate(data, settings):
+        for participant, spend_pos, spend_auction in data:        
+            spend_pos = 0 if spend_pos is None else spend_pos
+            spend_auction = 0 if spend_auction is None else spend_auction
+            
+            if settings['pos'] and settings['auction']:
+                amount = spend_auction + (spend_pos * settings['credit_value'] if settings['trade_credits'] else spend_pos)
+            elif settings['pos']:
+                amount = (spend_pos * settings['credit_value'] if settings['trade_credits'] else spend_pos)
+            else:
+                amount = spend_auction
+
+            if amount == 0:
+                continue
+
+            if amount > 0 and settings['description_pos_prefix'] and settings['description_auction_prefix']:
+                if spend_pos > 0 and spend_auction > 0:
+                    description = settings['description_pos_prefix'] + ' + ' + settings['description_auction_prefix'] + (' ' + settings['description'] if settings['description'] else '')
+                elif spend_pos > 0:
+                    description = settings['description_pos_prefix'] +  (' ' + settings['description'] if settings['description'] else '')
+                else: 
+                    description = settings['description_auction_prefix'] +  (' ' + settings['description'] if settings['description'] else '')
+            else:
+                description = settings['description']
+
+            iban = re.sub(r'\s+', '', participant.iban)
+            bic = re.sub(r'\s+', '', participant.bic) if participant.bic else ''
+
+            p_data = [participant.name, participant.address, participant.city, participant.email, iban, bic, float(amount)/100, description]
+            yield ','.join(['"' + unicode(field).encode('utf-8') + '"' for field in p_data]) + '\n'
+
+    return Response(generate(participants, settings), mimetype='text/csv')
 
 
 @app.route('/auction', methods=['GET', 'POST'])
