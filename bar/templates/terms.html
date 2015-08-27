@@ -2,7 +2,7 @@
 
 {% macro participant_details() %}
 	<table class="table table-bordered table-condensed">
-		<tr><th>Name</th><td>{{participant.name}}</td></tr>
+		<tr><th class="col-sm-4">Name</th><td class="col-sm-8">{{participant.name}}</td></tr>
 		<tr><th>Address</th><td>{{participant.address}}</td></tr>
 		<tr><th>Place of residence</th><td>{{participant.city}}</td></tr>
 		<tr><th>Email</th><td>{{participant.email}}</td></tr>
@@ -14,8 +14,8 @@
 	<table class="table table-bordered table-condensed">
 	{% for product in products %}
 		<tr>
-			<th>{{ product.name }}</th>
-			<td>
+			<th class="col-sm-4">{{ product.name }}</th>
+			<td class="col-sm-8">
 			{% if current_user.tradecredits %}
 				{{format_price((product.price*current_user.credit_value)/100)}}
 			{% else %}
