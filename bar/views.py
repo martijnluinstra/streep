@@ -105,7 +105,7 @@ def faq():
 def list_participants():
     """ List all participants in the system by name """
     registered_subq = current_user.participants.add_column(db.bindparam("activity", current_user.id)).subquery()
-    participants = db.session.query(Participant, registered_subq.c.activity).outerjoin(registered_subq, Participant.id==registered_subq.c.id).all()
+    participants = db.session.query(Participant, registered_subq.c.activity).outerjoin(registered_subq, Participant.id==registered_subq.c.id).order_by(Participant.name).all()
     return render_template('participant_list.html', participants=participants)
 
 
@@ -133,6 +133,9 @@ def import_process_csv(form):
             if form.header.data:
                 continue
         for column, value in enumerate(row):
+            participant = Participant.query.filter_by(name=value).first()
+            if participant:
+                value = [value,[participant.name, participant.email, participant.iban]]
             data[column]["rows"].append(value)
     return render_template('import_select_form.html', json_data=json.dumps(data, ensure_ascii=False).encode('utf-8'))
 
@@ -167,14 +170,20 @@ def import_process_data(data):
     errors = {}
     for key, row in data.iteritems():
         row, errors = import_validate_row(key, row, errors)
-        participant = Participant(row['name'],row['address'],row['city'],row['email'],row['iban'], row['bic'], row['birthday'])
-        db.session.add(participant)
-        current_user.participants.append(participant)
-        try: 
-            db.session.flush()
-        except IntegrityError:
-            import_report_error(errors,key,{'name': ['nonunique']})
-            db.session.rollback()
+        participant = Participant.query.filter_by(name=row['name']).first()
+        if participant:
+            participant.address = row['address']
+            participant.city = row['city']
+            participant.email = row['email']
+            participant.iban = row['iban']
+            participant.bic = row['bic']
+            participant.birthday = row['birthday']
+        else:
+            participant = Participant(row['name'],row['address'],row['city'],row['email'],row['iban'], row['bic'], row['birthday'])
+            db.session.add(participant)
+        if not current_user.participants.filter_by(name=participant.name).first():
+            current_user.participants.append(participant)
+        db.session.flush()
     if not errors:
         db.session.commit()
         return "", 200
@@ -225,7 +234,8 @@ def edit_participant(participant_id):
 def register_participant(participant_id):
     """ Add a participant to an activity """
     participant = Participant.query.get_or_404(participant_id)
-    current_user.participants.append(participant)
+    if not current_user.participants.filter_by(id=participant.id).first():
+        current_user.participants.append(participant)
     db.session.commit()
     return redirect(url_for('list_participants'))
 
@@ -235,8 +245,9 @@ def register_participant(participant_id):
 def deregister_participant(participant_id):
     """ Remove a participant from an activity """
     participant = Participant.query.get_or_404(participant_id)
-    purchases = participant.purchases.filter_by(activity_id=current_user.id).first()
-    if purchases:
+    pos_purchases = participant.pos_purchases.filter_by(activity_id=current_user.id).first()
+    auction_purchases = participant.auction_purchases.filter_by(activity_id=current_user.id).first()
+    if pos_purchases or auction_purchases:
         flash("Cannot remove this participant, this participant has purchases!")
     else:
         current_user.participants.remove(participant)

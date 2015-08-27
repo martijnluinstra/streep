@@ -53,7 +53,18 @@ var populate_column = function(prop, value)
 				$(this).prop('checked', !!value);
 				break;
 			default:
-				$(this).val($.isArray(value) ? value[row] : value);
+				console.log(typeof value[row] !== 'string');
+				if ($.isArray(value) && typeof value[row] !== 'string'){
+					$(this).val(value[row][0]);
+					if(prop == 'name'){
+						$(this).prop('title', 'Name already exists in the database: '+value[row][1].join(' '))
+						.closest('td').addClass('invalid nonunique');
+					}
+				}else if ($.isArray(value)){
+					$(this).val(value[row]);
+				}else{
+					$(this).val(value);
+				}
 				break;
 		}
 		
