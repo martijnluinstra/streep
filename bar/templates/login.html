@@ -7,19 +7,34 @@
 	<style>
 		html,body{
 			height: 100%;
-			padding: 0;
-			margin: 0;
-			font-family: sans-serif;
 		}
 		body{
 			background: #eee;
 		}
-		.header{
+		nav.navbar-cover{
+			color: #333;
 			background: none;
 		}
-		.header h1{
+
+		nav.navbar-cover h1{
 			color: inherit;
 		}
+
+		nav.navbar-cover .navbar-header{
+			width: 100%;
+		}
+
+		nav.navbar-cover a,
+		nav.navbar-cover a:visited,
+		nav.navbar-cover a:focus{
+			color: inherit;
+			outline: none;
+		}
+
+		nav.navbar-cover a:hover{
+			color: #555;
+		}
+
 		form#login-form{
 			position: absolute;
 			top: 0;
@@ -76,8 +91,12 @@
 {% endblock %}
 
 {% block header%}
-		<img src="{{ url_for('static', filename='img/cover_black.png') }}">
-		<h1>Beverage Administration Register</h1>
+		<div class="container-fluid">
+            <div class="navbar-header">
+                <a href="//www.svcover.nl/" class="navbar-logo"><img src="{{ url_for('static', filename='img/cover_black.png') }}"></a>
+                <a href="#" class="navbar-brand">Beverage &amp; Auction Register</a>
+            </div>
+        </div>
 {% endblock %}
 
 {# Disable messages #}

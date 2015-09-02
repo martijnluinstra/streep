@@ -3,33 +3,40 @@
 {% block css %}
     {{ super() }}
     <style>
-		html,body{
-			height: 100%;
- 			padding: 0;
-			margin: 0;
-			font-family: sans-serif;
-		}
 		body{
 			background: #eee;
 		}
-		.header{
+		nav.navbar-cover{
+			color: #333;
 			background: none;
-		    line-height: 64px;
 		}
-		.header h1{
+		nav.navbar-cover h1{
 			color: inherit;
 		}
-		.header a,
-		.header a:visited,
-		.header a:hover,
-		.header a:focus{
-			color: #222;
+		nav.navbar-cover .navbar-header{
+			width: 100%;
+		}
+		nav.navbar-cover a,
+		nav.navbar-cover a:visited,
+		nav.navbar-cover a:focus{
+			color: inherit;
+			outline: none;
+		}
+		nav.navbar-cover a:hover{
+			color: #555;
+		}
+		.logout-link{
+			font-size: 14px;
 		}
     </style>
 {% endblock %}
 
 {% block header%}
-	<img src="{{ url_for('static', filename='img/cover_black.png') }}">
-	<h1>BAR: Admin</h1>
-	<a class="pull-right" href="{{ url_for('admin_logout') }}">Logout</a>
+	<div class="container-fluid">
+        <div class="navbar-header">
+            <a href="//www.svcover.nl/" class="navbar-logo"><img src="{{ url_for('static', filename='img/cover_black.png') }}"></a>
+            <a href="#" class="navbar-brand">BAR: Admin</a>
+			<a class="pull-right logout-link" href="{{ url_for('admin_logout') }}">Logout</a>
+        </div>
+    </div>
 {% endblock %}
