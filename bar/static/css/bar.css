@@ -1,61 +1,15 @@
 @charset "UTF-8"*/;
+@-ms-viewport       { width: device-width; }
 
 .panel {
 	max-width: 500px;
 	margin: 10px auto;
 }
 
-.header{
-  background: #c60c30;
-	position: relative;
-	height: 64px;
-  padding: 0 1em;
-}
-
-/*.header .brand{
-}*/
-
-.header img {
-  position: relative;
-  top: -5px;
-  margin-right: 1em;
-  height: 44px;
-  vertical-align: middle;
-}
-
-.header h1{
-  color: white;
-  display: inline;
-  line-height: 64px;
-  font-size: 32px;
-  margin: 0;
-}
-
-.header h1 a {
-  text-decoration: inherit;
-  color: inherit;
-}
-
-.header nav{
-  position: relative;
-  top: 16px;
-  float: right;
-  display: inline;
-}
-
-.header .btn{
-	font-weight: bold;
-	font-size: 18px;
-  line-height: 30px;
-	height: 32px;
-	width: 32px;
-	padding: 0;
-}
-
-.header .navicon-button{
-  font-size: 12px;
-	padding: 14px 9px;
-}
+/*h1{font-size: 24px;}
+h2{font-size: 20px;}
+h3{font-size: 18px;}
+h4{font-size: 16px;}*/
 
 .content{
 	padding: 30px;
@@ -87,71 +41,6 @@
 .table-bar tbody > tr > td:last-child{
 	text-align: right;
 }
-
-/* Navicon */
-.navicon-button {
-  display: inline-block;
-  position: relative;
-  padding: 2.0625rem 0.9rem;
-  transition: 0.125s;
-  cursor: pointer;
-  user-select: none;
-}
-.navicon-button .navicon:before, .navicon-button .navicon:after {
-  transition: 0.125s;
-}
-.navicon-button:hover {
-  transition: 0.25s;
-}
-.navicon-button:hover .navicon:before, .navicon-button:hover .navicon:after {
-  transition: 0.125s;
-}
-.navicon-button:hover .navicon:before {
-  top: .5em;
-}
-.navicon-button:hover .navicon:after {
-  top: -.5em;
-}
-
-.navicon {
-  position: relative;
-  width: 1em;
-  height: .1667em;
-  background: #333;
-  transition: 0.25s;
-}
-.navicon:before, .navicon:after {
-  display: block;
-  content: "";
-  height: .1667em;
-  width: 1em;
-  background: #333;
-  position: absolute;
-  z-index: 1;
-  transition: 0.25s 0.125s;
-}
-.navicon:before {
-  top: .3333em;
-}
-.navicon:after {
-  top: -.3333em;
-}
-
-.open>button:not(.steps) .navicon:before,
-.open>button:not(.steps) .navicon:after {
-  top: 0 !important;
-}
-
-.open>button .navicon:before,
-.open>button .navicon:after {
-  transition: 0.5s;
-}
-
-/* Minus */
-.open>button>.navicon, .open>a:focus>.navicon {
-  transform: scale(0.83333);
-}
-
 
 .alert-flash{
   max-width: 500px;

@@ -86,7 +86,7 @@ def view_home():
     """ View all participants attending the activity, ordered by name """
     spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
     parti_subq = db.session.query(Participant, ActivityParticipant.agree_to_terms.label('agree_to_terms')).join(ActivityParticipant, Participant.id==ActivityParticipant.participant_id).filter(ActivityParticipant.activity_id == current_user.id).subquery()
-    participants = db.session.query(parti_subq, spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
+    participants = db.session.query(parti_subq,     spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
     products = Product.query.filter_by(activity_id=current_user.id).order_by(Product.priority.desc()).all()
     return render_template('main.html', participants=participants, products=products)
 
