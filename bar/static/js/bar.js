@@ -127,7 +127,6 @@ function show_history_modal(data, participant_id){
         $(this).addClass('disabled');
     });
     var btn_more = $('<a href="/participants/' + participant_id + '/history" class="btn btn-default">Complete history</a>');
-    btn_more.click(leave_page);
     $('#barModal').find('.modal-title').show().html(title);
     $('#barModal').find('.modal-body').hide().empty();
     $('#barModal').find('.modal-table').show().empty().append(body);
@@ -158,9 +157,9 @@ $('#view-users  #search').keyup(function() {
 
 /* FAQ */
 
-$(".header button[data-type^='faq']").click(function(evt){
+$("nav a[data-type^='faq']").click(function(evt){
     evt.preventDefault();
-    url='/faq';
+    var url = $(this).attr('href');
     $.get(url, {timeout: 3000}, function( data ) {
             show_info_modal($(data).find('.bar-panel'));
         }).fail(function(response){
@@ -209,10 +208,7 @@ function spinner_update(spinner, mod){
 
 $('.block-screen').hide();
 
-$("#view-users a").click(leave_page);
-
-function leave_page(evt){
-    evt.preventDefault();
+$(window).bind('beforeunload', function(){
     if (timers['purchases']){
         clearTimeout(timers['purchases']);
         var task = create_sync_task('/purchases', 'purchases');
@@ -224,8 +220,6 @@ function leave_page(evt){
         task();
     }
 
-    var target = $(this).attr('href');
-
     if (timers['leave'])
         clearInterval(timers['leave']);
 
@@ -235,10 +229,8 @@ function leave_page(evt){
             if ($.active==0){
                 $('.block-screen').hide();
                 clearInterval(timers['leave']);
-                window.location = target;
             }
         }, 250);
-    }else{
-        window.location = target;
+        return 'The last changes have not been saved!\n We will lose data if you continue!';
     }
-}
+});
