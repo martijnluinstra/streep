@@ -504,7 +504,7 @@ def list_auction():
         db.session.add(purchase)
         db.session.commit()
         return redirect(url_for('list_auction'))
-    purchases = AuctionPurchase.query.filter_by(activity_id=current_user.get_id()).all()
+    purchases = AuctionPurchase.query.filter_by(activity_id=current_user.get_id()).order_by(AuctionPurchase.timestamp.desc()).all()
     return render_template('auction.html', form=form, purchases=purchases)
 
 
