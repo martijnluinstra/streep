@@ -38,9 +38,9 @@
 			{{ form.description(class="form-control") }}
 		</div>
 		{{ render_errors(form.description) }}
+		<button type="submit" class="btn btn-primary">Export</button>
+		<a href="{{url_for('activity_settings')}}" class="btn btn-default">Back</a>
 	</form>
-	<button type="submit" class="btn btn-primary">Export</button>
-	<a href="{{url_for('activity_settings')}}" class="btn btn-default">Back</a>
 </div>
 {% endblock %}
 

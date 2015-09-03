@@ -28,7 +28,7 @@
 			</label>
 		</div>
 		{{ render_errors(form.age_limit) }}
+		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_products')}}" class="btn btn-link">Back</a>
 	</form>
-	<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_products')}}" class="btn btn-link">Back</a>
 </div>
 {% endblock %}
