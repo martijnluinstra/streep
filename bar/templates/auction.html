@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block page_id %}list-auction{% endblock %}
+
 {% block css %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/typeaheadjs.css') }}">
@@ -7,52 +9,54 @@
 
 {% block content %}
 <div class="container-fluid">
+    <h1>{% block title %}Auction{% endblock %}</h1>
     <form method="post">
         {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.description.label(class="control-label") }}
-            {{ form.description(class="form-control",autofocus="true") }}
-        </div>
-        {{ render_errors(form.description) }}
-        <div class="form-group">
-            {{ form.price.label(class="control-label") }}
-            {{ form.price(class="form-control") }}
-        </div>
-        {{ render_errors(form.price) }}
-        <div class="form-group">
-            {{ form.participant.label(class="control-label") }}
-            {{ form.participant(class="form-control typeahead", autocomplete="off") }}
-        </div>
-        {{ render_errors(form.participant) }}
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <table class="table table-hover table-bar">
+            <thead>
+                <tr>
+                    <th class="col-sm-2">Name</th>
+                    <th class="col-sm-1">Price</th>
+                    <th class="col-sm-3">Product description</th>
+                    <th class="col-sm-1"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="{{ 'has-error' if form.participant.errors }}">
+                        {{ form.participant.label(class="control-label sr-only") }}
+                        {{ form.participant(class="form-control typeahead", autocomplete="off", placeholder=form.participant.label.text, autofocus="autofocus") }}
+                    </td>
+                    <td class="{{ 'has-error' if form.price.errors }}">
+                        {{ form.price.label(class="control-label sr-only") }}
+                        {{ form.price(class="form-control", placeholder=form.price.label.text) }}
+                    </td>
+                    <td class="{{ 'has-error' if form.description.errors }}">
+                        {{ form.description.label(class="control-label sr-only") }}
+                        {{ form.description(class="form-control", placeholder=form.description.label.text) }}
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </td>
+                </tr>
+                {% for purchase in purchases %}
+                <tr class="{{ 'danger' if purchase.undone }}">
+                    <td>{{purchase.participant.name}}</td>
+                    <td>{{format_price(purchase.price/100)}}</td>
+                    <td>{{purchase.description}}</td>
+                    <td>
+                    {% if purchase.undone %}
+                        <a href="{{url_for('undo_auction_purchase', purchase_id=purchase.id, undo='False', next=request.url)}}" class="btn btn-default btn-sm">Redo</a>
+                    {% else %}
+                        <a href="{{url_for('undo_auction_purchase', purchase_id=purchase.id, next=request.url)}}" class="btn btn-default btn-sm">Undo</a>
+                    {% endif %}
+                        <a href="{{ url_for('edit_auction_purchase', purchase_id=purchase.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                    </td>
+                </tr> 
+                {% endfor %}
+            </tbody>
+        </table>
     </form>
-    <table class="table table-hover table-bar">
-        <thead>
-            <tr>
-                <th class="col-sm-2">Name</th>
-                <th class="col-sm-1">Price</th>
-                <th class="col-sm-3">Product description</th>
-                <th class="col-sm-1"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for purchase in purchases %}
-            <tr class="{{ 'danger' if purchase.undone }}">
-                <td>{{purchase.participant.name}}</td>
-                <td>{{format_price(purchase.price/100)}}</td>
-                <td>{{purchase.description}}</td>
-                <td>
-                {% if purchase.undone %}
-                    <a href="{{url_for('undo_auction_purchase', purchase_id=purchase.id, undo='False', next=request.url)}}" class="btn btn-default btn-sm">Redo</a>
-                {% else %}
-                    <a href="{{url_for('undo_auction_purchase', purchase_id=purchase.id, next=request.url)}}" class="btn btn-default btn-sm">Undo</a>
-                {% endif %}
-                    <a href="{{ url_for('edit_auction_purchase', purchase_id=purchase.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
-                </td>
-            </tr> 
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
 {% endblock %}
 

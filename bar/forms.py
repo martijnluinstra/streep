@@ -12,7 +12,7 @@ class ActivityForm(Form):
 
 
 class AuctionForm(Form):
-    description = TextField('Product description', [validators.Optional(strip_whitespace=True)])
+    description = TextField('Product description (optional)', [validators.Optional(strip_whitespace=True)])
     price = IntegerField('Price (in Euro cent)', [validators.InputRequired(message='Price is required')])
     participant = TextField('Participant', [validators.InputRequired(message='Participant is required')])
  
