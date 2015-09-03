@@ -4,6 +4,7 @@
 {% block page_id %}view-users" data-trade-credits="{{current_user.trade_credits|lower}}{% endblock %}
 
 {% block content %}
+<div class="container-fluid">
     <form class="form-search" role="search">
         <div class="form-group">
             <div class="input-group">
@@ -55,6 +56,7 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock %}
 {% block scripts%}
     <div class="block-screen">

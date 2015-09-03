@@ -1,61 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}Export and settings{% endblock %}
 {% block page_id %}activity-settings{% endblock %}
+{% block title %}Export and settings{% endblock %}
 
 {% block content %}
+<div class="container-narrow">
+	<h1>Export</h1>
 	<form method="post">
 		{{ form.hidden_tag() }}
-		{{ super() }}
-	</form>
-{% endblock %}
-
-{% block panel_body %}
-	<p>Export all purchases to an <a href="https://incasso.svcover.nl" target="_blank">Incass-o-matic</a> compliant CSV-file.</p>
-	<p><a href="{{url_for('activity_export_form')}}" class="btn btn-default">Export</a></p>
-	<hr>
-	<div class="form-group">
-		{{ form.trade_credits.label(class="control-label") }}
-		{% for field in form.trade_credits %}
-		<div class="radio">
-            <label>
-            	{{  field(checked="") if (field.label.text=='Credits') is equalto current_user.trade_credits else field() }}{{ field.label.text }}
-            </label>
+		<p>Export all purchases to an <a href="https://incasso.svcover.nl" target="_blank">Incass-o-matic</a> compliant CSV-file.</p>
+		<p><a href="{{url_for('activity_export_form')}}" class="btn btn-default">Export</a></p>
+		<hr>
+		<h1>Settings</h1>
+		<div class="form-group">
+			{{ form.trade_credits.label(class="control-label") }}
+			{% for field in form.trade_credits %}
+			<div class="radio">
+				<label>
+					{{  field(checked="") if (field.label.text=='Credits') is equalto current_user.trade_credits else field() }}{{ field.label.text }}
+				</label>
+			</div>
+			{% endfor %}
 		</div>
-		{% endfor %}
-	</div>
-	{{ render_errors(form.trade_credits) }}
-	<div class="form-group" id="option-credit-value">
-		{{ form.credit_value.label(class="control-label") }}
-		{{ form.credit_value(class="form-control") }}
-	</div>
-	{{ render_errors(form.credit_value) }}
-	<div class="form-group">
-		{{ form.age_limit.label(class="control-label") }}
-		{{ form.age_limit(class="form-control") }}
-	</div>
-	{{ render_errors(form.age_limit) }}
-	<div class="checkbox">
-		<label>
-			{{ form.stacked_purchases }} {{ form.stacked_purchases.label.text }}
-		</label>
-	</div>
-	{{ render_errors(form.stacked_purchases) }}
-	<div class="checkbox">
-		<label>
-			{{ form.require_terms }} {{ form.require_terms.label.text }}
-		</label>
-	</div>
-	{{ render_errors(form.require_terms) }}
-	<div class="form-group" id="option-terms">
-		{{ form.terms.label(class="control-label") }}
-		{{ form.terms(class="form-control") }}
-	</div>
-	{{ render_errors(form.terms) }}
-{% endblock %}
-
-{% block panel_footer %}
+		{{ render_errors(form.trade_credits) }}
+		<div class="form-group" id="option-credit-value">
+			{{ form.credit_value.label(class="control-label") }}
+			{{ form.credit_value(class="form-control") }}
+		</div>
+		{{ render_errors(form.credit_value) }}
+		<div class="form-group">
+			{{ form.age_limit.label(class="control-label") }}
+			{{ form.age_limit(class="form-control") }}
+		</div>
+		{{ render_errors(form.age_limit) }}
+		<div class="checkbox">
+			<label>
+				{{ form.stacked_purchases }} {{ form.stacked_purchases.label.text }}
+			</label>
+		</div>
+		{{ render_errors(form.stacked_purchases) }}
+		<div class="checkbox">
+			<label>
+				{{ form.require_terms }} {{ form.require_terms.label.text }}
+			</label>
+		</div>
+		{{ render_errors(form.require_terms) }}
+		<div class="form-group" id="option-terms">
+			{{ form.terms.label(class="control-label") }}
+			{{ form.terms(class="form-control") }}
+		</div>
+		{{ render_errors(form.terms) }}
+	</form>
 	<button type="submit" class="btn btn-primary">Submit settings</button>
+</div>
 {% endblock %}
 
 {% block scripts %}

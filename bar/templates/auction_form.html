@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}{{mode|title}} participant{% endblock %}
 {% block page_id %}participant-add{% endblock %}
 
 {% block css %}
@@ -9,33 +8,29 @@
 {% endblock %}
 
 {% block content %}
-	<form method="post" action="{{url_for('edit_auction_purchase', purchase_id=id) }}">
-		{{ form.hidden_tag() }}
-		{{ super() }}
-	</form>
-{% endblock %}
-
-{% block panel_body %}
-    <div class="form-group">
-        {{ form.description.label(class="control-label") }}
-        {{ form.description(class="form-control",autofocus="true") }}
-    </div>
-    {{ render_errors(form.description) }}
-    <div class="form-group">
-        {{ form.price.label(class="control-label") }}
-        {{ form.price(class="form-control") }}
-    </div>
-    {{ render_errors(form.price) }}
-    <div class="form-group">
-        {{ form.participant.label(class="control-label") }}
-        {{ form.participant(class="form-control typeahead", autocomplete="off") }}
-    </div>
-    {{ render_errors(form.participant) }}
-{% endblock %}
-
-{% block panel_footer %}
-	<button type="submit" class="btn btn-primary">Submit</button>
-    <a href="{{url_for('list_auction')}}" class="btn btn-link">Back</a>
+<div class="container-narrow">
+    <h1>{% block title %}{{mode|title}} purchase{% endblock %}</h1>
+    <form method="post" action="{{url_for('edit_auction_purchase', purchase_id=id) }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.description.label(class="control-label") }}
+            {{ form.description(class="form-control",autofocus="true") }}
+        </div>
+        {{ render_errors(form.description) }}
+        <div class="form-group">
+            {{ form.price.label(class="control-label") }}
+            {{ form.price(class="form-control") }}
+        </div>
+        {{ render_errors(form.price) }}
+        <div class="form-group">
+            {{ form.participant.label(class="control-label") }}
+            {{ form.participant(class="form-control typeahead", autocomplete="off") }}
+        </div>
+        {{ render_errors(form.participant) }}
+    	<button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{{url_for('list_auction')}}" class="btn btn-link">Back</a>
+    </form>
+</div>
 {% endblock %}
 
 {% block scripts %}

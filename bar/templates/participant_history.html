@@ -1,9 +1,14 @@
-{% extends "base.html" %}
+    {% extends "base.html" %}
 
-{% block title %}History of {{participant.name}}{% endblock %}
 {% block page_id %}participant-history{% endblock %}
 
-{% block panel_table %}
+{% block content %}
+<div class="container-narrow">
+    <h1>{% block title %}History of {{participant.name}}{% endblock %}</h1>
+    <ul class="nav nav-tabs">
+        <li role="presentation" class="{{ 'active' if view == 'pos' }}"><a href="{{url_for('participant_history', participant_id=participant.id, view='pos')}}">Bar purchases</a></li>
+        <li role="presentation" class="{{ 'active' if view != 'pos' }}"><a href="{{url_for('participant_history', participant_id=participant.id, view='auction')}}">Auction purchases</a></li>
+    </ul>
     <table class="table table-hover table-bar">
         <thead>
             <tr>
@@ -40,13 +45,6 @@
         {% endif %}
         </tbody>
     </table>
-{% endblock %}
-
-{% block panel_footer %}
     <a href="{{url_for('view_home')}}" class="btn btn-primary">Back</a>
-    {% if view == 'pos' %}
-        <a href="{{url_for('participant_history', participant_id=participant.id, view='auction')}}" class="btn btn-default">Auction purchases</a>
-    {% else %}
-        <a href="{{url_for('participant_history', participant_id=participant.id, view='pos')}}" class="btn btn-default">Bar purchases</a>
-    {% endif %}
+</div>
 {% endblock %}

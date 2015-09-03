@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+<div class="container-fluid">
     <form method="post">
         {{ form.hidden_tag() }}
         <div class="form-group">
@@ -52,6 +53,7 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock %}
 
 {% block scripts %}

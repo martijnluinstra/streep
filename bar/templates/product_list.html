@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Products{% endblock %}
 {% block page_id %}view-products{% endblock %}
 
-{% block panel_table %}
+{% block content %}
+<div class="container-narrow">
+    <h1>{% block title %}Products{% endblock %}</h1>
     <table class="table table-hover table-bar">
         <thead>
             <tr>
@@ -27,8 +28,6 @@
             {% endfor %}
         </tbody>
     </table>
-{% endblock %}
-
-{% block panel_footer %}
     <a href="{{url_for('add_product')}}" class="btn btn-primary">Add product</a>
+</div>
 {% endblock %}

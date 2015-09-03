@@ -1,53 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}Export and settings{% endblock %}
 {% block page_id %}activity-settings{% endblock %}
 
 {% block content %}
+<div class="container-narrow">
+	<h1>{% block title %}Export{% endblock %}</h1>
 	<form method="get" action="{{ url_for('activity_export') }}">
-		{{ super() }}
+		<p>Please choose what to export and provide a description if you like.</p>
+		<div class="checkbox">
+			<label>
+				{{ form.pos }} {{ form.pos.label.text }}
+			</label>
+		</div>
+		{{ render_errors(form.pos) }}
+		<div class="checkbox">
+			<label>
+				{{ form.auction }} {{ form.auction.label.text }}
+			</label>
+		</div>
+		<div class="form-group" id="description-demo">
+			<label for="description-demo">Description example</label>
+			<input class="form-control" name="description-demo" type="text" readonly>
+		</div>
+		{{ render_errors(form.auction) }}
+		<div class="form-group" id="option-description-pos-prefix">
+			{{ form.description_pos_prefix.label(class="control-label") }}
+			{{ form.description_pos_prefix(class="form-control") }}
+		</div>
+		{{ render_errors(form.description_pos_prefix) }}
+		<div class="form-group" id="option-description-auction-prefix">
+			{{ form.description_auction_prefix.label(class="control-label") }}
+			{{ form.description_auction_prefix(class="form-control") }}
+		</div>
+		{{ render_errors(form.description_auction_prefix) }}
+		<div class="form-group">
+			{{ form.description.label(class="control-label") }}
+			{{ form.description(class="form-control") }}
+		</div>
+		{{ render_errors(form.description) }}
 	</form>
-{% endblock %}
-
-{% block panel_body %}
-	<p>Please choose what to export and provide a description if you like.</p>
-	<div class="checkbox">
-		<label>
-			{{ form.pos }} {{ form.pos.label.text }}
-		</label>
-	</div>
-	{{ render_errors(form.pos) }}
-	<div class="checkbox">
-		<label>
-			{{ form.auction }} {{ form.auction.label.text }}
-		</label>
-	</div>
-	<div class="form-group" id="description-demo">
-		<label for="description-demo">Description example</label>
-		<input class="form-control" name="description-demo" type="text" readonly>
-	</div>
-	{{ render_errors(form.auction) }}
-	<div class="form-group" id="option-description-pos-prefix">
-		{{ form.description_pos_prefix.label(class="control-label") }}
-		{{ form.description_pos_prefix(class="form-control") }}
-	</div>
-	{{ render_errors(form.description_pos_prefix) }}
-	<div class="form-group" id="option-description-auction-prefix">
-		{{ form.description_auction_prefix.label(class="control-label") }}
-		{{ form.description_auction_prefix(class="form-control") }}
-	</div>
-	{{ render_errors(form.description_auction_prefix) }}
-	<div class="form-group">
-		{{ form.description.label(class="control-label") }}
-		{{ form.description(class="form-control") }}
-	</div>
-	{{ render_errors(form.description) }}
-{% endblock %}
-
-
-{% block panel_footer %}
 	<button type="submit" class="btn btn-primary">Export</button>
 	<a href="{{url_for('activity_settings')}}" class="btn btn-default">Back</a>
+</div>
 {% endblock %}
 
 {% block scripts %}

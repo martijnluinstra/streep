@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}Add birthday{% endblock %}
 {% block page_id %}user-birthday{% endblock %}
 
 {% block css %}
@@ -9,27 +8,23 @@
 {% endblock %}
 
 {% block content %}
+<div class="container-narrow">
+	<h1>{% block title %}Add birthday{% endblock %}</h1>
 	<form method="post" action="{{ url_for('add_participant_birthday') }}">
 		{{ form.hidden_tag() }}
-		{{ super() }}
+		<div class="form-group">
+			{{ form.name.label(class="control-label") }}
+			{{ form.name(class="form-control typeahead", autocomplete="off",autofocus="true") }}
+		</div>
+		{{ render_errors(form.name) }}
+		<div class="form-group">
+			{{ form.birthday.label(class="control-label") }}
+			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
+		</div>
+		{{ render_errors(form.birthday) }}
+		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_participants')}}" class="btn btn-link">Back</a>
 	</form>
-{% endblock %}
-
-{% block panel_body %}
-	<div class="form-group">
-		{{ form.name.label(class="control-label") }}
-		{{ form.name(class="form-control typeahead", autocomplete="off",autofocus="true") }}
-	</div>
-	{{ render_errors(form.name) }}
-	<div class="form-group">
-		{{ form.birthday.label(class="control-label") }}
-		{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
-	</div>
-	{{ render_errors(form.birthday) }}
-{% endblock %}
-
-{% block panel_footer %}
-	<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_participants')}}" class="btn btn-link">Back</a>
+</div>
 {% endblock %}
 
 {% block scripts %}

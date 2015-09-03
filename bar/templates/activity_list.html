@@ -1,8 +1,8 @@
 {% extends "admin/base.html" %}
 
-{% block title %}Activities{% endblock %}
-
-{% block panel_table %}
+{% block content %}
+<div class="container-narrow">
+    <h1>{% block title %}Activities{% endblock %}</h1>
     <table class="table table-hover table-bar">
         <thead>
             <tr>
@@ -32,8 +32,7 @@
             {% endfor %}
         </tbody>
     </table>
+    <a href="{{url_for('add_activity')}}" class="btn btn-primary">Add activity</a>
+</div>
 {% endblock %}
 
-{% block panel_footer %}
-    <a href="{{url_for('add_activity')}}" class="btn btn-primary">Add activity</a>
-{% endblock %}

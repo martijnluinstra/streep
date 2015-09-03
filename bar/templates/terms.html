@@ -31,14 +31,13 @@
 	{{ data|markdown|replace('[activity]', current_user.name)|replace('[price-list]', price_list())|replace('[participant-details]',participant_details())}}
 {% endmacro %}
 
-{% block title %}Terms and conditions{% endblock %}
 {% block page_id %}terms{% endblock %}
 
-{% block panel_body %}
+{% block content %}
+<div class="container-narrow">
+	<h1>{% block title %}Terms and conditions{% endblock %}</h1>
 	{{render_markdown_tags(terms)}}
-{% endblock %}
-
-{% block panel_footer %}
 	<a href="{{url_for('view_home')}}" class="btn btn-danger">I disagree</a>
 	<a href="{{url_for('accept_terms_participant', participant_id=participant.id, accept='True')}}" class="btn btn-success">I agree to the terms and conditions</a>
+</div>
 {% endblock %}
