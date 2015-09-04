@@ -123,13 +123,13 @@ def import_process_csv(form):
         if line==0:
             for column, value in enumerate(row):
                 data.append({
-                    'header': value.decode("utf-8") if form.header.data else ('Column_%d' % (column+1)),
+                    'header': unicode(value) if form.header.data else ('Column_%d' % (column+1)),
                     'rows': []
                     })
             if form.header.data:
                 continue
-        for column, value in enumerate(row):
-            value = value.decode("utf-8")
+        for column, val in enumerate(row):
+            value = unicode(val)
             participant = Participant.query.filter_by(name=value).first()
             if participant:
                 value = [value,[participant.name, participant.email, participant.iban]]
