@@ -22,6 +22,9 @@
 			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
 		</div>
 		{{ render_errors(form.birthday) }}
+		<div class="form-group">
+			<p id="legal-status">No birthdate found!</p>
+		</div>
 		<button type="submit" class="btn btn-primary">Submit</button>
 		<a href="{{url_for('list_participants')}}" class="btn btn-link">Cancel</a>
 	</form>
@@ -32,6 +35,7 @@
 	{{super()}}
 	<script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
 	<script>
+		window.legal_age = {{current_user.age_limit|safe}};
 
 		var participants = new Bloodhound({ 
 			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), 
@@ -54,12 +58,37 @@
 		$('#name.typeahead').bind('typeahead:autocomplete typeahead:select typeahead:cursorchange', function(ev, suggestion) {
 			$('#birthday').val(suggestion.birthday);
 			if(suggestion.legal_age){
-				$('#birthday').closest('.form-group').removeClass().addClass('form-group has-success');
+				$('#legal-status').html('Alcohol allowed!');
+				$('#legal-status').removeClass().addClass('success');
 			}else if(suggestion.birthday===''){
-				$('#birthday').closest('.form-group').removeClass().addClass('form-group');
+				$('#legal-status').html('No birthdate found!');
+				$('#birthday').closest('.form-group').removeClass();
 			}else{
-				$('#birthday').closest('.form-group').removeClass().addClass('form-group has-error');
+				$('#legal-status').html('NO alcohol allowed!');
+				$('#legal-status').removeClass().addClass('warning');
 			}
+		});
+
+		$('#birthday').keyup(function() {
+			if($(this).val() !== ''){
+				var pattern = /(\d{2})-(\d{2})-(\d{4})/;
+				var birthday = new Date(($(this).val()).replace(pattern,'$3-$2-$1'));
+			    var ref_date = new Date();
+				console.log(birthday);
+			    ref_date.setYear(ref_date.getYear() - window.legal_age);
+				console.log(ref_date);
+			    if(birthday<ref_date){
+			    	$('#legal-status').html('Alcohol allowed!');
+					$('#legal-status').removeClass().addClass('success');
+			    }else{
+			    	$('#legal-status').html('NO alcohol allowed!');
+					$('#legal-status').removeClass().addClass('warning');
+			    }
+	    	}else{
+				$('#legal-status').html('No birthdate found!');
+				$('#birthday').closest('.form-group').removeClass();
+	    	}
+
 		});
 	</script>
 {% endblock %}
