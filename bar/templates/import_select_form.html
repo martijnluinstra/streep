@@ -7,7 +7,10 @@
     <h1>{% block title %}Import{% endblock %}</h1>
     <form id="import-form" method="post" action="{{ url_for('import_participants')}}" novalidate>
         <p>Select in wich column in the file contains the values can be found. Participants who are already in the database will be overwritten and added to the activity. Be sure to uncheck them if you don't want this!</p> 
-        <p><button type="submit" class="btn btn-primary">Import participants</button></p>
+        <p>
+            <button type="submit" class="btn btn-primary">Import participants</button>
+            <a href="{{url_for('list_participants')}}" class="btn btn-link">Cancel</a>
+        </p>
         <table id="import-table" class="table table-hover">
             <thead>
                 <tr>

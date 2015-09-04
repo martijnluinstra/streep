@@ -22,7 +22,8 @@
 			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
 		</div>
 		{{ render_errors(form.birthday) }}
-		<button type="submit" class="btn btn-primary">Submit</button><a href="{{url_for('list_participants')}}" class="btn btn-link">Back</a>
+		<button type="submit" class="btn btn-primary">Submit</button>
+		<a href="{{url_for('list_participants')}}" class="btn btn-link">Cancel</a>
 	</form>
 </div>
 {% endblock %}

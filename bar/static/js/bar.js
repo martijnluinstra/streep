@@ -95,14 +95,14 @@ $("#view-users  .table-bar button[data-type^='history']").click(function(evt){
     url='/participants/' + participant_id + '/history?limit='+config['history_size']+'&timestamp='+ new Date().getTime();
 
     $.get(url, {timeout: 3000}, function( data ) {
-            show_history_modal($(data).filter('#panel-content'), participant_id);
+            show_history_modal($(data).filter('.content'), participant_id);
         }).fail(function(response){
         alert(config['error_message']);
     });
 });
 
 function show_history_modal(data, participant_id){
-    title = data.find('h1#panel-title').html();
+    title = data.find('.content-header>h1').html();
     body = data.find('.table-bar');
     body.find("a[data-type^='undo']").click(function(evt){
         evt.preventDefault();
