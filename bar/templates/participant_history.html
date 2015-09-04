@@ -1,10 +1,10 @@
-    {% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block page_id %}participant-history{% endblock %}
 
 {% block content %}
-<div class="container-narrow">
-    <h1>{% block title %}History of {{participant.name}}{% endblock %}</h1>
+<div class="container-narrow" id="panel-content">
+    <h1 id="panel-title">{% block title %}History of {{participant.name}}{% endblock %}</h1>
     <ul class="nav nav-tabs">
         <li role="presentation" class="{{ 'active' if view == 'pos' }}"><a href="{{url_for('participant_history', participant_id=participant.id, view='pos')}}">Bar purchases</a></li>
         <li role="presentation" class="{{ 'active' if view != 'pos' }}"><a href="{{url_for('participant_history', participant_id=participant.id, view='auction')}}">Auction purchases</a></li>

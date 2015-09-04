@@ -55,24 +55,7 @@
         </div>
     {% endblock %}
     </nav>
-    {% block content %}
-        <div class="panel panel-primary bar-panel">
-            <div class="panel-heading">
-                <h3 class="panel-title">{{ self.title() }}</h3>
-            </div>
-        {% if self.panel_body() %}
-            <div class="panel-body">
-                {% block panel_body %}{% endblock %}
-            </div>
-        {% endif %}
-            {% block panel_table %}{% endblock %}
-        {% if self.panel_footer() %}
-            <div class="panel-footer">
-                {% block panel_footer %}{% endblock %}
-            </div>
-        {% endif %}
-        </div>
-    {% endblock %}
+    
     {% block messages %}
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -84,6 +67,9 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+    {% endblock %}
+
+    {% block content %}
     {% endblock %}
 {% block scripts%}
     <div class="modal fade" id="barModal" tabindex="-1" role="dialog" aria-labelledby="barModalLabel" aria-hidden="true">

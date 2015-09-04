@@ -95,14 +95,14 @@ $("#view-users  .table-bar button[data-type^='history']").click(function(evt){
     url='/participants/' + participant_id + '/history?limit='+config['history_size']+'&timestamp='+ new Date().getTime();
 
     $.get(url, {timeout: 3000}, function( data ) {
-            show_history_modal($(data).find('.bar-panel'), participant_id);
+            show_history_modal($(data).filter('#panel-content'), participant_id);
         }).fail(function(response){
         alert(config['error_message']);
     });
 });
 
 function show_history_modal(data, participant_id){
-    title = data.find('.panel-title').html();
+    title = data.find('h1#panel-title').html();
     body = data.find('.table-bar');
     body.find("a[data-type^='undo']").click(function(evt){
         evt.preventDefault();
@@ -161,15 +161,15 @@ $("nav a[data-type^='faq']").click(function(evt){
     evt.preventDefault();
     var url = $(this).attr('href');
     $.get(url, {timeout: 3000}, function( data ) {
-            show_info_modal($(data).find('.bar-panel'));
+            show_info_modal($(data).filter('#panel-content'));
         }).fail(function(response){
         alert(config['error_message']);
     });
 });
 
 function show_info_modal(data){
-    title = data.find('.panel-title').html();
-    body = data.find('.panel-body').html();
+    title = data.find('h1#panel-title').html();
+    body = data.find('#panel-content').html();
     $('#barModal').find('.modal-title').show().html(title);
     $('#barModal').find('.modal-body').show().html(body);
     $('#barModal').find('.modal-table').hide().empty();
@@ -208,29 +208,31 @@ function spinner_update(spinner, mod){
 
 $('.block-screen').hide();
 
-$(window).bind('beforeunload', function(){
-    if (timers['purchases']){
-        clearTimeout(timers['purchases']);
-        var task = create_sync_task('/purchases', 'purchases');
-        task();
-    }
-    if (timers['undos']){
-        clearTimeout(timers['undos']);
-        var task = create_sync_task('/purchases/undo', 'undos');
-        task();
-    }
+if($('#view-users').length !== 0){
+    $(window).bind('beforeunload', function(){
+        if (timers['purchases']){
+            clearTimeout(timers['purchases']);
+            var task = create_sync_task('/purchases', 'purchases');
+            task();
+        }
+        if (timers['undos']){
+            clearTimeout(timers['undos']);
+            var task = create_sync_task('/purchases/undo', 'undos');
+            task();
+        }
 
-    if (timers['leave'])
-        clearInterval(timers['leave']);
+        if (timers['leave'])
+            clearInterval(timers['leave']);
 
-    if ($.active>0){
-        $('.block-screen').show();
-        timers['leave'] = setInterval(function(){
-            if ($.active==0){
-                $('.block-screen').hide();
-                clearInterval(timers['leave']);
-            }
-        }, 250);
-        return 'The last changes have not been saved!\n We will lose data if you continue!';
-    }
-});
+        if ($.active>0){
+            $('.block-screen').show();
+            timers['leave'] = setInterval(function(){
+                if ($.active==0){
+                    $('.block-screen').hide();
+                    clearInterval(timers['leave']);
+                }
+            }, 250);
+            return 'The last changes have not been saved!\n We will lose data if you continue!';
+        }
+    });
+}
