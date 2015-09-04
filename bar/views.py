@@ -129,7 +129,7 @@ def import_process_csv(form):
             if form.header.data:
                 continue
         for column, value in enumerate(row):
-            participant = Participant.query.filter_by(name=value.encode('utf-8')).first()
+            participant = Participant.query.filter_by(name=unicode(value)).first()
             if participant:
                 value = [value,[participant.name, participant.email, participant.iban]]
             data[column]["rows"].append(value)
