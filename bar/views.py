@@ -318,7 +318,15 @@ def add_participant_birthday():
 def list_participant_names():
     """ List all participants """
     participants = current_user.participants
-    return jsonify([participant.name for participant in participants])
+    def generate(data):
+        for participant in data:
+            yield {
+                'id': participant.id,
+                'name': participant.name,
+                'birthday': '' if not participant.birthday else participant.birthday.strftime('%d-%m-%Y'),
+                'legal_age': relativedelta(datetime.now(), participant.birthday).years > current_user.age_limit
+            }
+    return jsonify(list(generate(participants)))
 
 
 @app.route('/purchases', methods=['POST'])

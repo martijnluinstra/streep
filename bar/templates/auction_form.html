@@ -38,8 +38,9 @@
     <script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
     <script>
         var participants = new Bloodhound({ 
-            datumTokenizer: Bloodhound.tokenizers.whitespace, 
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), 
             queryTokenizer: Bloodhound.tokenizers.whitespace, 
+            identify: function(obj) { return obj.id; },
             prefetch: {
                 url: '{{url_for('list_participant_names')}}',
                 cache: false
@@ -49,7 +50,8 @@
         $('#participant.typeahead').typeahead({
             highlight: true
         }, { 
-            name: 'participants', 
+            name: 'participants',
+            display: 'name',
             source: participants 
         }); 
     </script>

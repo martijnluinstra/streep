@@ -34,8 +34,9 @@
 	<script>
 
 		var participants = new Bloodhound({ 
-			datumTokenizer: Bloodhound.tokenizers.whitespace, 
+			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), 
 			queryTokenizer: Bloodhound.tokenizers.whitespace, 
+			identify: function(obj) { return obj.id; },
 			prefetch: {
                 url: '{{url_for('list_participant_names')}}',
                 cache: false
@@ -46,7 +47,19 @@
 			highlight: true
 		}, { 
 			name: 'participants', 
+			display: 'name',
 			source: participants 
-		}); 
+		});
+
+		$('#name.typeahead').bind('typeahead:autocomplete typeahead:select typeahead:cursorchange', function(ev, suggestion) {
+			$('#birthday').val(suggestion.birthday);
+			if(suggestion.legal_age){
+				$('#birthday').closest('.form-group').removeClass().addClass('form-group has-success');
+			}else if(suggestion.birthday===''){
+				$('#birthday').closest('.form-group').removeClass().addClass('form-group');
+			}else{
+				$('#birthday').closest('.form-group').removeClass().addClass('form-group has-error');
+			}
+		});
 	</script>
 {% endblock %}
