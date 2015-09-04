@@ -23,6 +23,7 @@ $('#view-users .table-bar tr').each(function() {
 
 $("#view-users .table-bar button[data-type^='purchase']").click(function(evt){
     evt.preventDefault();
+    evt.stopPropagation()
     // Get me some data
     var field = $(this).closest('tr').find('td').get(1);
     var spinner = $(this).closest('td').find('.spinner').get(0);
