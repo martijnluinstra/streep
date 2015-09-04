@@ -51,7 +51,7 @@
 {% block scripts %}
     {{super()}}
     <script>
-    window.import_data = {{ json_data|safe }};
+    window.import_data = {{ json_data|tojson }};
 
     window.urls = {
                 'list_participants': '{{ url_for("list_participants") }}'

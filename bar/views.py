@@ -123,17 +123,18 @@ def import_process_csv(form):
         if line==0:
             for column, value in enumerate(row):
                 data.append({
-                    'header': value if form.header.data else ('Column_%d' % (column+1)),
+                    'header': value.decode("utf-8") if form.header.data else ('Column_%d' % (column+1)),
                     'rows': []
                     })
             if form.header.data:
                 continue
         for column, value in enumerate(row):
+            value = value.decode("utf-8")
             participant = Participant.query.filter_by(name=value).first()
             if participant:
                 value = [value,[participant.name, participant.email, participant.iban]]
             data[column]["rows"].append(value)
-    return render_template('import_select_form.html', json_data=json.dumps(data, ensure_ascii=False).encode('utf-8'))
+    return render_template('import_select_form.html', json_data=data)
 
 
 def import_report_error(errors, key, err):
