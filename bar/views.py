@@ -128,7 +128,7 @@ def import_process_csv(form):
                     })
             if form.header.data:
                 continue
-        for column, val in enumerate(row):
+        for column, value in enumerate(row):
             participant = Participant.query.filter_by(name=value).first()
             if participant:
                 value = [value,[participant.name, participant.email, participant.iban]]
