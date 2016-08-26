@@ -28,7 +28,7 @@
                 <td>{{participant.name}}</td>
                 <td>{{format_exchange(participant.spend if participant.spend != None else 0)}}</td>
                 <td>
-                {% if participant.agree_to_terms or not current_user.require_terms%}
+                {% if participant.has_agreed_to_terms or not current_user.require_terms%}
                     <form class="form-inline">
                         <div class="form-group">
                         {% for product in products %}

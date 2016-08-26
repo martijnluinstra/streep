@@ -1,5 +1,5 @@
 from flask import request, render_template, redirect, url_for, abort, get_flashed_messages, session
-from flask.ext.login import login_user
+from flask_login import login_user
 from werkzeug.security import check_password_hash
 
 from functools import wraps
@@ -71,7 +71,10 @@ def add_activity():
     form = ActivityForm()
     if form.validate_on_submit():
         activity = Activity(
-            form.name.data, form.passcode.data, form.active.data)
+            name=form.name.data, 
+            passcode=form.passcode.data, 
+            active=form.active.data
+        )
         db.session.add(activity)
         try:
             db.session.commit()

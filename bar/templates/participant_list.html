@@ -30,15 +30,10 @@
             </tr>
         </thead>
         <tbody>
-            {% for participant, activity in participants %}
+            {% for participant in participants %}
             <tr id="{{ participant.id }}" {% if activity %} class="registered" {% endif %}>
                 <td>{{participant.name}}</td>
                 <td>
-                    {% if not activity %}
-                    <a href="{{ url_for('register_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm">Add to activity</a>
-                    {% else %}
-                    <a href="{{ url_for('deregister_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm">Remove from activity</a>
-                    {% endif %}
                     <a href="{{ url_for('edit_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
                 </td>
             </tr>

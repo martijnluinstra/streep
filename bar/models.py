@@ -1,6 +1,6 @@
 from bar import db
 from datetime import datetime
-from flask.ext import login
+import flask_login as login
 from sqlalchemy.ext.associationproxy import association_proxy
 
 
@@ -16,56 +16,34 @@ class Activity(db.Model, login.UserMixin):
     stacked_purchases = db.Column(db.Boolean(), nullable=False, default=True)
     require_terms = db.Column(db.Boolean(), nullable=False, default=False)
     terms = db.Column(db.String(2048), nullable=True)
-
-    participants = association_proxy('activity_participants', 'participant')
-
-    def __init__(self, name, passcode, active=True):
-        self.name = name
-        self.passcode = passcode
-        self.active = active
+    participants = db.relationship('Participant', backref='activity', lazy='dynamic')
 
     def is_active(self):
         return self.active
-    
-
-class ActivityParticipant(db.Model):
-    __tablename__ = 'activity_participant'
-    participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'), primary_key=True)
-    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), primary_key=True)
-    agree_to_terms = db.Column(db.Boolean(), default=False)
-
-    activity = db.relationship(Activity, backref=db.backref('activity_participants', cascade="all, delete-orphan"))
-
-    participant = db.relationship("Participant", backref='activity_participants')
-    
-    def __init__(self, participant=None, activity=None, agree_to_terms=False):
-        self.activity = activity
-        self.participant = participant
-        self.agree_to_terms = agree_to_terms
 
 
 class Participant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False, unique=True)
+    cover_id = db.Column(db.Integer(), nullable=True)
+    name = db.Column(db.String(255), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     city = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
     iban = db.Column(db.String(34), nullable=False)
     bic = db.Column(db.String(11), nullable=True)
     birthday = db.Column(db.DateTime(), nullable=True)
+    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), nullable=False)
+    has_agreed_to_terms = db.Column(db.Boolean(), nullable=False, default=False)
+
     pos_purchases = db.relationship('Purchase', backref='participant',
                                 lazy='dynamic')
     auction_purchases = db.relationship('AuctionPurchase', backref='participant',
                                 lazy='dynamic')
 
-    def __init__(self, name, address, city, email, iban, bic=None , birthday=None):
-        self.name = name
-        self.address = address
-        self.city = city
-        self.email = email
-        self.iban = iban
-        self.bic = bic
-        self.birthday = birthday
+    __table_args__ = (
+        db.UniqueConstraint('cover_id', 'activity_id'),
+        db.UniqueConstraint('name', 'activity_id'),
+    )
 
 
 class Purchase(db.Model):
@@ -76,27 +54,18 @@ class Purchase(db.Model):
     timestamp = db.Column(db.DateTime(), nullable=False)
     undone = db.Column(db.Boolean(), default=False, nullable=False)
 
-    def __init__(self, participant_id, activity_id, product_id):
-        self.participant_id = participant_id
-        self.activity_id = activity_id
-        self.product_id = product_id
+    def __init__(self, **kwargs):
         self.timestamp = datetime.now()
+        super(Purchase, self).__init__(**kwargs)
 
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    price = db.Column(db.Integer(), nullable=False)
+    price = db.Column(db.Integer(), nullable=False, default=1)
     activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), nullable=False)
-    priority = db.Column(db.Integer(), nullable=False)
-    age_limit = db.Column(db.Boolean(), nullable=False)
-
-    def __init__(self, name, activity_id, price=1, priority=0, age_limit=False):
-        self.name = name
-        self.price = price
-        self.activity_id = activity_id
-        self.priority = priority
-        self.age_limit = age_limit
+    priority = db.Column(db.Integer(), nullable=False, default=0)
+    age_limit = db.Column(db.Boolean(), nullable=False, default=False)
 
 
 class AuctionPurchase(db.Model):
@@ -108,9 +77,6 @@ class AuctionPurchase(db.Model):
     timestamp = db.Column(db.DateTime(), nullable=False)
     undone = db.Column(db.Boolean(), default=False, nullable=False)
 
-    def __init__(self, participant_id, activity_id, description, price):
-        self.participant_id = participant_id
-        self.activity_id = activity_id
-        self.description = description
-        self.price = price
+    def __init__(self, **kwargs):
         self.timestamp = datetime.now()
+        super(AuctionPurchase, self).__init__(**kwargs)

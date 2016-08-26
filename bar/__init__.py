@@ -1,12 +1,15 @@
 from flask import Flask
-from flask.ext.login import LoginManager
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.misaka import Misaka
+from flask_migrate import Migrate
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
+from flask_misaka import Misaka
 
 # Init app
 app = Flask(__name__)
 app.config.from_object('config')
+
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 md = Misaka(skip_html=True)
 md.init_app(app)

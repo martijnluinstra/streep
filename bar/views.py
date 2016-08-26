@@ -1,7 +1,7 @@
 from __future__ import division
 
 from flask import request, render_template, redirect, url_for, abort, make_response, flash, Response, get_flashed_messages
-from flask.ext.login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, login_required, current_user
 from urlparse import urlparse, urljoin
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
@@ -12,7 +12,7 @@ import re
 import csv
 
 from bar import app, db, login_manager
-from models import Activity, Participant, Purchase, Product, AuctionPurchase, ActivityParticipant
+from models import Activity, Participant, Purchase, Product, AuctionPurchase
 from forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, AuctionForm, ExportForm
 
 
@@ -84,9 +84,17 @@ def logout():
 @login_required
 def view_home():
     """ View all participants attending the activity, ordered by name """
-    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend")).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
-    parti_subq = db.session.query(Participant, ActivityParticipant.agree_to_terms.label('agree_to_terms')).join(ActivityParticipant, Participant.id==ActivityParticipant.participant_id).filter(ActivityParticipant.activity_id == current_user.id).subquery()
-    participants = db.session.query(parti_subq,     spend_subq.c.spend).outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id).order_by(parti_subq.c.name).all()
+    spend_subq = db.session.query(Purchase.participant_id.label("participant_id"), db.func.sum(Product.price).label("spend"))\
+                           .join(Product, Purchase.product_id == Product.id)\
+                           .filter(Purchase.undone == False)\
+                           .filter(Purchase.activity_id == current_user.id)\
+                           .group_by(Purchase.participant_id)\
+                           .subquery()
+    parti_subq = current_user.participants.subquery()
+    participants = db.session.query(parti_subq, spend_subq.c.spend)\
+                           .outerjoin(spend_subq, spend_subq.c.participant_id==parti_subq.c.id)\
+                           .order_by(parti_subq.c.name)\
+                           .all()
     products = Product.query.filter_by(activity_id=current_user.id).order_by(Product.priority.desc()).all()
     return render_template('main.html', participants=participants, products=products)
 
@@ -100,8 +108,7 @@ def faq():
 @login_required
 def list_participants():
     """ List all participants in the system by name """
-    registered_subq = db.session.query(Participant).join(ActivityParticipant, Participant.id==ActivityParticipant.participant_id).filter(ActivityParticipant.activity_id == current_user.id).add_column(db.bindparam("activity", current_user.id)).subquery()
-    participants = db.session.query(Participant, registered_subq.c.activity).outerjoin(registered_subq, Participant.id==registered_subq.c.id).order_by(Participant.name).all()
+    participants = current_user.participants.order_by(Participant.name).all()
     return render_template('participant_list.html', participants=participants)
 
 
@@ -174,7 +181,16 @@ def import_process_data(data):
             participant.bic = row['bic']
             participant.birthday = row['birthday']
         else:
-            participant = Participant(row['name'],row['address'],row['city'],row['email'],row['iban'], row['bic'], row['birthday'])
+            participant = Participant(
+                name=row['name'],
+                address=row['address'],
+                city=row['city'],
+                email=row['email'],
+                iban=row['iban'],
+                bic=row['bic'],
+                birhday=row['birthday'],
+                activity=current_user
+            )
             db.session.add(participant)
         if not participant in current_user.participants:
             current_user.participants.append(participant)
@@ -194,9 +210,16 @@ def add_participant():
     form = ParticipantForm()
     if form.validate_on_submit():
         participant = Participant(
-            form.name.data, form.address.data, form.city.data, form.email.data, form.iban.data, form.bic.data, form.birthday.data)
+            name=form.name.data, 
+            address=form.address.data,
+            city=form.city.data,
+            email=form.email.data,
+            iban=form.iban.data,
+            bic=form.bic.data,
+            birthday=form.birthday.data,
+            activity=current_user
+        )
         db.session.add(participant)
-        current_user.participants.append(participant)
         try:
             db.session.commit()
         except IntegrityError:
@@ -255,14 +278,14 @@ def deregister_participant(participant_id):
 def accept_terms_participant(participant_id):
     """ Let a participant accept terms """
     accept = request.args.get('accept') == 'True'
-    participant = ActivityParticipant.query.filter_by(participant_id=participant_id).first_or_404()
+    participant = Participant.query.get_or_404(participant_id)
     products = Product.query.filter_by(activity_id=current_user.id).all()
-    if not participant.agree_to_terms:
-        participant.agree_to_terms = accept
+    if not participant.has_agreed_to_terms:
+        participant.has_agreed_to_terms = accept
     db.session.commit()
     if accept:
         return redirect(url_for('view_home'))
-    return render_template('terms.html', terms=current_user.terms, participant=participant.participant, products=products)
+    return render_template('terms.html', terms=current_user.terms, participant=participant, products=products)
 
 
 @app.route('/participants/<int:participant_id>/history', methods=['GET'])
@@ -382,7 +405,13 @@ def add_product():
     """
     form = ProductForm()
     if form.validate_on_submit():
-        product = Product(form.name.data, current_user.id, form.price.data, form.priority.data, form.age_limit.data)
+        product = Product(
+            name=form.name.data, 
+            activity_id=current_user.id,
+            price=form.price.data, 
+            priority=form.priority.data, 
+            age_limit=form.age_limit.data
+        )
         db.session.add(product)
         db.session.commit()
         return redirect(url_for('list_products'))
@@ -451,10 +480,25 @@ def activity_export():
     if not (form.pos.data or form.auction.data):
         return '', 200
 
-    pos_subq = db.session.query(Purchase.participant_id.label('participant_id'), db.func.sum(Product.price).label('spend')).join(Product, Purchase.product_id==Product.id).filter(Purchase.undone == False).filter(Purchase.activity_id==current_user.id).group_by(Purchase.participant_id).subquery()
-    auction_subq = db.session.query(AuctionPurchase.participant_id.label('participant_id'), db.func.sum(AuctionPurchase.price).label('spend')).filter(AuctionPurchase.activity_id==current_user.get_id()).group_by(AuctionPurchase.participant_id).subquery()
+    pos_subq = db.session.query(Purchase.participant_id.label('participant_id'), db.func.sum(Product.price).label('spend'))\
+                         .join(Product, Purchase.product_id==Product.id)\
+                         .filter(Purchase.undone == False)\
+                         .filter(Purchase.activity_id==current_user.id)\
+                         .group_by(Purchase.participant_id)\
+                         .subquery()
 
-    participants = db.session.query(Participant).join(ActivityParticipant, Participant.id==ActivityParticipant.participant_id).filter(ActivityParticipant.activity_id == current_user.id).add_columns(pos_subq.c.spend.label('spend_pos'), auction_subq.c.spend.label('spend_auction')).outerjoin(pos_subq, pos_subq.c.participant_id == Participant.id).outerjoin(auction_subq, auction_subq.c.participant_id == Participant.id).order_by(Participant.name).all()
+    auction_subq = db.session.query(AuctionPurchase.participant_id.label('participant_id'), db.func.sum(AuctionPurchase.price).label('spend'))\
+                             .filter(AuctionPurchase.undone == False)\
+                             .filter(AuctionPurchase.activity_id==current_user.get_id())\
+                             .group_by(AuctionPurchase.participant_id)\
+                             .subquery()
+
+    participants = current_user.participants\
+                             .add_columns(pos_subq.c.spend.label('spend_pos'), auction_subq.c.spend.label('spend_auction'))\
+                             .outerjoin(pos_subq, pos_subq.c.participant_id == Participant.id)\
+                             .outerjoin(auction_subq, auction_subq.c.participant_id == Participant.id)\
+                             .order_by(Participant.name)\
+                             .all()
 
     spend_data = []
 

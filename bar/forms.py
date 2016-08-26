@@ -1,5 +1,5 @@
-from flask.ext.wtf import Form
-from flask.ext.wtf.file import FileField, FileAllowed, FileRequired
+from flask_wtf import Form
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import TextField, BooleanField, IntegerField, DateTimeField, RadioField, SelectField, validators, TextAreaField
 
 from models import Activity

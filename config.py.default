@@ -11,6 +11,7 @@ SQLALCHEMY_DATABASE_URI = 'dialect+driver://username:password@host:port/database
 
 # example local MySQL database
 # SQLALCHEMY_DATABASE_URI = 'mysql://bar:bar@localhost/bar'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 ADMINS = (
     ('username', 'email', 'pbkdf2:sha1:passwordhash')
