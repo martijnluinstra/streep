@@ -2,14 +2,6 @@ from flask_wtf import Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import TextField, BooleanField, IntegerField, DateTimeField, RadioField, SelectField, validators, TextAreaField
 
-from models import Activity
-
-
-class ActivityForm(Form):
-    name = TextField('Name', [validators.InputRequired(message='Name is required')])
-    passcode = TextField('Passcode', [validators.InputRequired(message='Passcode is required')])
-    active = BooleanField('Active')
-
 
 class AuctionForm(Form):
     description = TextField('Product description (optional)', [validators.Optional(strip_whitespace=True)])

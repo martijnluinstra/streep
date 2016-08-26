@@ -5,7 +5,7 @@
     <header class="content-header">
         <h1>{% block title %}Activities{% endblock %}</h1>
         <div class="content-controls">
-            <a href="{{url_for('add_activity')}}" class="btn btn-primary">Add activity</a>
+            <a href="{{url_for('admin.add_activity')}}" class="btn btn-primary">Add activity</a>
         </div>
     </header>
     <table class="table table-hover table-bar">
@@ -24,14 +24,14 @@
                 <td>{{activity.passcode}}</td>
                 <td>
                 	{% if activity.active %}
-                		<a href="{{ url_for('activate_activity', activity_id=activity.id, activate='False')}}"><span class="glyphicon glyphicon-ok"></span></a>
+                		<a href="{{ url_for('admin.activate_activity', activity_id=activity.id, activate='False')}}"><span class="glyphicon glyphicon-ok"></span></a>
                 	{% else %}
-                		<a href="{{ url_for('activate_activity', activity_id=activity.id)}}"><span class="glyphicon glyphicon-remove"></span></a>
+                		<a href="{{ url_for('admin.activate_activity', activity_id=activity.id)}}"><span class="glyphicon glyphicon-remove"></span></a>
                 	{% endif %}
                 </td>
                 <td>
-                    <a href="{{ url_for('impersonate_activity', activity_id=activity.id)}}" class="btn btn-default btn-sm" target="_blank"><span class="glyphicon glyphicon-user"></span></a>
-                    <a href="{{ url_for('edit_activity', activity_id=activity.id)}}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="{{ url_for('admin.impersonate_activity', activity_id=activity.id)}}" class="btn btn-default btn-sm" target="_blank"><span class="glyphicon glyphicon-user"></span></a>
+                    <a href="{{ url_for('admin.edit_activity', activity_id=activity.id)}}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
                 </td>
             </tr>
             {% endfor %}
