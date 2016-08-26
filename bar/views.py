@@ -247,32 +247,6 @@ def edit_participant(participant_id):
     return render_template('participant_form.html', form=form, mode='edit', id=participant.id)
 
 
-@app.route('/participants/<int:participant_id>/register', methods=['GET'])
-@login_required
-def register_participant(participant_id):
-    """ Add a participant to an activity """
-    participant = Participant.query.get_or_404(participant_id)
-    if not participant in current_user.participants:
-        current_user.participants.append(participant)
-    db.session.commit()
-    return redirect(url_for('list_participants'))
-
-
-@app.route('/participants/<int:participant_id>/deregister', methods=['GET'])
-@login_required
-def deregister_participant(participant_id):
-    """ Remove a participant from an activity """
-    participant = Participant.query.get_or_404(participant_id)
-    pos_purchases = participant.pos_purchases.filter_by(activity_id=current_user.id).first()
-    auction_purchases = participant.auction_purchases.filter_by(activity_id=current_user.id).first()
-    if pos_purchases or auction_purchases:
-        flash("Cannot remove this participant, this participant has purchases!")
-    else:
-        current_user.participants.remove(participant)
-        db.session.commit()
-    return redirect(url_for('list_participants'))
-
-
 @app.route('/participants/<int:participant_id>/terms', methods=['GET'])
 @login_required
 def accept_terms_participant(participant_id):
