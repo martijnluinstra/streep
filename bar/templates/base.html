@@ -31,23 +31,23 @@
             <div class="navbar-header">
                 <button class="navbar-toggle collapsed navicon-button" href="#navbar-main-collapse" data-toggle="collapse" aria-expanded="false" aria-controls="navbar-main-collapse"><span class="navicon navicon-white"></span></button>
                 <a href="//www.svcover.nl/" class="navbar-logo"><img src="{{ url_for('static', filename='img/cover.png') }}"></a>
-                <a href="{{ url_for('view_home') }}" class="navbar-brand">BAR: {{ current_user.name }}</a>
+                <a href="{{ url_for('pos.view_home') }}" class="navbar-brand">BAR: {{ current_user.name }}</a>
             </div>
             <div class="collapse navbar-collapse" id="navbar-main-collapse">
                 <ul class="navbar-right">
-                    <li><a href="{{ url_for('faq') }}" data-type="faq">FAQ</a></li>
+                    <li><a href="{{ url_for('pos.faq') }}" data-type="faq">FAQ</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('view_home') }}">Home</a></li>
+                            <li><a href="{{ url_for('pos.view_home') }}">Home</a></li>
                             <li><a href="{{ url_for('auction.list_auction') }}">Auction</a></li>
                             <li class="divider"></li>
                             <!-- <li class="dropdown-header">Admin</li> -->
-                            <li><a href="{{ url_for('list_products') }}">Products</a></li>
-                            <li><a href="{{ url_for('list_participants') }}">Participants</a></li>
-                            <li><a href="{{ url_for('activity_settings') }}">Settings</a></li>
+                            <li><a href="{{ url_for('pos.list_products') }}">Products</a></li>
+                            <li><a href="{{ url_for('pos.list_participants') }}">Participants</a></li>
+                            <li><a href="{{ url_for('pos.activity_settings') }}">Settings</a></li>
                             <li class="divider"></li>
-                            <li><a href="{{ url_for('logout') }}">Log out</a></li>
+                            <li><a href="{{ url_for('pos.logout') }}">Log out</a></li>
                         </ul>
                     </li>
                 </ul>

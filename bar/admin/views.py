@@ -4,12 +4,12 @@ from werkzeug.security import check_password_hash
 
 from functools import wraps
 
+from bar import db
+from bar.utils import is_safe_url
+from bar.pos.models import Activity
+
 from . import admin
 from .forms import ActivityForm
-
-from bar import db
-from bar.models import Activity
-from bar.views import is_safe_url
 
 
 def admin_required(func):

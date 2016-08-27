@@ -8,16 +8,16 @@
         <h1>{% block title %}Participants{% endblock %}</h1>
         <div class="content-controls">
             <div class="btn-group">
-                <a type="button" class="btn btn-primary" href="{{url_for('add_participant')}}">Add participant</a>
+                <a type="button" class="btn btn-primary" href="{{url_for('pos.add_participant')}}">Add participant</a>
                 <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="caret"></span>
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="{{url_for('add_participant')}}">Add participant</a></li>
-                    <li><a href="{{url_for('import_participants')}}">Import participants</a></li>
+                    <li><a href="{{url_for('pos.add_participant')}}">Add participant</a></li>
+                    <li><a href="{{url_for('pos.import_participants')}}">Import participants</a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="{{url_for('add_participant_birthday')}}">Birthday registration</a></li>
+                    <li><a href="{{url_for('pos.add_participant_birthday')}}">Birthday registration</a></li>
                 </ul>
             </div>
         </div>
@@ -34,7 +34,7 @@
             <tr id="{{ participant.id }}" {% if activity %} class="registered" {% endif %}>
                 <td>{{participant.name}}</td>
                 <td>
-                    <a href="{{ url_for('edit_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="{{ url_for('pos.edit_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
                 </td>
             </tr>
             {% endfor %}

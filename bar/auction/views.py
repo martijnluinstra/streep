@@ -4,7 +4,7 @@ from flask import request, render_template, redirect, url_for
 from flask_login import login_required, current_user
 
 from bar import db
-from bar.models import Participant
+from bar.pos.models import Participant
 
 from . import auction
 from .forms import AuctionForm

@@ -8,8 +8,8 @@
         <h1>{% block title %}History of {{participant.name}}{% endblock %}</h1>
     </header>
     <ul class="nav nav-tabs">
-        <li role="presentation" class="{{ 'active' if view == 'pos' }}"><a href="{{url_for('participant_history', participant_id=participant.id, view='pos')}}">Bar purchases</a></li>
-        <li role="presentation" class="{{ 'active' if view != 'pos' }}"><a href="{{url_for('participant_history', participant_id=participant.id, view='auction')}}">Auction purchases</a></li>
+        <li role="presentation" class="{{ 'active' if view == 'pos' }}"><a href="{{url_for('pos.participant_history', participant_id=participant.id, view='pos')}}">Bar purchases</a></li>
+        <li role="presentation" class="{{ 'active' if view != 'pos' }}"><a href="{{url_for('pos.participant_history', participant_id=participant.id, view='auction')}}">Auction purchases</a></li>
     </ul>
     <table class="table table-hover table-bar">
         <thead>
@@ -29,7 +29,7 @@
                 <td>{{product}}</td>
                 <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
                 <td>
-                    <a href="{{url_for('undo', purchase_id=purchase.id)}}" data-participant-id="{{participant.id}}" data-purchase-id="{{purchase.id}}" data-price="{{price}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone}}" data-type="undo">Undo</a>
+                    <a href="{{url_for('pos.undo', purchase_id=purchase.id)}}" data-participant-id="{{participant.id}}" data-purchase-id="{{purchase.id}}" data-price="{{price}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone}}" data-type="undo">Undo</a>
                 </td>
             </tr>
             {% endfor %}
@@ -40,7 +40,7 @@
                 <td>{{format_price(purchase.price/100)}}</td>
                 <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
                 <td>
-                    <a href="{{url_for('undo', purchase_id=purchase.id)}}" data-participant-id="{{participant.id}}" data-purchase-id="{{purchase.id}}" data-price="{{purchase.price}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone }}" data-type="undo">Undo</a>
+                    <a href="{{url_for('pos.undo', purchase_id=purchase.id)}}" data-participant-id="{{participant.id}}" data-purchase-id="{{purchase.id}}" data-price="{{purchase.price}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone }}" data-type="undo">Undo</a>
                 </td>
             </tr>
             {% endfor %}

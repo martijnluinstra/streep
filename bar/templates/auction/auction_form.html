@@ -42,7 +42,7 @@
             queryTokenizer: Bloodhound.tokenizers.whitespace, 
             identify: function(obj) { return obj.id; },
             prefetch: {
-                url: '{{url_for('list_participant_names')}}',
+                url: '{{url_for('pos.list_participant_names')}}',
                 cache: false
             }
         }); 

@@ -10,7 +10,7 @@
 {% block content %}
 <div class="container-narrow">
 	<h1>{% block title %}Add birthday{% endblock %}</h1>
-	<form method="post" action="{{ url_for('add_participant_birthday') }}">
+	<form method="post" action="{{ url_for('pos.add_participant_birthday') }}">
 		{{ form.hidden_tag() }}
 		<div class="form-group">
 			{{ form.name.label(class="control-label") }}
@@ -26,7 +26,7 @@
 			<p id="legal-status">No birthdate found!</p>
 		</div>
 		<button type="submit" class="btn btn-primary">Submit</button>
-		<a href="{{url_for('list_participants')}}" class="btn btn-link">Cancel</a>
+		<a href="{{url_for('pos.list_participants')}}" class="btn btn-link">Cancel</a>
 	</form>
 </div>
 {% endblock %}
@@ -42,7 +42,7 @@
 			queryTokenizer: Bloodhound.tokenizers.whitespace, 
 			identify: function(obj) { return obj.id; },
 			prefetch: {
-                url: '{{url_for('list_participant_names')}}',
+                url: '{{url_for('pos.list_participant_names')}}',
                 cache: false
             }
 		}); 

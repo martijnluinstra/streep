@@ -20,8 +20,16 @@ login_manager.login_view = 'login'
 
 from .admin import admin
 from .auction import auction
+from .pos import pos
 
 app.register_blueprint(admin)
 app.register_blueprint(auction)
+app.register_blueprint(pos)
 
-from bar import models, views, forms
+from .pos.models import Activity
+
+@login_manager.user_loader
+def load_activity(activity_id):
+    return Activity.query.get(activity_id)
+
+from . import utils

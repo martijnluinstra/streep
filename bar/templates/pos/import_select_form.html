@@ -5,11 +5,11 @@
 {% block content %}
 <div class="container-fluid">
     <h1>{% block title %}Import{% endblock %}</h1>
-    <form id="import-form" method="post" action="{{ url_for('import_participants')}}" novalidate>
+    <form id="import-form" method="post" action="{{ url_for('pos.import_participants')}}" novalidate>
         <p>Select in wich column in the file contains the values can be found. Participants who are already in the database will be overwritten and added to the activity. Be sure to uncheck them if you don't want this!</p> 
         <p>
             <button type="submit" class="btn btn-primary">Import participants</button>
-            <a href="{{url_for('list_participants')}}" class="btn btn-link">Cancel</a>
+            <a href="{{url_for('pos.list_participants')}}" class="btn btn-link">Cancel</a>
         </p>
         <table id="import-table" class="table table-hover">
             <thead>
@@ -57,7 +57,7 @@
     window.import_data = {{ json_data|tojson }};
 
     window.urls = {
-                'list_participants': '{{ url_for("list_participants") }}'
+                'list_participants': '{{ url_for("pos.list_participants") }}'
             };
     </script>
     <script src="{{ url_for('static', filename='js/import.js') }}"></script>

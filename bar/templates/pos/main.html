@@ -47,7 +47,7 @@
                         </div>
                     </form>
                 {% else %}
-                    <a href="{{url_for('accept_terms_participant', participant_id=participant.id)}}" class="btn btn-danger btn-sm">Accept the terms</a>
+                    <a href="{{url_for('pos.accept_terms_participant', participant_id=participant.id)}}" class="btn btn-danger btn-sm">Accept the terms</a>
                 {% endif %}
                 </td><td>
                     <button data-participant-id="{{participant.id}}" data-type="history" class="btn btn-default btn-sm">Undo</button>

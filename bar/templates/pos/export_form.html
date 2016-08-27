@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container-narrow">
 	<h1>{% block title %}Export{% endblock %}</h1>
-	<form method="get" action="{{ url_for('activity_export') }}">
+	<form method="get" action="{{ url_for('pos.activity_export') }}">
 		<p>Please choose what to export and provide a description if you like.</p>
 		<div class="checkbox">
 			<label>
@@ -39,7 +39,7 @@
 		</div>
 		{{ render_errors(form.description) }}
 		<button type="submit" class="btn btn-primary">Export</button>
-		<a href="{{url_for('activity_settings')}}" class="btn btn-default">Cancel</a>
+		<a href="{{url_for('pos.activity_settings')}}" class="btn btn-default">Cancel</a>
 	</form>
 </div>
 {% endblock %}
