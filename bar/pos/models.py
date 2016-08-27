@@ -1,6 +1,7 @@
-from bar import db
 from datetime import datetime
 import flask_login as login
+
+from bar import db
 
 
 class Activity(db.Model, login.UserMixin):
