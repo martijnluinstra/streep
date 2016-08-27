@@ -18,7 +18,10 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from .admin import admin as admin
+from .admin import admin
+from .auction import auction
+
 app.register_blueprint(admin)
+app.register_blueprint(auction)
 
 from bar import models, views, forms

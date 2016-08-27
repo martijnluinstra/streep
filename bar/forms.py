@@ -3,12 +3,6 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import TextField, BooleanField, IntegerField, DateTimeField, RadioField, SelectField, validators, TextAreaField
 
 
-class AuctionForm(Form):
-    description = TextField('Product description (optional)', [validators.Optional(strip_whitespace=True)])
-    price = IntegerField('Price (in Euro cent)', [validators.InputRequired(message='Price is required')])
-    participant = TextField('Participant', [validators.InputRequired(message='Participant is required')])
- 
-
 class ExportForm(Form):
     pos = BooleanField('Consumptions')
     auction = BooleanField('Auction')

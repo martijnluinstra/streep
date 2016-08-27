@@ -46,11 +46,11 @@
                     <td>{{purchase.description}}</td>
                     <td>
                     {% if purchase.undone %}
-                        <a href="{{url_for('undo_auction_purchase', purchase_id=purchase.id, undo='False', next=request.url)}}" class="btn btn-default btn-sm">Redo</a>
+                        <a href="{{url_for('auction.undo_auction_purchase', purchase_id=purchase.id, undo='False', next=request.url)}}" class="btn btn-default btn-sm">Redo</a>
                     {% else %}
-                        <a href="{{url_for('undo_auction_purchase', purchase_id=purchase.id, next=request.url)}}" class="btn btn-default btn-sm">Undo</a>
+                        <a href="{{url_for('auction.undo_auction_purchase', purchase_id=purchase.id, next=request.url)}}" class="btn btn-default btn-sm">Undo</a>
                     {% endif %}
-                        <a href="{{ url_for('edit_auction_purchase', purchase_id=purchase.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                        <a href="{{ url_for('auction.edit_auction_purchase', purchase_id=purchase.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
                     </td>
                 </tr> 
                 {% endfor %}
