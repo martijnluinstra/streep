@@ -218,7 +218,7 @@ def edit_participant(participant_id):
     return render_template('pos/participant_form.html', form=form, mode='edit', id=participant.id)
 
 
-@app.route('/participants/<int:participant_id>/terms', methods=['GET'])
+@pos.route('/participants/<int:participant_id>/terms', methods=['GET'])
 @login_required
 def accept_terms_participant(participant_id):
     """ Let a participant accept terms """

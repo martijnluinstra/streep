@@ -16,7 +16,7 @@ md.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'pos.login'
 
 from .admin import admin
 from .auction import auction
