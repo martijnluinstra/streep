@@ -110,7 +110,7 @@ def edit_activity(activity_id):
 def impersonate_activity(activity_id):
     activity = Activity.query.get_or_404(activity_id)
     login_user(activity, force=True)
-    return redirect(url_for('view_home'))
+    return redirect(url_for('pos.view_home'))
 
 
 @admin.route('/activities/<int:activity_id>/activate', methods=['GET', 'POST'])
