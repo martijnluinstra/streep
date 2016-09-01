@@ -5,3 +5,4 @@ test.csv
 
 config.py
 bar.wsgi
+data/secretary_token
