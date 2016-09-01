@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 
+{% from 'form_macros.html' import render_field %}
+
+{% block css %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typeaheadjs.css') }}" type="text/css">
+{% endblock %}
+
 {% block page_id %}participant-add{% endblock %}
 
 {% block content %}
@@ -7,43 +14,40 @@
 	<h1>{% block title %}{{mode|title}} participant{% endblock %}</h1>
 	<form method="post" action="{{ url_for('pos.add_participant') if mode == 'add' else url_for('pos.edit_participant', participant_id=id) }}">
 		{{ form.hidden_tag() }}
-		<div class="form-group">
-			{{ form.name.label(class="control-label") }}
-			{{ form.name(class="form-control") }}
+		<div class="form-group {% if form.member_id.errors %}has-error{% endif %}">
+			{{ form.name.label(class_="control-label") }}
+			{{ form.name(class_="form-control typeahead", autocomplete="off", placeholder="Search member name…") }}
+			{{ form.member_id(type='hidden') }}
+			{% if form.name.errors %}
+				{% for e in form.name.errors %}
+					<p class="help-block">{{ e }}</p>
+				{% endfor %}
+			{% endif %}
+			{% if form.member_id.errors %}
+				{% for e in form.member_id.errors %}
+					<p class="help-block">{{ e }}</p>
+				{% endfor %}
+			{% endif %}
 		</div>
-		{{ render_errors(form.name) }}
-		<div class="form-group">
-			{{ form.address.label(class="control-label") }}
-			{{ form.address(class="form-control") }}
-		</div>
-		{{ render_errors(form.address) }}
-		<div class="form-group">
-			{{ form.city.label(class="control-label") }}
-			{{ form.city(class="form-control") }}
-		</div>
-		{{ render_errors(form.city) }}
-		<div class="form-group">
-			{{ form.email.label(class="control-label") }}
-			{{ form.email(class="form-control") }}
-		</div>
-		{{ render_errors(form.email) }}
-		<div class="form-group">
-			{{ form.iban.label(class="control-label") }}
-			{{ form.iban(class="form-control") }}
-		</div>
-		{{ render_errors(form.iban) }}
-		<div class="form-group">
-			{{ form.bic.label(class="control-label") }}
-			{{ form.bic(class="form-control") }}
-		</div>
-		{{ render_errors(form.bic) }}
-		<div class="form-group">
-			{{ form.birthday.label(class="control-label") }}
-			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
-		</div>
-		{{ render_errors(form.birthday) }}
+		{{ render_field(form.address) }}
+		{{ render_field(form.city) }}
+		{{ render_field(form.email) }}
+		{{ render_field(form.iban) }}
+		{{ render_field(form.bic) }}
+		{{ render_field(form.birthday, placeholder="yyyy-mm-dd") }}
 		<button type="submit" class="btn btn-primary">Submit</button>
 		<a href="{{url_for('pos.list_participants')}}" class="btn btn-link">Cancel</a>
 	</form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        window.urls = {
+            auto_complete_members: '{{url_for('pos.auto_complete_members')}}'
+        };
+    </script>
+    <script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/autocomplete.js') }}"></script>
 {% endblock %}

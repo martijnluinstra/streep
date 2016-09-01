@@ -16,3 +16,9 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 ADMINS = (
     ('username', 'email', 'pbkdf2:sha1:passwordhash')
 )
+
+SECRETARY_URL = ''
+SECRETARY_USER = ''
+SECRETARY_PASSWORD = ''
+SECRETARY_TOKEN_DUMP_LOCATION = ''
+

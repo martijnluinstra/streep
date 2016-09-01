@@ -11,7 +11,7 @@ import re
 import csv
 
 from bar import db, login_manager
-from bar.utils import is_safe_url
+from bar.utils import is_safe_url, get_secretary_api
 from bar.auction.models import AuctionPurchase
 
 from . import pos
@@ -489,3 +489,13 @@ def activity_export():
             yield ','.join(['"' + unicode(field).encode('utf-8') + '"' for field in p_data]) + '\n'
 
     return Response(generate(participants, settings), mimetype='text/csv')
+
+
+@pos.route('/auto_complete/members', methods=['GET'])
+@login_required
+def auto_complete_members():
+    name = request.args.get('name')
+    if not name:
+        return jsonify([])
+    members = get_secretary_api().find_members_by_name(name)
+    return jsonify([m.to_dict() for m in members.itervalues()])

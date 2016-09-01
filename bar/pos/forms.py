@@ -12,13 +12,20 @@ class ExportForm(Form):
 
 
 class ParticipantForm(Form):
-    name = TextField('Name', [validators.InputRequired(message='Name is required')])
+    name = TextField('Name', validators=[
+        validators.InputRequired(message='Name is required')
+    ])
+    member_id = IntegerField('Member ID', validators=[
+        validators.Optional(strip_whitespace=True)
+    ])
     address = TextField('Address', [validators.InputRequired(message='Address is required')])
     city = TextField('Place of residence', [validators.InputRequired(message='Place of residence is required')])
     email = TextField('Email address', [validators.InputRequired(message='Email is required'), validators.Email(message='Invalid email address')])
     iban = TextField('IBAN', [validators.InputRequired(message='IBAN is required'), validators.length(max=34, message='An IBAN may not be longer than 34 characters')])
     bic = TextField('BIC (optional)', [validators.Optional(strip_whitespace=True), validators.length(max=11, message='A BIC may not be longer than 11 characters')])
-    birthday  = DateTimeField('Birthday (optional)', format='%d-%m-%Y', validators=[validators.Optional(strip_whitespace=True)])
+    birthday  = DateTimeField('Date of birth (optional)', format='%Y-%m-%d', validators=[
+        validators.Optional(strip_whitespace=True)
+    ])
 
 
 class BirthdayForm(Form):
