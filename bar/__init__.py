@@ -4,6 +4,8 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_misaka import Misaka
 
+from flask_coverapi import CoverSessionManager
+
 # Init app
 app = Flask(__name__)
 app.config.from_object('config')
@@ -17,6 +19,8 @@ md.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'pos.login'
+
+cover_session_manager = CoverSessionManager(app.config['COVER_APP'], app.config['COVER_SECRET'], flask_app=app)
 
 from .admin import admin
 from .auction import auction

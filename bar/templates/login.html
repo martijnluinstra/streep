@@ -35,6 +35,10 @@
 			color: #555;
 		}
 
+		nav a.admin-link{
+			font-size: 14px;
+		}
+
 		form#login-form{
 			position: absolute;
 			top: 0;
@@ -95,6 +99,9 @@
             <div class="navbar-header">
                 <a href="//www.svcover.nl/" class="navbar-logo"><img src="{{ url_for('static', filename='img/cover_black.png') }}"></a>
                 <a href="#" class="navbar-brand">Beverage &amp; Auction Register</a>
+                {% if current_cover_user.is_admin %}
+	                <a class="pull-right admin-link" href="{{ url_for('admin.list_activities') }}">Admin</a>
+                {% endif %}
             </div>
         </div>
 {% endblock %}

@@ -1,61 +1,12 @@
-from flask import request, render_template, redirect, url_for, abort, get_flashed_messages, session, current_app
+from flask import request, render_template, redirect, url_for, current_app
 from flask_login import login_user
-from werkzeug.security import check_password_hash
-
-from functools import wraps
+from flask_coverapi import admin_required
 
 from bar import db
-from bar.utils import is_safe_url
 from bar.pos.models import Activity
 
 from . import admin
 from .forms import ActivityForm
-
-
-def admin_required(func):
-    @wraps(func)
-    def decorated_view(*args, **kwargs):
-        if not get_user():
-            return redirect(url_for('admin.login', next=request.url))
-        return func(*args, **kwargs)
-    return decorated_view
-
-
-def get_user(username=None):
-    if not username:
-        if not 'username' in session:
-            return None
-        username = session.get('username', None)
-    for user in current_app.config['ADMINS']:
-        if user[0] == username:
-            return user
-    return None
-
-
-@admin.route("/login", methods=["GET", "POST"])
-def login():
-    errors = []
-    if request.method == 'POST':
-        if not any(field in request.form for field in ('username', 'password')):
-            return abort(400)
-        user = get_user(request.form['username'])
-        if user and check_password_hash(user[2], request.form['password']):
-            session['username'] = user[0]
-
-            next_url = request.args.get('next')
-            if not is_safe_url(next_url):
-                return abort(400)
-            return redirect(url_for('admin.list_activities'))
-        else:
-            errors.append('Username and password do not match!')
-    flashes = get_flashed_messages()
-    return render_template('admin/login.html', errors=errors)
-
-
-@admin.route('/logout', methods=['GET'])
-def logout():
-    session.pop('username', None)
-    return redirect(url_for('admin.login'))
 
 
 @admin.route('/', methods=['GET'])
