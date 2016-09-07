@@ -40,4 +40,6 @@ def is_safe_url(target):
 
 
 def get_secretary_api():
-    return g.get('_secretary_api', SecretaryAPI(app))
+    if not g.get('_secretary_api'):
+        g._secretary_api = SecretaryAPI(app)
+    return g.get('_secretary_api')
