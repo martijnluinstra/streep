@@ -1,6 +1,6 @@
 from __future__ import division
 
-from flask import request, render_template, redirect, url_for, abort, make_response, flash, Response, get_flashed_messages
+from flask import request, render_template, redirect, url_for, abort, make_response, flash, Response, get_flashed_messages, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
@@ -494,6 +494,8 @@ def activity_export():
 @pos.route('/auto_complete/members', methods=['GET'])
 @login_required
 def auto_complete_members():
+    if current_app.config.get('STAND_ALONE', False):
+        return jsonify([])
     name = request.args.get('name')
     if not name:
         return jsonify([])

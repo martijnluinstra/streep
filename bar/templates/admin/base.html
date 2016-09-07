@@ -37,7 +37,9 @@
         <div class="navbar-header">
             <a href="//www.svcover.nl/" class="navbar-logo"><img src="{{ url_for('static', filename='img/cover_black.png') }}"></a>
             <a href="{{ url_for('admin.list_activities') }}" class="navbar-brand">BAR: Admin</a>
-			<a class="pull-right logout-link" href="{{ logout_url() }}">Logout at Cover</a>
+            {% if not config.STAND_ALONE %}
+				<a class="pull-right logout-link" href="{{ logout_url() }}">Logout at Cover</a>
+			{% endif %}
         </div>
     </div>
 {% endblock %}

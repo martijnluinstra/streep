@@ -1,12 +1,27 @@
-from flask import request, render_template, redirect, url_for, current_app
+from functools import wraps
+
+from flask import request, render_template, redirect, url_for, current_app, has_request_context
 from flask_login import login_user
-from flask_coverapi import admin_required
+from flask_coverapi import current_user
 
 from bar import db
 from bar.pos.models import Activity
 
 from . import admin
 from .forms import ActivityForm
+
+
+def admin_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if current_app.config.get('STAND_ALONE', False):
+            return func(*args, **kwargs)
+        elif not current_user.is_authenticated:
+            return redirect(login_url())
+        elif not current_user.is_admin:
+            abort(403)
+        return func(*args, **kwargs)
+    return decorated_view
 
 
 @admin.route('/', methods=['GET'])

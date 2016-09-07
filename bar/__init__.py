@@ -20,7 +20,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'pos.login'
 
-cover_session_manager = CoverSessionManager(app.config['COVER_APP'], app.config['COVER_SECRET'], flask_app=app)
+if not app.config.get('STAND_ALONE', False):
+	cover_session_manager = CoverSessionManager(app.config['COVER_APP'], app.config['COVER_SECRET'], flask_app=app)
 
 from .admin import admin
 from .auction import auction
