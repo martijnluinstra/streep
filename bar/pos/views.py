@@ -9,6 +9,8 @@ from dateutil.relativedelta import relativedelta
 import json
 import re
 import csv
+import validators
+
 
 from bar import db, login_manager
 from bar.utils import is_safe_url, get_secretary_api
@@ -17,6 +19,10 @@ from bar.auction.models import AuctionPurchase
 from . import pos
 from .models import Activity, Participant, Purchase, Product
 from .forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, ExportForm
+
+
+class CSVRowError(Exception):
+    pass
 
 
 def jsonify(data):
@@ -88,7 +94,10 @@ def list_participants():
 def import_participants():
     form = ImportForm()
     if form.validate_on_submit():
-        return import_process_csv(form)
+        try:
+            return import_process_csv(form)
+        except (CSVRowError, csv.Error) as e:
+            form.import_file.errors.append(str(e))
     elif request.method == 'POST':
         return import_process_data(request.get_json())
     return render_template('pos/import_upload_form.html', form=form)
@@ -96,9 +105,14 @@ def import_participants():
 
 def import_process_csv(form):
     data = []
-    participant_data = csv.reader(form.import_file.data, delimiter=form.delimiter.data.encode('ascii', 'ignore'))
+    line_length = 0
+    csvfile = form.import_file.data
+    dialect = csv.Sniffer().sniff(csvfile.read(1024), delimiters=form.delimiter.data.encode('ascii', 'ignore'))
+    csvfile.seek(0)
+    participant_data = csv.reader(csvfile, dialect)
     for line, row in enumerate(participant_data):
         if line==0:
+            line_length = len(row)
             for column, value in enumerate(row):
                 data.append({
                     'header': value if form.header.data else ('Column_%d' % (column+1)),
@@ -106,10 +120,9 @@ def import_process_csv(form):
                     })
             if form.header.data:
                 continue
+        if line_length != len(row):
+            raise CSVRowError('Not all rows have equal length')
         for column, value in enumerate(row):
-            participant = Participant.query.filter_by(name=value).first()
-            if participant:
-                value = [value,[participant.name, participant.email, participant.iban]]
             data[column]["rows"].append(value)
     return render_template('pos/import_select_form.html', json_data=data)
 
@@ -122,6 +135,7 @@ def import_report_error(errors, key, err):
 
 
 def import_validate_row(key, row, errors):
+    # Fix birthday
     birthday = None
     if row['birthday']:
         try:
@@ -129,13 +143,20 @@ def import_validate_row(key, row, errors):
         except ValueError:
             import_report_error(errors,key,{'birthday': ['type']})
     row['birthday'] = birthday
+    # Clean iban and bic
+    row['iban'] = row['iban'].upper().replace(" ", "")
+    row['bic'] = row['bic'].upper().replace(" ", "")
+
+    if not validators.email(row['email']):
+        import_report_error(errors,key,{'email': ['type']})
+    if not validators.iban(row['iban']) or len(row['iban']) > 34:
+        import_report_error(errors,key,{'iban': ['type']})
+    if row['bic'] and not ( len(row['bic']) == 8 or len(row['bic']) == 11 ):
+        import_report_error(errors,key,{'bic': ['type']})
+
     for prop in ['name', 'address', 'city', 'email', 'iban']:
         if not row[prop].strip():
             import_report_error(errors,key,{prop: ['nonblank']})
-    if len(row['iban']) > 34:
-        import_report_error(errors,key,{'iban': ['type']})
-    if len(row['bic']) > 11:
-        import_report_error(errors,key,{'bic': ['type']})
     return (row, errors)
 
 
@@ -143,29 +164,22 @@ def import_process_data(data):
     errors = {}
     for key, row in data.iteritems():
         row, errors = import_validate_row(key, row, errors)
-        participant = Participant.query.filter_by(name=row['name']).first()
-        if participant:
-            participant.address = row['address']
-            participant.city = row['city']
-            participant.email = row['email']
-            participant.iban = row['iban']
-            participant.bic = row['bic']
-            participant.birthday = row['birthday']
-        else:
-            participant = Participant(
-                name=row['name'],
-                address=row['address'],
-                city=row['city'],
-                email=row['email'],
-                iban=row['iban'],
-                bic=row['bic'],
-                birhday=row['birthday'],
-                activity=current_user
-            )
-            db.session.add(participant)
-        if not participant in current_user.participants:
-            current_user.participants.append(participant)
-        db.session.flush()
+        participant = Participant(
+            name=row['name'],
+            address=row['address'],
+            city=row['city'],
+            email=row['email'],
+            iban=row['iban'],
+            bic=row['bic'],
+            birthday=row['birthday'],
+            activity=current_user
+        )
+        db.session.add(participant)
+        try:
+            db.session.flush()
+        except IntegrityError:
+            db.session.rollback()
+            import_report_error(errors,key,{'name': ['nonunique']})
     if not errors:
         db.session.commit()
         return "", 200
