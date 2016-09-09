@@ -106,10 +106,7 @@ def import_participants():
 def import_process_csv(form):
     data = []
     line_length = 0
-    csvfile = form.import_file.data
-    dialect = csv.Sniffer().sniff(csvfile.read(1024), delimiters=form.delimiter.data.encode('ascii', 'ignore'))
-    csvfile.seek(0)
-    participant_data = csv.reader(csvfile, dialect)
+    participant_data = csv.reader(form.import_file.data, delimiter=form.delimiter.data.encode('ascii', 'ignore'))
     for line, row in enumerate(participant_data):
         if line==0:
             line_length = len(row)
@@ -144,7 +141,7 @@ def import_validate_row(key, row, errors):
             import_report_error(errors,key,{'birthday': ['type']})
     row['birthday'] = birthday
     # Clean iban and bic
-    row['iban'] = row['iban'].upper().replace(" ", "")
+    row['iban'] = row['iban'].upper().replace(" ", "").encode('ascii', 'ignore')
     row['bic'] = row['bic'].upper().replace(" ", "")
 
     if not validators.email(row['email']):

@@ -6,7 +6,7 @@ var model = {
 };
 var timers = {};
 var config = {
-    error_message: 'Something went wrong? See the console, or ask Martijn!',
+    error_message: 'Something went wrong? See the console, or ask Martijn! (06-81040211)',
     history_size: 10
 };
 
