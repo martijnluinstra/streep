@@ -12,8 +12,11 @@ class AuctionPurchase(db.Model):
     undone = db.Column(db.Boolean(), default=False, nullable=False)
 
     participant = db.relationship('Participant', backref=db.backref('auction_purchases', lazy='dynamic'))
-    activity = db.relationship('Activity')
+    activity = db.relationship('Activity', backref=db.backref('auction_purchases', lazy='dynamic'))
 
     def __init__(self, **kwargs):
         self.timestamp = datetime.now()
         super(AuctionPurchase, self).__init__(**kwargs)
+
+    def to_dict(self):
+        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name)

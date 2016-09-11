@@ -1,14 +1,17 @@
 from functools import wraps
 
-from flask import request, render_template, redirect, url_for, current_app, has_request_context
+import json
+
+from flask import request, render_template, redirect, url_for, current_app, has_request_context, jsonify
 from flask_login import login_user
 from flask_coverapi import current_user
 
 from bar import db
-from bar.pos.models import Activity
+from bar.pos.models import Activity, Product, Participant, Purchase
+from bar.auction.models import AuctionPurchase
 
 from . import admin
-from .forms import ActivityForm
+from .forms import ActivityForm, ImportForm
 
 
 def admin_required(func):
@@ -47,11 +50,82 @@ def add_activity():
         try:
             db.session.commit()
         except IntegrityError:
+            db.session.rollback()
             form.name.errors.append('Please provide a unique passcode!')
             return render_template('activity_form.html', form=form, mode='add')
         else:
             return redirect(url_for('admin.list_activities'))
     return render_template('admin/activity_form.html', form=form, mode='add')
+
+
+@admin.route('/activities/import', methods=['GET', 'POST'])
+@admin_required
+def import_activity():
+    form = ImportForm()
+    if form.validate_on_submit():
+        try: 
+            data = json.load(form.import_file.data)
+            _load_activity(data)
+        except Exception as e:
+            db.session.rollback()
+            form.import_file.errors.append(str(e))
+            raise
+        else:
+            return redirect(url_for('admin.list_activities'))
+    return render_template('admin/activity_import_form.html', form=form)
+
+
+def _load_activity(data):
+    activity = Activity(
+            name=data['name'],
+            passcode=data['passcode'],
+            **data['settings']
+        )
+    
+    db.session.add(activity)
+    db.session.flush()
+
+    products = {}
+    participants = {}
+
+    for product in data['products']:
+        p_id = str(product['id'])
+        del product['id']
+        product['activity_id'] = activity.id
+        products[p_id] = Product(**product)
+        db.session.add(products[p_id])
+
+    for participant in data['participants']:
+        p_id = str(participant['id'])
+        del participant['id']
+        participant['activity_id'] = activity.id
+        participants[p_id] = Participant(**participant)
+        db.session.add(participants[p_id])
+
+    db.session.flush()
+
+    for purchase in data['pos_purchases']:
+        p = Purchase(
+            participant_id=participants[str(purchase['participant_id'])].id,
+            activity_id=activity.id,
+            product_id=products[str(purchase['product_id'])].id,
+            timestamp=purchase['timestamp'],
+            undone=purchase['undone']
+        )
+        db.session.add(p)
+
+    for purchase in data['auction_purchases']:
+        p = AuctionPurchase(
+            participant_id=participants[str(purchase['participant_id'])].id,
+            activity_id=activity.id,
+            description=purchase['description'],
+            price=purchase['price'],
+            timestamp=purchase['timestamp'],
+            undone=purchase['undone']
+        )
+        db.session.add(p)
+
+    db.session.commit()
 
 
 @admin.route('/activities/<int:activity_id>', methods=['GET', 'POST'])
@@ -86,3 +160,10 @@ def activate_activity(activity_id):
     activity.active = request.args.get('activate') != 'False'
     db.session.commit()
     return redirect(url_for('admin.list_activities'))
+
+
+@admin.route('/activities/<int:activity_id>/export.json', methods=['GET'])
+@admin_required
+def export_activity(activity_id):
+    activity = Activity.query.get_or_404(activity_id)
+    return jsonify(activity.to_dict())

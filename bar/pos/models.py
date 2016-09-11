@@ -21,6 +21,20 @@ class Activity(db.Model, login.UserMixin):
     def is_active(self):
         return self.active
 
+    def to_dict(self):
+        settings_fields = ['trade_credits', 'credit_value', 'age_limit', 'stacked_purchases', 'require_terms', 'terms']
+        settings = dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name in settings_fields)
+        return {
+            'id': self.id,
+            'name': self.name,
+            'passcode': self.passcode,
+            'settings': settings,
+            'participants': [p.to_dict() for p in self.participants.all()],
+            'products': [p.to_dict() for p in self.products.all()],
+            'pos_purchases': [p.to_dict() for p in self.pos_purchases.all()],
+            'auction_purchases': [p.to_dict() for p in self.auction_purchases.all()] 
+        }
+
 
 class Participant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,6 +54,9 @@ class Participant(db.Model):
         db.UniqueConstraint('name', 'activity_id'),
     )
 
+    def to_dict(self):
+        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name)
+
 
 class Purchase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,12 +67,15 @@ class Purchase(db.Model):
     undone = db.Column(db.Boolean(), default=False, nullable=False)
 
     participant = db.relationship('Participant', backref=db.backref('pos_purchases', lazy='dynamic'))
-    activity = db.relationship('Activity')
+    activity = db.relationship('Activity', backref=db.backref('pos_purchases', lazy='dynamic'))
     product = db.relationship('Product')
 
     def __init__(self, **kwargs):
         self.timestamp = datetime.now()
         super(Purchase, self).__init__(**kwargs)
+
+    def to_dict(self):
+        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name)
 
 
 class Product(db.Model):
@@ -66,4 +86,7 @@ class Product(db.Model):
     priority = db.Column(db.Integer(), nullable=False, default=0)
     age_limit = db.Column(db.Boolean(), nullable=False, default=False)
 
-    activity = db.relationship('Activity')
+    activity = db.relationship('Activity',  backref=db.backref('products', lazy='dynamic'))
+
+    def to_dict(self):
+        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name)

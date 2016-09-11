@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container-narrow">
+	<h1>{% block title %}Import{% endblock %}</h1>
+	<form method="POST" enctype="multipart/form-data">
+		{{ form.hidden_tag() }}
+		<div class="form-group">
+			{{ form.import_file.label(class="control-label") }}
+			{{ form.import_file() }}
+		</div>
+		{{ render_errors(form.import_file) }}
+		<button type="submit" class="btn btn-primary">Submit</button>
+		<a href="{{url_for('admin.list_activities')}}" class="btn btn-link">Cancel</a>
+	</form>
+</div>
+{% endblock %}
