@@ -66,14 +66,14 @@ def import_activity():
     if form.validate_on_submit():
         try: 
             data = json.load(form.import_file.data)
+            if not form.name.data:
+                form.name.data = data['name']
+            if not form.passcode.data:
+                form.passcode.data = data['passcode']
             _load_activity(data, form.name.data, form.passcode.data)
-        # except IntegrityError:
-        #     db.session.rollback()
-        #     if not form.name.data:
-        #         form.name.data = data['name']
-        #     if not form.passcode.data:
-        #         form.passcode.data = data['passcode']
-        #     form.passcode.errors.append('Please provide a unique passcode!')
+        except IntegrityError:
+            db.session.rollback()
+            form.passcode.errors.append('Please provide a unique passcode!')
         except Exception as e:
             db.session.rollback()
             form.import_file.errors.append(str(e))
