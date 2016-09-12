@@ -8,4 +8,13 @@ class ActivityForm(Form):
     active = BooleanField('Active')
 
 class ImportForm(Form):
-    import_file = FileField('Activity JSON', validators=[FileRequired(), FileAllowed(['json'], 'JSON files only!')])
+    import_file = FileField('Activity JSON', validators=[
+        FileRequired(), 
+        FileAllowed(['json'], 'JSON files only!')
+        ])
+    name = TextField('Name (optional)', validators=[
+        validators.Optional(strip_whitespace=True)
+        ])
+    passcode = TextField('Passcode', validators=[
+        validators.Optional(strip_whitespace=True)
+        ])

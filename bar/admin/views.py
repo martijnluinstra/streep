@@ -1,10 +1,11 @@
 from functools import wraps
 
-import json
-
 from flask import request, render_template, redirect, url_for, current_app, has_request_context, jsonify
 from flask_login import login_user
 from flask_coverapi import current_user
+
+import json
+from sqlalchemy.exc import IntegrityError
 
 from bar import db
 from bar.pos.models import Activity, Product, Participant, Purchase
@@ -51,7 +52,7 @@ def add_activity():
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-            form.name.errors.append('Please provide a unique passcode!')
+            form.passcode.errors.append('Please provide a unique passcode!')
             return render_template('activity_form.html', form=form, mode='add')
         else:
             return redirect(url_for('admin.list_activities'))
@@ -65,20 +66,31 @@ def import_activity():
     if form.validate_on_submit():
         try: 
             data = json.load(form.import_file.data)
-            _load_activity(data)
+            _load_activity(data, form.name.data, form.passcode.data)
+        # except IntegrityError:
+        #     db.session.rollback()
+        #     if not form.name.data:
+        #         form.name.data = data['name']
+        #     if not form.passcode.data:
+        #         form.passcode.data = data['passcode']
+        #     form.passcode.errors.append('Please provide a unique passcode!')
         except Exception as e:
             db.session.rollback()
             form.import_file.errors.append(str(e))
-            raise
         else:
             return redirect(url_for('admin.list_activities'))
     return render_template('admin/activity_import_form.html', form=form)
 
 
-def _load_activity(data):
+def _load_activity(data, name=None, passcode=None):
+    if not name:
+        name = data['name']
+    if not passcode:
+        passcode = data['passcode']
+
     activity = Activity(
-            name=data['name'],
-            passcode=data['passcode'],
+            name=name,
+            passcode=passcode,
             **data['settings']
         )
     

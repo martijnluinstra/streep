@@ -5,6 +5,7 @@
     <header class="content-header">
         <h1>{% block title %}Activities{% endblock %}</h1>
         <div class="content-controls">
+            <a href="{{url_for('admin.import_activity')}}" class="btn btn-default">Import</a>
             <a href="{{url_for('admin.add_activity')}}" class="btn btn-primary">Add activity</a>
         </div>
     </header>
