@@ -113,8 +113,13 @@ def _load_activity(data, name=None, passcode=None):
     for participant in data['participants']:
         p_id = str(participant['id'])
         del participant['id']
+        if participant['birthday']:
+            birthday = datetime.strptime(participant['birthday'], "%Y-%m-%dT%H:%M:%S"),
+        else:
+            birthday = None
+        del participant['birthday']
         participant['activity_id'] = activity.id
-        participants[p_id] = Participant(**participant)
+        participants[p_id] = Participant(birthday=birthday, **participant)
         db.session.add(participants[p_id])
 
     db.session.flush()

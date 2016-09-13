@@ -55,7 +55,10 @@ class Participant(db.Model):
     )
 
     def to_dict(self):
-        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns)
+        exclude = ['birthday']
+        result = dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name not in exclude)
+        result['birthday'] = self.birthday.isoformat() if self.birthday else None
+        return result
 
 
 class Purchase(db.Model):
