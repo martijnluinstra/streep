@@ -6,6 +6,7 @@ from flask import request, render_template, redirect, url_for, current_app, has_
 from flask_login import login_user
 from flask_coverapi import current_user
 
+from datetime import datetime
 import json
 from sqlalchemy.exc import IntegrityError
 
@@ -123,7 +124,7 @@ def _load_activity(data, name=None, passcode=None):
             participant_id=participants[str(purchase['participant_id'])].id,
             activity_id=activity.id,
             product_id=products[str(purchase['product_id'])].id,
-            timestamp=purchase['timestamp'],
+            timestamp=datetime.strptime(purchase['timestamp'], "%Y-%m-%dT%H:%M:%S"),
             undone=purchase['undone']
         )
         db.session.add(p)
@@ -134,7 +135,7 @@ def _load_activity(data, name=None, passcode=None):
             activity_id=activity.id,
             description=purchase['description'],
             price=purchase['price'],
-            timestamp=purchase['timestamp'],
+            timestamp=datetime.strptime(purchase['timestamp'], "%Y-%m-%dT%H:%M:%S"),
             undone=purchase['undone']
         )
         db.session.add(p)

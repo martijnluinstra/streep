@@ -26,8 +26,8 @@
         {% if view == 'pos' %}
             {% for (purchase, product, price) in purchases %}
             <tr id="{{ purchase.id }}">
-                <td>{{product}}</td>
-                <td>{{purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
+                <td>{{ product }}</td>
+                <td>{{ purchase.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                 <td>
                     <a href="{{url_for('pos.undo', purchase_id=purchase.id)}}" data-participant-id="{{participant.id}}" data-purchase-id="{{purchase.id}}" data-price="{{price}}" class="btn btn-default btn-sm {{ 'disabled' if purchase.undone}}" data-type="undo">Undo</a>
                 </td>

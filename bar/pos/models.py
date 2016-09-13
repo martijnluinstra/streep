@@ -55,7 +55,7 @@ class Participant(db.Model):
     )
 
     def to_dict(self):
-        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name)
+        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns)
 
 
 class Purchase(db.Model):
@@ -75,7 +75,10 @@ class Purchase(db.Model):
         super(Purchase, self).__init__(**kwargs)
 
     def to_dict(self):
-        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name)
+        exclude = ['timestamp']
+        result = dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name not in exclude)
+        result['timestamp'] = self.timestamp.isoformat()
+        return result
 
 
 class Product(db.Model):
@@ -89,4 +92,4 @@ class Product(db.Model):
     activity = db.relationship('Activity',  backref=db.backref('products', lazy='dynamic'))
 
     def to_dict(self):
-        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name)
+        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns)

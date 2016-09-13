@@ -19,4 +19,7 @@ class AuctionPurchase(db.Model):
         super(AuctionPurchase, self).__init__(**kwargs)
 
     def to_dict(self):
-        return dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name)
+        exclude = ['timestamp']
+        result = dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name not in exclude)
+        result['timestamp'] = self.timestamp.isoformat()
+        return result
