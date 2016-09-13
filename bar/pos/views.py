@@ -512,3 +512,35 @@ def auto_complete_members():
         return jsonify([])
     members = get_secretary_api().find_members_by_name(name)
     return jsonify([m.to_dict() for m in members.itervalues()])
+
+
+@pos.route('/stats', methods=['GET'])
+@login_required
+def activity_stats():
+    pos_purchases_query = db.session.query(
+            db.func.sum(Product.price).label('amount'), 
+            db.func.count(Product.price).label('units')
+        )\
+        .join(Purchase, Purchase.product_id == Product.id)\
+        .filter(Purchase.activity_id == current_user.get_id())\
+        .filter(Purchase.undone == False)
+    auction_purchases_query = db.session.query(
+            db.func.sum(AuctionPurchase.price).label('amount'), 
+            db.func.count(AuctionPurchase.price).label('units')
+        )\
+        .filter(AuctionPurchase.activity_id == current_user.get_id())\
+        .filter(AuctionPurchase.undone == False)
+
+    stats = {
+        'pos_purchases_total': pos_purchases_query.first(),
+        'pos_purchases_products': pos_purchases_query.add_column(Product.name)\
+            .group_by(Product.name).order_by(db.desc('amount')).all(),
+        'pos_purchases_participants': pos_purchases_query.add_column(Participant.name)\
+            .join(Participant, Purchase.participant_id == Participant.id)\
+            .group_by(Participant.name).order_by(db.desc('amount')).limit(10),
+        'auction_purchases_total': auction_purchases_query.first(),
+        'auction_purchases_participants': auction_purchases_query.add_column(Participant.name)\
+            .join(Participant, AuctionPurchase.participant_id == Participant.id)\
+            .group_by(Participant.name).order_by(db.desc('amount')).limit(10)
+    }
+    return render_template('pos/activity_stats.html', **stats)

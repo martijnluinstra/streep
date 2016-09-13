@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Stats{% endblock %}
+
+{% block content %}
+<div class="container-narrow">
+	<h1>Stats</h1>
+	<section id="pos-stats">
+		<h2>Bar</h2>
+		<p>
+			<strong>Total sale:</strong> {{ format_exchange(pos_purchases_total.amount) }} ({{ pos_purchases_total.units }} units)
+		</p>
+		<h3>Products</h3>
+		<table class="table table-condensed table-hover">
+			<thead>
+				<tr>
+					<th class="col-sm-7">Product</th>
+					<th class="col-sm-3">Amount</th>
+					<th class="col-sm-2">Units</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for product in pos_purchases_products %}
+					<tr>
+						<td>{{ product.name }}</td>
+						<td>{{ format_exchange(product.amount) }}</td>
+						<td>{{ product.units }}</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td collspan="3">No products :(</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		</ul>
+		<h3>Participants</h3>
+		<table class="table table-condensed table-hover">
+			<thead>
+				<tr>
+					<th class="col-sm-1">#</th>
+					<th class="col-sm-6">Name</th>
+					<th class="col-sm-3">Amount</th>
+					<th class="col-sm-2">Units</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for participant in pos_purchases_participants %}
+					<tr>
+						<td>{{ loop.index }}</td>
+						<td>{{ participant.name }}</td>
+						<td>{{ format_exchange(participant.amount) }}</td>
+						<td>{{ participant.units }}</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td collspan="4">No participants :(</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
+	<section id="auction-stats">
+		<h2>Auction</h2>
+		<p>
+			<strong>Total sale:</strong> {{ format_exchange(auction_purchases_total.amount) }} ({{ auction_purchases_total.units }} units)
+		</p>
+		<h3>Participants</h3>
+		<table class="table table-condensed table-hover">
+			<thead>
+				<tr>
+					<th class="col-sm-1">#</th>
+					<th class="col-sm-6">Name</th>
+					<th class="col-sm-3">Amount</th>
+					<th class="col-sm-2">Units</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for participant in auction_purchases_participants %}
+					<tr>
+						<td>{{ loop.index }}</td>
+						<td>{{ participant.name }}</td>
+						<td>{{ format_exchange(participant.amount) }}</td>
+						<td>{{ participant.units }}</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td collspan="4">No participants :(</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
+</div>
+{% endblock %}

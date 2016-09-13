@@ -8,3 +8,4 @@ bar.wsgi
 data/secretary_token
 coverapi.zip
 flask_coverapi.zip
+__config.py
