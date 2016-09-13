@@ -1,3 +1,5 @@
+from __future__ import division
+
 from urlparse import urlparse, urljoin
 
 from urlparse import urlparse, urljoin

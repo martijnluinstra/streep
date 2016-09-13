@@ -1,3 +1,5 @@
+from __future__ import division
+
 from functools import wraps
 
 from flask import request, render_template, redirect, url_for, current_app, has_request_context, jsonify
