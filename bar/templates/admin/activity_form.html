@@ -5,7 +5,9 @@
     <header class="content-header">
         <h1>{% block title %}{{mode|title}} activity{% endblock %}</h1>
         <div class="content-controls">
-            <a href="{{url_for('admin.export_activity', activity_id=id)}}" class="btn btn-default" download>Export</a>
+            {% if mode != 'add' %}
+                <a href="{{url_for('admin.export_activity', activity_id=id)}}" class="btn btn-default" download>Export</a>
+            {* endif *}
         </div>
     </header>
     <form method="post" action="{{ url_for('admin.add_activity') if mode == 'add' else url_for('admin.edit_activity', activity_id=id) }}">
