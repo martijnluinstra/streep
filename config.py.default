@@ -13,7 +13,7 @@ SQLALCHEMY_DATABASE_URI = 'dialect+driver://username:password@host:port/database
 # SQLALCHEMY_DATABASE_URI = 'mysql://bar:bar@localhost/bar'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-COVER_APP = u'reclaim'
+COVER_APP = u'bar'
 COVER_SECRET = u''
 
 ADMINS = ('board','audicee','candy','foodcee','webcie')
