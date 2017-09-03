@@ -18,7 +18,7 @@ from bar.auction.models import AuctionPurchase
 
 from . import pos
 from .models import Activity, Participant, Purchase, Product
-from .forms import ParticipantForm, ProductForm, BirthdayForm, SettingsForm, ImportForm, ExportForm
+from .forms import ParticipantForm, ProductForm, RegistrationForm, SettingsForm, ImportForm, ExportForm
 
 
 class CSVRowError(Exception):
@@ -273,22 +273,21 @@ def participant_history(participant_id):
     return render_template('pos/participant_history.html', purchases=purchases, participant=participant, view=view)
 
 
-@pos.route('/participants/birthday', methods=['GET', 'POST'])
+@pos.route('/participants/registration', methods=['GET', 'POST'])
 @login_required
-def add_participant_birthday():
-    """ 
-    Edit a participant's birthday
-    """
-    form = BirthdayForm()
+def participant_registration():
+    """ Register a participant """
+    form = RegistrationForm()
     if form.validate_on_submit():
         participant = Participant.query.filter_by(name=form.name.data).first()
         if participant:
             participant.birthday = form.birthday.data
+            participant.barcode = form.barcode.data
             db.session.commit()
-            return redirect(url_for('pos.add_participant_birthday'))
+            return redirect(url_for('pos.participant_registration'))
         else:
             form.name.errors.append('Participant\'s name can not be found')
-    return render_template('pos/participant_birthday.html', form=form)
+    return render_template('pos/participant_registration.html', form=form)
 
 
 @pos.route('/participants/names.json', methods=['GET'])
@@ -302,7 +301,8 @@ def list_participant_names():
                 'id': participant.id,
                 'name': participant.name,
                 'birthday': '' if not participant.birthday else participant.birthday.strftime('%d-%m-%Y'),
-                'legal_age': relativedelta(datetime.now(), participant.birthday).years > current_user.age_limit
+                'barcode': '' if not participant.barcode else participant.barcode,
+                'is_legal_age': relativedelta(datetime.now(), participant.birthday).years > current_user.age_limit
             }
     return jsonify(list(generate(participants)))
 

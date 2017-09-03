@@ -50,9 +50,15 @@ class ParticipantForm(Form):
             raise validators.StopValidation('This is not a valid IBAN')
 
 
-class BirthdayForm(Form):
+class RegistrationForm(Form):
     name = TextField('Name', [validators.InputRequired(message='Name is required')])
-    birthday  = DateTimeField('Birthday', format='%d-%m-%Y', validators=[validators.InputRequired(message='Birthday is required')])
+    birthday = DateTimeField('Birthday', format='%d-%m-%Y', validators=[
+        validators.Optional(strip_whitespace=True)
+    ])
+    barcode = TextField('Barcode', [
+        validators.Optional(strip_whitespace=True),
+        validators.length(max=255)
+    ])
 
 
 class ProductForm(Form):

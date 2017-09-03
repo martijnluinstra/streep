@@ -10,23 +10,27 @@
 {% block content %}
 <div class="container-narrow">
 	<h1>{% block title %}Add birthday{% endblock %}</h1>
-	<form method="post" action="{{ url_for('pos.add_participant_birthday') }}">
+	<form method="post">
 		{{ form.hidden_tag() }}
 		<div class="form-group">
 			{{ form.name.label(class="control-label") }}
-			{{ form.name(class="form-control typeahead", autocomplete="off",autofocus="true") }}
+			{{ form.name(class="form-control typeahead", autocomplete="off", autofocus="true") }}
 		</div>
 		{{ render_errors(form.name) }}
 		<div class="form-group">
+			{{ form.barcode.label(class="control-label") }}
+			{{ form.barcode(class="form-control", placeholder="Scan a barcode", autocomplete="off") }}
+		</div>
+		{{ render_errors(form.barcode) }}
+		<div class="form-group">
 			{{ form.birthday.label(class="control-label") }}
-			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy") }}
+			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy", autocomplete="off") }}
 		</div>
 		{{ render_errors(form.birthday) }}
 		<div class="form-group">
 			<p id="legal-status">No birthdate found!</p>
 		</div>
 		<button type="submit" class="btn btn-primary">Submit</button>
-		<a href="{{url_for('pos.list_participants')}}" class="btn btn-link">Cancel</a>
 	</form>
 </div>
 {% endblock %}
@@ -57,7 +61,8 @@
 
 		$('#name.typeahead').bind('typeahead:autocomplete typeahead:select typeahead:cursorchange', function(ev, suggestion) {
 			$('#birthday').val(suggestion.birthday);
-			if(suggestion.legal_age){
+			$('#barcode').val(suggestion.barcode);
+			if(suggestion.is_legal_age){
 				$('#legal-status').html('Alcohol allowed!');
 				$('#legal-status').removeClass().addClass('success');
 			}else if(suggestion.birthday===''){
@@ -67,6 +72,11 @@
 				$('#legal-status').html('NO alcohol allowed!');
 				$('#legal-status').removeClass().addClass('warning');
 			}
+		});
+
+		$('#barcode').keydown(function(evt) {
+			if (evt.key === 'Enter')
+				evt.preventDefault();
 		});
 
 		$('#birthday').keyup(function() {
