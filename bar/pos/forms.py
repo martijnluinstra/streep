@@ -1,3 +1,5 @@
+from validators import iban
+
 from flask_wtf import Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import TextField, BooleanField, IntegerField, DateTimeField, RadioField, SelectField, validators, TextAreaField
@@ -21,11 +23,16 @@ class ParticipantForm(Form):
     address = TextField('Address', [validators.InputRequired(message='Address is required')])
     city = TextField('Place of residence', [validators.InputRequired(message='Place of residence is required')])
     email = TextField('Email address', [validators.InputRequired(message='Email is required'), validators.Email(message='Invalid email address')])
-    iban = TextField('IBAN', [validators.InputRequired(message='IBAN is required'), validators.length(max=34, message='An IBAN may not be longer than 34 characters')])
     bic = TextField('BIC (optional)', [validators.Optional(strip_whitespace=True), validators.length(max=11, message='A BIC may not be longer than 11 characters')])
+    iban = TextField('IBAN', [
+        validators.InputRequired(message='IBAN is required')
+    ])
     birthday  = DateTimeField('Date of birth (optional)', format='%Y-%m-%d', validators=[
         validators.Optional(strip_whitespace=True)
     ])
+    def validate_iban(form, field):
+        if not iban(field.raw_data[0]) or len(field.raw_data[0]) > 34:
+            raise validators.StopValidation('This is not a valid IBAN')
 
 
 class BirthdayForm(Form):
