@@ -33,8 +33,9 @@
 		{{ render_field(form.city) }}
 		{{ render_field(form.email) }}
 		{{ render_field(form.iban) }}
-		{{ render_field(form.bic) }}
-		{{ render_field(form.birthday, placeholder="yyyy-mm-dd") }}
+        {{ render_field(form.bic) }}
+        {{ render_field(form.birthday, placeholder="yyyy-mm-dd") }}
+		{{ render_field(form.barcode) }}
 		<button type="submit" class="btn btn-primary">Submit</button>
 		<a href="{{url_for('pos.list_participants')}}" class="btn btn-link">Cancel</a>
 	</form>

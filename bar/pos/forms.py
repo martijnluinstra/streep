@@ -20,16 +20,31 @@ class ParticipantForm(Form):
     member_id = IntegerField('Member ID', validators=[
         validators.Optional(strip_whitespace=True)
     ])
-    address = TextField('Address', [validators.InputRequired(message='Address is required')])
-    city = TextField('Place of residence', [validators.InputRequired(message='Place of residence is required')])
-    email = TextField('Email address', [validators.InputRequired(message='Email is required'), validators.Email(message='Invalid email address')])
-    bic = TextField('BIC (optional)', [validators.Optional(strip_whitespace=True), validators.length(max=11, message='A BIC may not be longer than 11 characters')])
+    address = TextField('Address', [
+        validators.InputRequired(message='Address is required')
+    ])
+    city = TextField('Place of residence', [
+        validators.InputRequired(message='Place of residence is required')
+    ])
+    email = TextField('Email address', [
+        validators.InputRequired(message='Email is required'),
+        validators.Email(message='Invalid email address')
+    ])
     iban = TextField('IBAN', [
         validators.InputRequired(message='IBAN is required')
+    ])
+    bic = TextField('BIC (optional)', [
+        validators.Optional(strip_whitespace=True),
+        validators.length(max=11, message='A BIC may not be longer than 11 characters')
     ])
     birthday  = DateTimeField('Date of birth (optional)', format='%Y-%m-%d', validators=[
         validators.Optional(strip_whitespace=True)
     ])
+    barcode = TextField('Barcode', [
+        validators.Optional(strip_whitespace=True),
+        validators.length(max=255)
+    ])
+
     def validate_iban(form, field):
         if not iban(field.raw_data[0]) or len(field.raw_data[0]) > 34:
             raise validators.StopValidation('This is not a valid IBAN')

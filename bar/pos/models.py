@@ -46,7 +46,7 @@ class Participant(db.Model):
     birthday = db.Column(db.DateTime(), nullable=True)
     activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), nullable=False)
     has_agreed_to_terms = db.Column(db.Boolean(), nullable=False, default=False)
-    # barcode = db.Column(db.String(255), nullable=False)
+    barcode = db.Column(db.String(255), nullable=True)
 
     __table_args__ = (
         db.UniqueConstraint('cover_id', 'activity_id'),
