@@ -47,23 +47,10 @@ class ImportForm(Form):
 
 
 class SettingsForm(Form):
-    trade_credits = RadioField('Trading currency', choices=[('True','Credits'),('False','Euro')])
-    credit_value = IntegerField('Credit value (in Euro cent)')
     age_limit = IntegerField('Age limit (minimal legal age)', [validators.InputRequired(message='Age limit is required')])
     stacked_purchases = BooleanField('Allow stacked purchases (e.g. buy 6 beers at once)')
     require_terms = BooleanField('Accept terms before purchases')
     terms = TextAreaField('Terms', [validators.length(max=2048)])
-
-    def validate_trade_credits(form, field):
-        field.data = field.data == 'True'
-
-    def validate_credit_value(form, field):
-        if not form.trade_credits.data:
-            field.errors[:] = []
-            return
-        if not field.raw_data or not field.raw_data[0]:
-            field.errors[:] = []
-            raise validators.StopValidation('Credit value is requiered!')
 
     def validate_terms(form, field):
         if not form.require_terms.data:

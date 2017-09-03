@@ -11,9 +11,6 @@ var config = {
 };
 
 function format_exchange(amount){
-    if ($('#view-users').data('trade-credits')){
-        return amount;
-    }
     return "€ "+(amount/100).toFixed(2)
 }
 

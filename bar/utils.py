@@ -23,8 +23,6 @@ def utility_processor():
     def format_exchange(amount):
         if not amount:
             amount = 0
-        if current_user.trade_credits:
-            return amount
         return format_price(amount/100)
     def format_price(amount, currency=u"\u20AC"):
         return u'{1} {0:.2f}'.format(amount, currency)

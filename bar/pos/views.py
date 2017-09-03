@@ -459,8 +459,6 @@ def activity_export():
     spend_data = []
 
     settings={
-        'trade_credits': current_user.trade_credits,
-        'credit_value': current_user.credit_value,
         'pos': form.pos.data,
         'auction': form.auction.data,
         'description_pos_prefix': form.description_pos_prefix.data,
@@ -474,9 +472,9 @@ def activity_export():
             spend_auction = 0 if spend_auction is None else spend_auction
             
             if settings['pos'] and settings['auction']:
-                amount = spend_auction + (spend_pos * settings['credit_value'] if settings['trade_credits'] else spend_pos)
+                amount = spend_auction + spend_pos
             elif settings['pos']:
-                amount = (spend_pos * settings['credit_value'] if settings['trade_credits'] else spend_pos)
+                amount = spend_pos
             else:
                 amount = spend_auction
 

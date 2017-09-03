@@ -15,13 +15,7 @@
 	{% for product in products %}
 		<tr>
 			<th class="col-sm-4">{{ product.name }}</th>
-			<td class="col-sm-8">
-			{% if current_user.tradecredits %}
-				{{format_price((product.price*current_user.credit_value)/100)}}
-			{% else %}
-				{{format_price(product.price/100)}}
-			{% endif %}
-			</td>
+			<td class="col-sm-8">{{ format_price(product.price/100) }}</td>
 		</tr>
 	{% endfor %}
 	</table>
@@ -35,8 +29,8 @@
 
 {% block content %}
 <div class="container-narrow">
-	<h1>{% block title %}Terms and conditions{% endblock %}</h1>
-	{{render_markdown_tags(terms)}}
+	<h1>{% block title %} Terms and conditions {% endblock %}</h1>
+	{{ render_markdown_tags(terms) }}
 	<a href="{{url_for('pos.view_home')}}" class="btn btn-danger">I disagree</a>
 	<a href="{{url_for('pos.accept_terms_participant', participant_id=participant.id, accept='True')}}" class="btn btn-success">I agree to the terms and conditions</a>
 </div>

@@ -10,19 +10,17 @@ class Activity(db.Model, login.UserMixin):
     passcode = db.Column(db.String(40), nullable=False, unique=True)
     active = db.Column(db.Boolean(), nullable=False, default=True)
     # settings
-    trade_credits = db.Column(db.Boolean(), nullable=False, default=False)
-    credit_value = db.Column(db.Integer, nullable=True)
     age_limit = db.Column(db.Integer, nullable=False, default=18)
     stacked_purchases = db.Column(db.Boolean(), nullable=False, default=True)
     require_terms = db.Column(db.Boolean(), nullable=False, default=False)
-    terms = db.Column(db.String(2048), nullable=True)
+    terms = db.Column(db.String(4096), nullable=True)
     participants = db.relationship('Participant', backref='activity', lazy='dynamic')
 
     def is_active(self):
         return self.active
 
     def to_dict(self):
-        settings_fields = ['trade_credits', 'credit_value', 'age_limit', 'stacked_purchases', 'require_terms', 'terms']
+        settings_fields = ['age_limit', 'stacked_purchases', 'require_terms', 'terms']
         settings = dict((field.name, getattr(self, field.name)) for field in self.__table__.columns if field.name in settings_fields)
         return {
             'id': self.id,
@@ -48,6 +46,7 @@ class Participant(db.Model):
     birthday = db.Column(db.DateTime(), nullable=True)
     activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), nullable=False)
     has_agreed_to_terms = db.Column(db.Boolean(), nullable=False, default=False)
+    # barcode = db.Column(db.String(255), nullable=False)
 
     __table_args__ = (
         db.UniqueConstraint('cover_id', 'activity_id'),
