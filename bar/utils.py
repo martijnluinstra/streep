@@ -31,7 +31,12 @@ def utility_processor():
             return True
         age = relativedelta(datetime.now(), birthdate).years
         return not (product_age_limit and age<current_user.age_limit)
-    return dict(format_exchange=format_exchange, format_price=format_price, is_eligible=is_eligible)
+    return {
+        'format_exchange': format_exchange,
+        'format_price': format_price,
+        'is_eligible': is_eligible,
+        'now': datetime.now()
+    }
 
 
 def is_safe_url(target):

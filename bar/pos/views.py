@@ -229,19 +229,29 @@ def edit_participant(participant_id):
     return render_template('pos/participant_form.html', form=form, mode='edit', id=participant.id)
 
 
-@pos.route('/participants/<int:participant_id>/terms', methods=['GET'])
+@pos.route('/participants/<int:participant_id>/terms', methods=['GET', 'POST'])
 @login_required
 def accept_terms_participant(participant_id):
     """ Let a participant accept terms """
-    accept = request.args.get('accept') == 'True'
+    next_url = request.args.get('next')
+    if not is_safe_url(next_url):
+        return abort(400)
+
     participant = Participant.query.get_or_404(participant_id)
     products = Product.query.filter_by(activity_id=current_user.id).all()
-    if not participant.has_agreed_to_terms:
-        participant.has_agreed_to_terms = accept
-    db.session.commit()
-    if accept:
-        return redirect(url_for('pos.view_home'))
-    return render_template('pos/terms.html', terms=current_user.terms, participant=participant, products=products)
+
+    if request.method == 'POST':
+        participant.has_agreed_to_terms = True
+        db.session.commit()
+        return redirect(next_url or url_for('pos.view_home'))
+    
+    return render_template(
+        'pos/terms.html',
+        terms=current_user.terms,
+        participant=participant,
+        products=products,
+        next_url=next_url or url_for('pos.view_home')
+    )
 
 
 @pos.route('/participants/<int:participant_id>/history', methods=['GET'])
@@ -284,7 +294,15 @@ def participant_registration():
             participant.birthday = form.birthday.data
             participant.barcode = form.barcode.data
             db.session.commit()
-            return redirect(url_for('pos.participant_registration'))
+
+            next_url = url_for('pos.participant_registration')
+            if current_user.require_terms and not participant.has_agreed_to_terms:
+                return redirect(url_for(
+                    'pos.accept_terms_participant', 
+                    participant_id=participant.id,
+                    next=next_url
+                ))
+            return redirect(next_url)
         else:
             form.name.errors.append('Participant\'s name can not be found')
     return render_template('pos/participant_registration.html', form=form)

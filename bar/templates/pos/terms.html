@@ -2,11 +2,21 @@
 
 {% macro participant_details() %}
 	<table class="table table-bordered table-condensed">
-		<tr><th class="col-sm-4">Name</th><td class="col-sm-8">{{participant.name}}</td></tr>
-		<tr><th>Address</th><td>{{participant.address}}</td></tr>
-		<tr><th>Place of residence</th><td>{{participant.city}}</td></tr>
-		<tr><th>Email</th><td>{{participant.email}}</td></tr>
-		<tr><th>IBAN</th><td>{{participant.iban}}</td></tr>
+		<tr><th class="col-sm-4">Participant ID</th><td class="col-sm-8">{{ participant.id }}</td></tr>
+		<tr><th class="col-sm-4">Name</th><td class="col-sm-8">{{ participant.name }}</td></tr>
+		<tr><th>Address</th><td>{{ participant.address }}</td></tr>
+		<tr><th>Place of residence</th><td>{{ participant.city }}</td></tr>
+		<tr><th>Email</th><td>{{ participant.email }}</td></tr>
+		<tr><th>IBAN</th><td>{{ participant.iban }}</td></tr>
+		<tr><th>BIC</th><td>{{ participant.bic }}</td></tr>
+		<tr class="visible-print-table-row">
+			<th>Date</th>
+			<td>{{ now.strftime('%Y-%m-%d') }} </td>
+		</tr>
+		<tr class="visible-print-table-row signature">
+			<th>Signature</th>
+			<td></td>
+		</tr>
 	</table>
 {% endmacro %}
 
@@ -29,9 +39,11 @@
 
 {% block content %}
 <div class="container-narrow">
-	<h1>{% block title %} Terms and conditions {% endblock %}</h1>
+	<h1 class="hidden-print">{% block title %} Terms and conditions {% endblock %}</h1>
 	{{ render_markdown_tags(terms) }}
-	<a href="{{url_for('pos.view_home')}}" class="btn btn-danger">I disagree</a>
-	<a href="{{url_for('pos.accept_terms_participant', participant_id=participant.id, accept='True')}}" class="btn btn-success">I agree to the terms and conditions</a>
+	<form method="POST" class="hidden-print">
+		<a href="{{ next_url }}" class="btn btn-danger">I disagree</a>
+		<button type="submit" class="btn btn-success">I agree to the terms and conditions</a>
+	</form>
 </div>
 {% endblock %}
