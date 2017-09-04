@@ -78,7 +78,11 @@ class SettingsForm(Form):
     age_limit = IntegerField('Age limit (minimal legal age)', [validators.InputRequired(message='Age limit is required')])
     stacked_purchases = BooleanField('Allow stacked purchases (e.g. buy 6 beers at once)')
     require_terms = BooleanField('Accept terms before purchases')
-    terms = TextAreaField('Terms', [validators.length(max=2048)])
+    terms = TextAreaField('Terms', [validators.length(max=4096)])
+    faq = TextAreaField('FAQ', [
+        validators.Optional(strip_whitespace=True),
+        validators.length(max=4096)
+    ])
 
     def validate_terms(form, field):
         if not form.require_terms.data:

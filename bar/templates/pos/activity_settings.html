@@ -31,9 +31,17 @@
 		{{ render_errors(form.require_terms) }}
 		<div class="form-group" id="option-terms">
 			{{ form.terms.label(class="control-label") }}
-			{{ form.terms(class="form-control") }}
+			{{ form.terms(class="form-control", placeholder="Use markdown to format your terms.") }}
+			<span class="help-block">
+				You may include the following tags in you terms: [activity], [price-list], [participant-details]
+			</span>
 		</div>
 		{{ render_errors(form.terms) }}
+		<div class="form-group" id="option-terms">
+			{{ form.faq.label(class="control-label") }}
+			{{ form.faq(class="form-control", placeholder="Use markdown to format your FAQ") }}
+		</div>
+		{{ render_errors(form.faq) }}
 		<button type="submit" class="btn btn-primary">Submit settings</button>
 	</form>
 </div>
