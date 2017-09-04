@@ -8,8 +8,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-narrow">
-	<h1>{% block title %}Add birthday{% endblock %}</h1>
+<div class="container-narrow content">
+    <header class="content-header">
+    	<h1>{% block title %}Register participant{% endblock %}</h1>
+        <div class="content-controls">
+            <a type="button" class="btn btn-default" href="{{url_for('pos.add_participant')}}">New participant</a>
+        </div>
+    </header>
 	<form method="post">
 		{{ form.hidden_tag() }}
 		<div class="form-group">
