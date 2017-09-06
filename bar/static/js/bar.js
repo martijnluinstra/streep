@@ -156,8 +156,10 @@ $('#view-users  #search').keyup(function(evt) {
     var query = $(this).val();
     $('.table-bar tbody tr').hide();
     $('.table-bar tbody tr td:first-child:containsNCS('+ query +')').closest('tr').show();
-    if (evt.key === 'Enter')
+    if (evt.key === 'Enter') {
         $('.table-bar tbody tr[data-barcode='+ $(this).val() +']').show();
+        $(this).val('');
+    }
 });
 
 /* FAQ */
