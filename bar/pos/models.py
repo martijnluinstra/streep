@@ -1,4 +1,5 @@
-from datetime import datetime
+import datetime
+
 import flask_login as login
 
 from bar import db
@@ -37,7 +38,6 @@ class Activity(db.Model, login.UserMixin):
 
 
 class Participant(db.Model):
-    __table_args__ = {'mysql_engine':'InnoDB'}
     id = db.Column(db.Integer, primary_key=True)
     cover_id = db.Column(db.Integer(), nullable=True)
     name = db.Column(db.String(255), nullable=False)
@@ -54,7 +54,17 @@ class Participant(db.Model):
     __table_args__ = (
         db.UniqueConstraint('cover_id', 'activity_id'),
         db.UniqueConstraint('name', 'activity_id'),
+        {'mysql_engine':'InnoDB'},
     )
+
+    @property
+    def age(self):
+        # datetime.timedelta does not account for leap years
+        # See https://stackoverflow.com/questions/2217488/age-from-birthdate-in-python
+        if not self.birthday:
+            return None
+        today = datetime.date.today()
+        return today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
 
     def to_dict(self):
         exclude = ['birthday']
@@ -77,7 +87,7 @@ class Purchase(db.Model):
     product = db.relationship('Product')
 
     def __init__(self, **kwargs):
-        self.timestamp = datetime.now()
+        self.timestamp = datetime.datetime.now()
         super(Purchase, self).__init__(**kwargs)
 
     def to_dict(self):

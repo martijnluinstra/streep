@@ -10,100 +10,100 @@
 {% block content %}
 <div class="container-narrow content">
     <header class="content-header">
-    	<h1>{% block title %}Register participant{% endblock %}</h1>
+        <h1>{% block title %}Register participant{% endblock %}</h1>
         <div class="content-controls">
             <a type="button" class="btn btn-default" href="{{url_for('pos.add_participant')}}">New participant</a>
         </div>
     </header>
-	<form method="post">
-		{{ form.hidden_tag() }}
-		<div class="form-group">
-			{{ form.name.label(class="control-label") }}
-			{{ form.name(class="form-control typeahead", autocomplete="off", autofocus="true") }}
-		</div>
-		{{ render_errors(form.name) }}
-		<div class="form-group">
-			{{ form.barcode.label(class="control-label") }}
-			{{ form.barcode(class="form-control", placeholder="Scan a barcode", autocomplete="off") }}
-		</div>
-		{{ render_errors(form.barcode) }}
-		<div class="form-group">
-			{{ form.birthday.label(class="control-label") }}
-			{{ form.birthday(class="form-control", placeholder="dd-mm-yyyy", autocomplete="off") }}
-		</div>
-		{{ render_errors(form.birthday) }}
-		<div class="form-group">
-			<p id="legal-status">No birthdate found!</p>
-		</div>
-		<button type="submit" class="btn btn-primary">Submit</button>
-	</form>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.name.label(class="control-label") }}
+            {{ form.name(class="form-control typeahead", autocomplete="off", autofocus="true") }}
+        </div>
+        {{ render_errors(form.name) }}
+        <div class="form-group">
+            {{ form.barcode.label(class="control-label") }}
+            {{ form.barcode(class="form-control", placeholder="Scan a barcode", autocomplete="off") }}
+        </div>
+        {{ render_errors(form.barcode) }}
+        <div class="form-group">
+            {{ form.birthday.label(class="control-label") }}
+            {{ form.birthday(class="form-control", placeholder="dd-mm-yyyy", autocomplete="off") }}
+        </div>
+        {{ render_errors(form.birthday) }}
+        <div class="form-group">
+            <p id="legal-status">No birthdate found!</p>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>
 {% endblock %}
 
 {% block scripts %}
-	{{super()}}
-	<script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
-	<script>
-		window.legal_age = {{current_user.age_limit|safe}};
+    {{super()}}
+    <script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
+    <script>
+        window.legal_age = {{current_user.age_limit|safe}};
 
-		var participants = new Bloodhound({ 
-			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), 
-			queryTokenizer: Bloodhound.tokenizers.whitespace, 
-			identify: function(obj) { return obj.id; },
-			prefetch: {
+        var participants = new Bloodhound({ 
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), 
+            queryTokenizer: Bloodhound.tokenizers.whitespace, 
+            identify: function(obj) { return obj.id; },
+            prefetch: {
                 url: '{{url_for('pos.list_participant_names')}}',
                 cache: false
             }
-		}); 
+        }); 
 
-		$('#name.typeahead').typeahead({
-			highlight: true
-		}, { 
-			name: 'participants', 
-			display: 'name',
-			source: participants 
-		});
+        $('#name.typeahead').typeahead({
+            highlight: true
+        }, { 
+            name: 'participants', 
+            display: 'name',
+            source: participants 
+        });
 
-		$('#name.typeahead').bind('typeahead:autocomplete typeahead:select typeahead:cursorchange', function(ev, suggestion) {
-			$('#birthday').val(suggestion.birthday);
-			$('#barcode').val(suggestion.barcode);
-			if(suggestion.is_legal_age){
-				$('#legal-status').html('Alcohol allowed!');
-				$('#legal-status').removeClass().addClass('success');
-			}else if(suggestion.birthday===''){
-				$('#legal-status').html('No birthdate found!');
-				$('#birthday').closest('.form-group').removeClass();
-			}else{
-				$('#legal-status').html('NO alcohol allowed!');
-				$('#legal-status').removeClass().addClass('warning');
-			}
-		});
+        $('#name.typeahead').bind('typeahead:autocomplete typeahead:select typeahead:cursorchange', function(ev, suggestion) {
+            $('#birthday').val(suggestion.birthday);
+            $('#barcode').val(suggestion.barcode);
+            if(suggestion.is_legal_age){
+                $('#legal-status').html('Alcohol allowed!');
+                $('#legal-status').removeClass().addClass('success');
+            }else if(suggestion.birthday===''){
+                $('#legal-status').html('No birthdate found!');
+                $('#birthday').closest('.form-group').removeClass();
+            }else{
+                $('#legal-status').html('NO alcohol allowed!');
+                $('#legal-status').removeClass().addClass('warning');
+            }
+        });
 
-		$('#barcode').keydown(function(evt) {
-			if (evt.key === 'Enter')
-				evt.preventDefault();
-		});
+        $('#barcode').keydown(function(evt) {
+            if (evt.key === 'Enter')
+                evt.preventDefault();
+        });
 
-		$('#birthday').keyup(function() {
-			if($(this).val() !== ''){
-				var pattern = /(\d{2})-(\d{2})-(\d{4})/;
-				var birthday = new Date(($(this).val()).replace(pattern,'$3-$2-$1'));
-			    var ref_date = new Date();
-				console.log(birthday);
-			    ref_date.setYear(ref_date.getYear() - window.legal_age);
-				console.log(ref_date);
-			    if(birthday<ref_date){
-			    	$('#legal-status').html('Alcohol allowed!');
-					$('#legal-status').removeClass().addClass('success');
-			    }else{
-			    	$('#legal-status').html('NO alcohol allowed!');
-					$('#legal-status').removeClass().addClass('warning');
-			    }
-	    	}else{
-				$('#legal-status').html('No birthdate found!');
-				$('#birthday').closest('.form-group').removeClass();
-	    	}
+        $('#birthday').keyup(function() {
+            if($(this).val() !== ''){
+                var pattern = /(\d{2})-(\d{2})-(\d{4})/;
+                var birthday = new Date(($(this).val()).replace(pattern,'$3-$2-$1'));
+                var ref_date = new Date();
+                console.log(birthday);
+                ref_date.setYear(ref_date.getYear() - window.legal_age);
+                console.log(ref_date);
+                if(birthday<ref_date){
+                    $('#legal-status').html('Alcohol allowed!');
+                    $('#legal-status').removeClass().addClass('success');
+                }else{
+                    $('#legal-status').html('NO alcohol allowed!');
+                    $('#legal-status').removeClass().addClass('warning');
+                }
+            }else{
+                $('#legal-status').html('No birthdate found!');
+                $('#birthday').closest('.form-group').removeClass();
+            }
 
-		});
-	</script>
+        });
+    </script>
 {% endblock %}

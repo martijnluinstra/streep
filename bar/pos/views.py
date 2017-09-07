@@ -5,7 +5,6 @@ from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 import json
 import re
 import csv
@@ -320,7 +319,7 @@ def list_participant_names():
                 'name': participant.name,
                 'birthday': '' if not participant.birthday else participant.birthday.strftime('%d-%m-%Y'),
                 'barcode': '' if not participant.barcode else participant.barcode,
-                'is_legal_age': relativedelta(datetime.now(), participant.birthday).years > current_user.age_limit
+                'is_legal_age': participant.age >= current_user.age_limit if participant.age else None
             }
     return jsonify(list(generate(participants)))
 
