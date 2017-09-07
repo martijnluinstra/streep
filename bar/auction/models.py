@@ -3,6 +3,7 @@ from datetime import datetime
 from bar import db
 
 class AuctionPurchase(db.Model):
+    __table_args__ = {'mysql_engine':'InnoDB'}
     id = db.Column(db.Integer, primary_key=True)
     participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'), nullable=False)
     activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), nullable=False)

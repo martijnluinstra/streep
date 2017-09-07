@@ -5,6 +5,7 @@ from bar import db
 
 
 class Activity(db.Model, login.UserMixin):
+    __table_args__ = {'mysql_engine':'InnoDB'}
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     passcode = db.Column(db.String(40), nullable=False, unique=True)
@@ -36,6 +37,7 @@ class Activity(db.Model, login.UserMixin):
 
 
 class Participant(db.Model):
+    __table_args__ = {'mysql_engine':'InnoDB'}
     id = db.Column(db.Integer, primary_key=True)
     cover_id = db.Column(db.Integer(), nullable=True)
     name = db.Column(db.String(255), nullable=False)
@@ -62,6 +64,7 @@ class Participant(db.Model):
 
 
 class Purchase(db.Model):
+    __table_args__ = {'mysql_engine':'InnoDB'}
     id = db.Column(db.Integer, primary_key=True)
     participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'), nullable=False)
     activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), nullable=False)
@@ -85,6 +88,7 @@ class Purchase(db.Model):
 
 
 class Product(db.Model):
+    __table_args__ = {'mysql_engine':'InnoDB'}
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     price = db.Column(db.Integer(), nullable=False, default=1)
