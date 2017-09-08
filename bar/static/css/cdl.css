@@ -1,3 +1,7 @@
+/*!
+ * Cover Design Language v0.1 (https://cdl.svcover.nl)
+ */
+
 @-ms-viewport       { width: device-width; }
 
 html, body {
@@ -37,7 +41,7 @@ nav.navbar-cover {
     left: 0px;
     right: 0px;
     min-height: 48px;
-    background: #C60C30;
+    background: #c8102e;
     color: white;
     padding: 0 1rem;
     font-size: 24px;
@@ -45,6 +49,7 @@ nav.navbar-cover {
     z-index: 1000;
     border-radius: 0;
     border: none;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -76,14 +81,19 @@ nav.navbar-cover .navbar-toggle{
 }
 
 nav.navbar-cover a.navbar-logo{
+    position: relative;
     float: left;
-    display: none;
+    height: 48px;
+    line-height: 48px;
     margin-right: 2rem;
+    display: none;
 }
     
 nav.navbar-cover a.navbar-logo img{
-    height: 33px;
-    vertical-align: middle;
+    position:relative;
+    bottom: -2px;
+    height: 24px;
+    vertical-align: baseline;
 }
 
 @media (min-width: 400px) {
@@ -93,8 +103,12 @@ nav.navbar-cover a.navbar-logo img{
 }
 
 @media (min-width: 768px) {
+    nav.navbar-cover a.navbar-logo{
+        height: 64px;
+        line-height: 64px;
+    }
     nav.navbar-cover a.navbar-logo img{
-        height: 44px;
+        height: 32px;
     }
 }
 
@@ -215,7 +229,7 @@ nav.navbar-cover .dropdown ul li a:focus{
 }
 
 /* Responsible dropdown in header, some bootstrap to overwrite on small devices*/
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     nav.navbar-cover .dropdown a.dropdown-toggle{
         display: none;
     }
@@ -433,21 +447,21 @@ nav.navbar-cover .dropdown ul li a:focus{
 .navicon.navicon-red,
 .navicon.navicon-red:before,
 .navicon.navicon-red:after{
-    background: #c60c30;
+    background: #c8102e;
 }
 
 /* Navicon Menu */
 
-nav.navbar-cover .navicon-button,
-nav.navbar-cover .navicon-button:focus,
-nav.navbar-cover .navicon-button:hover,
-nav.navbar-cover .navicon-button:visited{
+nav.navbar-cover .navbar-toggle.navicon-button,
+nav.navbar-cover .navbar-toggle.navicon-button:focus,
+nav.navbar-cover .navbar-toggle.navicon-button:hover,
+nav.navbar-cover .navbar-toggle.navicon-button:visited{
     outline: none;
     float: right;
 }
 
 @media (min-width: 768px) {
-    nav.navbar-cover .navicon-button{
+    nav.navbar-cover .navbar-toggle.navicon-button{
         display: none;
     }
 }
@@ -527,6 +541,22 @@ nav.navbar-cover .navicon-button:visited{
          box-sizing: border-box;
 }
 
+.side-nav nav ul li.divider{
+    height: 1px;
+    margin: 9px 0;
+    overflow: hidden;
+    background-color: #e5e5e5;
+}
+
+.side-nav nav ul li.sidenav-header{
+    display: block;
+    padding: .3rem 15px;
+    /*font-size: 12px;*/
+    font-weight: bold;
+    line-height: 1.42857143;
+    color: #777;
+    white-space: nowrap;
+}
 
 .side-nav nav ul li a,
 .side-nav nav ul li a:visited{
@@ -545,7 +575,7 @@ nav.navbar-cover .navicon-button:visited{
 }
 
 .side-nav nav ul li.active a{
-    border-left: 2px solid #c60c30;
+    border-left: 2px solid #c8102e;
     padding-left: calc(15px - 2px);
 }
 
