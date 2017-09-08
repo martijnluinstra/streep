@@ -65,14 +65,22 @@
     <script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
     <script>
         var participants = new Bloodhound({ 
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), 
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace(['name', 'barcode']), 
             queryTokenizer: Bloodhound.tokenizers.whitespace, 
             identify: function(obj) { return obj.id; },
             prefetch: {
                 url: '{{url_for('pos.list_participant_names')}}',
                 cache: false
             }
-        }); 
+        });
+
+        $('#participant.typeahead').parent().on('keydown', function(evt){
+            if(evt.key === 'Enter') {
+                // Autocomplete when barcode is entered
+                evt.preventDefault();
+                $(".tt-suggestion:first-child", this).trigger('click');
+            }
+        });
 
         $('#participant.typeahead').typeahead({
             highlight: true
@@ -80,6 +88,6 @@
             name: 'participants',
             display: 'name',
             source: participants 
-        }); 
+        });
     </script>
 {% endblock %}

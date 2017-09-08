@@ -89,9 +89,7 @@
                 var pattern = /(\d{2})-(\d{2})-(\d{4})/;
                 var birthday = new Date(($(this).val()).replace(pattern,'$3-$2-$1'));
                 var ref_date = new Date();
-                console.log(birthday);
                 ref_date.setYear(ref_date.getYear() - window.legal_age);
-                console.log(ref_date);
                 if(birthday<ref_date){
                     $('#legal-status').html('Alcohol allowed!');
                     $('#legal-status').removeClass().addClass('success');
