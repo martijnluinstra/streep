@@ -53,6 +53,7 @@ $("#view-users .table-bar button[data-type^='purchase']").click(function(evt){
 
     // Queue a sync-request for this user
     timers['purchases'] = setTimeout(create_sync_task('/purchases', 'purchases'), 1000);
+    $('#search').focus();
 });
 
 function create_sync_task(url, item) {
@@ -97,6 +98,8 @@ $("#view-users  .table-bar button[data-type^='history']").click(function(evt){
         }).fail(function(response){
         alert(config['error_message']);
     });
+
+    $('#search').focus();
 });
 
 function show_history_modal(data, participant_id){

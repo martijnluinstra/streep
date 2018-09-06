@@ -23,7 +23,10 @@
             <tr id="{{ participant.id }}" {% if activity %} class="registered" {% endif %}>
                 <td>{{participant.name}}</td>
                 <td>
-                    <a href="{{ url_for('pos.edit_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <ul class="list-inline">
+                        <li><a href="{{ url_for('pos.accept_terms_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm">terms</a></li>
+                        <li><a href="{{ url_for('pos.edit_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm">edit</a></li>
+                    </ul>
                 </td>
             </tr>
             {% endfor %}

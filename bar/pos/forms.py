@@ -89,4 +89,4 @@ class SettingsForm(Form):
             return
         if not field.raw_data or not field.raw_data[0]:
             field.errors[:] = []
-            raise validators.StopValidation('Terms are requiered!')
+            raise validators.StopValidation('Terms are required!')

@@ -46,22 +46,3 @@
 	</form>
 </div>
 {% endblock %}
-
-{% block scripts %}
-	{{super()}}
-	<script>
-		toggle_terms = function(){
-			if($('input:checkbox[name=require_terms]').prop('checked')){
-				$('#option-terms').show();
-			}else{
-				$('#option-terms').hide();
-			}
-		};
-
-		toggle_terms();
-		$('input:checkbox[name=require_terms]').change(function(){
-			toggle_terms();
-		});
-
-	</script>
-{% endblock %}
