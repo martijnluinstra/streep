@@ -24,8 +24,8 @@
                 <td>{{participant.name}}</td>
                 <td>
                     <ul class="list-inline">
-                        <li><a href="{{ url_for('pos.accept_terms_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm">terms</a></li>
-                        <li><a href="{{ url_for('pos.edit_participant', participant_id=participant.id) }}" class="btn btn-default btn-sm">edit</a></li>
+                        <li><a href="{{ url_for('pos.accept_terms_participant', participant_id=participant.id) }}" class="btn btn-link">terms</a></li>
+                        <li><a href="{{ url_for('pos.edit_participant', participant_id=participant.id) }}" class="btn btn-link">edit</a></li>
                     </ul>
                 </td>
             </tr>
