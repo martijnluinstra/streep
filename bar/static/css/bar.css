@@ -113,16 +113,6 @@ h4{font-size: 16px;}*/
   padding: 9px;
 }
 
-#list-participants table tr{
-  color: #666;
-}
-
-#list-participants table tr th,
-#list-participants table tr.registered td{
-  color: initial;
-}
-
-
 /* import */
 #import-select .bar-panel{
   max-width: none;

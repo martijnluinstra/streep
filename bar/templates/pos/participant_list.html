@@ -20,12 +20,12 @@
         </thead>
         <tbody>
             {% for participant in participants %}
-            <tr id="{{ participant.id }}" {% if activity %} class="registered" {% endif %}>
+            <tr id="{{ participant.id }}">
                 <td>{{participant.name}}</td>
                 <td>
                     <ul class="list-inline">
-                        <li><a href="{{ url_for('pos.accept_terms_participant', participant_id=participant.id) }}" class="btn btn-link">terms</a></li>
-                        <li><a href="{{ url_for('pos.edit_participant', participant_id=participant.id) }}" class="btn btn-link">edit</a></li>
+                        <li><a href="{{ url_for('pos.accept_terms_participant', participant_id=participant.id) }}">terms</a></li>
+                        <li><a href="{{ url_for('pos.edit_participant', participant_id=participant.id) }}">edit</a></li>
                     </ul>
                 </td>
             </tr>
