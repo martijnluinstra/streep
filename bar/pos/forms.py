@@ -1,5 +1,6 @@
 from validators import iban
 
+from flask import current_app
 from flask_wtf import Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import TextField, BooleanField, IntegerField, DateTimeField, RadioField, SelectField, validators, TextAreaField
@@ -46,7 +47,7 @@ class ParticipantForm(Form):
     ])
 
     def validate_iban(form, field):
-        if not iban(field.raw_data[0]) or len(field.raw_data[0]) > 34:
+        if field.raw_data[0] != current_app.config.get('NO_IBAN_STRING', 'OUTSIDE_SEPA_AREA') and (not iban(field.raw_data[0]) or len(field.raw_data[0]) > 34):
             raise validators.StopValidation('This is not a valid IBAN')
 
 
@@ -83,6 +84,7 @@ class SettingsForm(Form):
         validators.Optional(strip_whitespace=True),
         validators.length(max=4096)
     ])
+    uuid_prefix = TextField('UUID Prefix', [validators.length(max=255)])
 
     def validate_terms(form, field):
         if not form.require_terms.data:

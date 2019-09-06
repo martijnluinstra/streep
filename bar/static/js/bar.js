@@ -160,7 +160,11 @@ $('#view-users  #search').keyup(function(evt) {
     $('.table-bar tbody tr').hide();
     $('.table-bar tbody tr td:first-child:containsNCS('+ query +')').closest('tr').show();
     if (evt.key === 'Enter') {
-        $('.table-bar tbody tr[data-barcode='+ $(this).val() +']').show();
+        var clean = query.split(window.uuid_prefix)
+        if (window.uuid_prefix && clean.length > 1)
+            $('.table-bar tbody tr[data-uuid="'+ clean[1] +'"]').show();
+        else
+            $('.table-bar tbody tr[data-barcode="'+ query +'"]').show();
         $(this).val('');
     }
 });

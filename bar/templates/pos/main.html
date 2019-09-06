@@ -26,6 +26,7 @@
             <tr id="{{ participant.id }}" 
                 data-spend-amount="{{participant.spend if participant.spend != None else 0}}"
                 data-barcode="{{ participant.barcode|default('', True) }}"
+                data-uuid="{{ participant.uuid|default('', True) }}"
             >
                 <td>{{participant.name}}</td>
                 <td>{{format_exchange(participant.spend if participant.spend != None else 0)}}</td>
@@ -70,5 +71,8 @@
     <div class="block-screen">
         <div class="block-screen-wait"><img alt="Loading..." src="{{ url_for('static', filename='img/loading.gif') }}"></div>
     </div>
+    <script>
+    window.uuid_prefix = "{{ current_user.uuid_prefix }}";
+    </script>
     {{ super() }}
 {% endblock %}

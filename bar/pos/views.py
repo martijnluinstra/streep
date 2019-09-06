@@ -135,7 +135,7 @@ def import_validate_row(key, row, errors):
     birthday = None
     if row['birthday']:
         try:
-            birthday = datetime.strptime(row['birthday'], "%d-%m-%Y")
+            birthday = datetime.strptime(row['birthday'], '%Y-%m-%d')
         except ValueError:
             import_report_error(errors,key,{'birthday': ['type']})
     row['birthday'] = birthday
@@ -145,7 +145,7 @@ def import_validate_row(key, row, errors):
 
     if not validators.email(row['email']):
         import_report_error(errors,key,{'email': ['type']})
-    if not validators.iban(row['iban']) or len(row['iban']) > 34:
+    if row['iban'] != current_app.config.get('NO_IBAN_STRING', 'OUTSIDE_SEPA_AREA') and (not validators.iban(row['iban']) or len(row['iban']) > 34):
         import_report_error(errors,key,{'iban': ['type']})
     if row['bic'] and not ( len(row['bic']) == 8 or len(row['bic']) == 11 ):
         import_report_error(errors,key,{'bic': ['type']})
@@ -162,6 +162,7 @@ def import_process_data(data):
         row, errors = import_validate_row(key, row, errors)
         participant = Participant(
             name=row['name'],
+            uuid=row['uuid'],
             address=row['address'],
             city=row['city'],
             email=row['email'],
@@ -288,7 +289,7 @@ def participant_registration():
     """ Register a participant """
     form = RegistrationForm()
     if form.validate_on_submit():
-        participant = Participant.query.filter_by(name=form.name.data).first()
+        participant = Participant.query.filter_by(name=form.name.data, activity=current_user).first()
         if participant:
             participant.birthday = form.birthday.data
             participant.barcode = form.barcode.data
@@ -316,6 +317,7 @@ def list_participant_names():
         for participant in data:
             yield {
                 'id': participant.id,
+                'uuid': participant.uuid,
                 'name': participant.name,
                 'birthday': '' if not participant.birthday else participant.birthday.strftime('%d-%m-%Y'),
                 'barcode': '' if not participant.barcode else participant.barcode,

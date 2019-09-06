@@ -17,6 +17,7 @@ class Activity(db.Model, login.UserMixin):
     require_terms = db.Column(db.Boolean(), nullable=False, default=False)
     terms = db.Column(db.String(4096), nullable=True)
     faq = db.Column(db.String(4096), nullable=True)
+    uuid_prefix = db.Column(db.String(255), nullable=True)
     participants = db.relationship('Participant', backref='activity', lazy='dynamic')
 
     def is_active(self):
@@ -50,6 +51,7 @@ class Participant(db.Model):
     activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'), nullable=False)
     has_agreed_to_terms = db.Column(db.Boolean(), nullable=False, default=False)
     barcode = db.Column(db.String(255), nullable=True)
+    uuid = db.Column(db.String(255), nullable=True)
 
     __table_args__ = (
         db.UniqueConstraint('cover_id', 'activity_id'),

@@ -44,24 +44,51 @@
     {{super()}}
     <script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>
     <script>
-        window.legal_age = {{current_user.age_limit|safe}};
+        window.legal_age = {{ current_user.age_limit|safe }};
+        window.uuid_prefix = "{{ current_user.uuid_prefix }}";
 
         var participants = new Bloodhound({ 
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), 
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name', 'uuid'), 
             queryTokenizer: Bloodhound.tokenizers.whitespace, 
             identify: function(obj) { return obj.id; },
             prefetch: {
                 url: '{{url_for('pos.list_participant_names')}}',
                 cache: false
             }
-        }); 
+        });
 
         $('#name.typeahead').typeahead({
-            highlight: true
+            highlight: true,
         }, { 
             name: 'participants', 
             display: 'name',
             source: participants 
+        });
+
+        $('#name').keydown(function(evt) {
+            if (evt.key === 'Enter')
+                evt.preventDefault();
+        });
+
+        $('#name.typeahead').keyup(function(evt) {
+            if (evt.key === 'Enter') {
+                var clean = $(this).val().split(window.uuid_prefix)
+                if (window.uuid_prefix && clean.length > 1) {
+                    participants.search(
+                        clean[1],
+                        function (datums) {
+                            console.log(datums);
+                            if (datums.length > 0)
+                                $(evt.target).typeahead('val', datums[0].name);
+                        }, 
+                        function (datums) {
+                            console.log(datums);
+                            if (datums.length > 0)
+                                $(evt.target).typeahead('val', datums[0].name);
+                        }
+                    );
+                }
+            }
         });
 
         $('#name.typeahead').bind('typeahead:autocomplete typeahead:select typeahead:cursorchange', function(ev, suggestion) {
@@ -78,6 +105,8 @@
                 $('#legal-status').removeClass().addClass('warning');
             }
         });
+
+        $('#name.typeahead').focus();
 
         $('#barcode').keydown(function(evt) {
             if (evt.key === 'Enter')
