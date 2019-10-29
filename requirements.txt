@@ -23,7 +23,7 @@ six==1.10.0
 SQLAlchemy==1.1.13
 SQLAlchemy-Utils==0.32.16
 validators==0.12.0
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 WTForms==2.1
 git+https://bitbucket.org/cover-webcie/coverapi.git@v0.1#egg=CoverAPI
 git+https://bitbucket.org/cover-webcie/flask-coverapi.git@5aa9a64#egg=Flask-CoverAPI
